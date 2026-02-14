@@ -26,20 +26,3 @@ import { DocumentBuilder } from '@nestjs/swagger';
     .build();
 
 
-
-  export const adminSwaggerConfig = new DocumentBuilder()
-    .setTitle('Admin API App')
-    .setDescription('The ADMIN API description')
-    .setVersion('1.0')
-    .setLicense('MIT', 'https://opensource.org/licenses/MIT')
-    .setContact('Admin API', 'https://your-website.com', 'your-email@example.com')
-    .setTermsOfService('https://your-website.com/terms')
-    .setExternalDoc('Find out more', 'https://your-website.com/docs')
-    .addServer('http://localhost:3000', "Local development server")
-    .addServer('https://your-website.com', "Production server")
-    .addServer('https://staging.your-website.com', "Staging server")
-    .addServer('http://localhost:3001', "Testing server")
-    .addTag('Admin', 'Administrative operations') 
-    // Add bearer authentication if your API uses JWTs
-    .addBearerAuth()
-    .build();
