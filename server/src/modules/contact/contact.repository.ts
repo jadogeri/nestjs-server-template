@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { Auth } from './entities/auth.entity';
+import { Contact } from './entities/contact.entity';
 
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseRepository } from '../../common/repositories/base.repository';
 @Injectable()
-export class AuthRepository extends BaseRepository<Auth> {
+export class ContactRepository extends BaseRepository<Contact> {
   constructor(
-    @InjectRepository(Auth)
-    private readonly repo: Repository<Auth>,
+    @InjectRepository(Contact)
+    private readonly repo: Repository<Contact>,
   ) {
     super(repo); // Pass the injected TypeORM repo to the super class
   }
