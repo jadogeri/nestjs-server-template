@@ -20,16 +20,16 @@ export class SessionController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.sessionService.findOne(+id);
+    return this.sessionService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSessionDto: UpdateSessionDto) {
-    return this.sessionService.update(+id, updateSessionDto);
+    return this.sessionService.update(id, updateSessionDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.sessionService.remove(+id);
+    return this.sessionService.remove(id);
   }
 }

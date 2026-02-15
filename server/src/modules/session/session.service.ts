@@ -17,15 +17,15 @@ export class SessionService {
     return await this.sessionRepository.findAll({});
   }
 
-  async findOne(id: number) {    
+  async findOne(id: string) {    
     return await this.sessionRepository.findOne({ where: { id }, relations: [] });
   }
 
-  async update(id: number, updateSessionDto: UpdateSessionDto) {
+  async update(id: string, updateSessionDto: UpdateSessionDto) {
     return await this.sessionRepository.update(id, updateSessionDto);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     return await this.sessionRepository.delete(id);
   }
 }
