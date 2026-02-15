@@ -5,6 +5,7 @@ import { UpdateContactDto } from './dto/update-contact.dto';
 
 @Controller('contact')
 export class ContactController {
+
   constructor(private readonly contactService: ContactService) {}
 
   @Post()

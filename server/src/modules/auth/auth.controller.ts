@@ -20,8 +20,7 @@ export class AuthController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    const findOneOptions: FindAuthDto = { id: +id }; // Create an object that matches the FindAuthDto structure
-    return this.authService.findOne(findOneOptions);
+    return this.authService.findOne(+id);
   }
 
   @Patch(':id')
