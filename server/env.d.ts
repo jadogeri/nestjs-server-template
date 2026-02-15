@@ -30,6 +30,7 @@ declare global {
             ARGON2_ITERATIONS: string | number;
             ARGON2_PARALLELISM: string | number;
             ARGON2_SECRET: string;
+            APP_URL: string;
         }
     }
 }

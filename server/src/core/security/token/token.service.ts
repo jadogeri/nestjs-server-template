@@ -64,7 +64,10 @@ export class TokenService {
   async verifyAccessToken(token: string) {
     try {
       return await this.accessJwtService.verifyAsync(token);
-    } catch (e) {
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.error('Access token verification failed:', e.message);
+      }
       throw new UnauthorizedException('Invalid or expired access token');
     }
   }

@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HashingService } from './argon2.service';
+import { Argon2Service} from './argon2.service';
+import { HashingService } from './interfaces/hashing.service';
 import { ConfigService } from '@nestjs/config';
 
 describe('HashingService', () => {
@@ -8,7 +9,10 @@ describe('HashingService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        HashingService,
+        {
+          provide: HashingService,  
+          useClass: Argon2Service,
+        },
         {
           provide: ConfigService,
           useValue: {

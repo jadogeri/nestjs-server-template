@@ -1,4 +1,5 @@
 // 1. NestJS & Third-Party Libs
+import { ConfigModule } from '@nestjs/config/dist/config.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerModule } from 'nestjs-pino';
@@ -29,6 +30,7 @@ import { pinoLoggerConfig } from './configs/pino.config';
     PermissionModule,
     TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
     LoggerModule.forRoot(pinoLoggerConfig),
+    ConfigModule.forRoot({ isGlobal: true }),   
 
   ],
   controllers: [],

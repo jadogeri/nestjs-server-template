@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class CreateSchema1771187281772 implements MigrationInterface {
-    name = 'CreateSchema1771187281772'
+export class CreateSchema1234567890000 implements MigrationInterface {
+    name = 'CreateSchema1234567890000'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "permissions" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "resource" varchar CHECK( "resource" IN ('user','profile','contact','role','permission','admin','auth','*') ) NOT NULL DEFAULT ('auth'), "action" varchar CHECK( "action" IN ('create','read','update','delete','*') ) NOT NULL DEFAULT ('read'), "description" varchar, CONSTRAINT "UQ_7331684c0c5b063803a425001a0" UNIQUE ("resource", "action"))`);
