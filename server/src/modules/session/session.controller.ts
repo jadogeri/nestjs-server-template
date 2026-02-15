@@ -5,6 +5,7 @@ import { UpdateSessionDto } from './dto/update-session.dto';
 
 @Controller('session')
 export class SessionController {
+
   constructor(private readonly sessionService: SessionService) {}
 
   @Post()
