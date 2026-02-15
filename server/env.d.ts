@@ -1,4 +1,4 @@
-import { NodeEnvironment } from "src/common/types/node-environment.type";
+import { NodeEnvironment } from "./src/common/types/node-environment.type";
 import { JwtPayloadInterface } from "./src/common/interfaces/jwt-payload.interface";
 import { UserPayload } from "./src/common/interfaces/user-payload.interface";
 
