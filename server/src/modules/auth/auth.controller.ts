@@ -13,7 +13,12 @@ import { RegisterDto } from './dto/register.dto';
 
 // 4. Custom Decorators (Documentation/Metatdata)
 import { ApiRegisterUser } from './decorators/api-register-user.decorator';
-import { ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { ApiVerifyEmail } from './decorators/api-verify-email.decorator';
+
+
+//Other
+import { TokenValidationPipe } from '../../common/pipes/token-validation.pipe';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -27,15 +32,16 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Verify user email via token' })
-  @ApiQuery({ name: 'token', type: String, description: 'The unique verification hash' }) // This adds it to Swagger
+
   @Get('verify-email')
-  async verifyEmail(@Query('token', TokenValidationPipe)  token: string) {
-    // verifyEmailDto.token will contain the token from the URL
-    console.log('Received email verification token:', token);
-    return { message: 'Email verification successful' };
-    //await this.authService.verifyEmail(token);
+  @ApiVerifyEmail()
+  async verifyEmail(@Query(TokenValidationPipe)  verifyEmailDto: VerifyEmailDto) {
+    console.log('Received email verification token:', verifyEmailDto.token);
+    const verificationToken = verifyEmailDto.token; 
+
+    return await this.authService.verifyEmail(verificationToken);
+
   }
   
 }
+  

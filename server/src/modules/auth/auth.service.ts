@@ -82,6 +82,34 @@ export class AuthService {
     }
   }
 
+  async verifyEmail(token: string) {
+    try {
+      const payload = await this.tokenService.verifyEmailToken(token);
+      console.log('Email verification token payload:', payload);
+      const{ id, email } = payload;
+      const userAccount = await this.authRepository.findOne({ where: { user: { id }, email }, relations: ['user'] });
+      if (!userAccount) {
+        return { message:" success" }
+      }
+      if (userAccount.isVerified) {
+       throw new ConflictException({ message: 'Your email is already verified. You can proceed to login.',
+                alreadyVerified: true });
+      }else{
+        await this.authRepository.update(userAccount.id, { isEnabled: true, isVerified: true, verificationToken: null, verifiedAt: new Date() });
+      }
+      return {payload};
+      // ... update user to verified in DB  
+    } catch (error:unknown) {
+      if (error instanceof TokenExpiredError) {
+        log('Error verifying email token:', error.message);
+        throw new GoneException('Verification link expired. Please request a new one.');
+
+      }
+      log('Error verifying email token:', error instanceof Error ? error.message : error);
+      throw new BadRequestException('Invalid verification token.');
+    }
+  }
+
   async create(createAuthDto: CreateAuthDto) {
     return await this.authRepository.create(createAuthDto);
   }
