@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
-import { FindAuthDto } from './dto/find-auth.dto';
 import { AuthRepository } from './auth.repository';
 
 @Injectable()
@@ -15,11 +14,11 @@ export class AuthService {
   }
 
   async findAll() {
-    return await this.authRepository.findAll();
+    return await this.authRepository.findAll({});
   }
 
-  async findOne(options: FindAuthDto) {    
-    return await this.authRepository.findOne({ where: options });
+  async findOne(id: number) {    
+    return await this.authRepository.findOne({ where: { id }, relations: [] });
   }
 
   async update(id: number, updateAuthDto: UpdateAuthDto) {
@@ -27,6 +26,6 @@ export class AuthService {
   }
 
   async remove(id: number) {
-    return await this.authRepository.delete({ where: { id } });
+    return await this.authRepository.delete(id);
   }
 }

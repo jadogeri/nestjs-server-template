@@ -2,7 +2,6 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
-import { FindAuthDto } from './dto/find-auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -21,8 +20,7 @@ export class AuthController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    const findOneOptions: FindAuthDto = { id: +id }; // Create an object that matches the FindAuthDto structure
-    return this.authService.findOne(findOneOptions);
+    return this.authService.findOne(+id);
   }
 
   @Patch(':id')
