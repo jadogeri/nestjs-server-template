@@ -1,5 +1,6 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+// 1. NestJS & Third-Party Libs
 import { SeederOptions } from 'typeorm-extension';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 
 import dotenv from 'dotenv';
