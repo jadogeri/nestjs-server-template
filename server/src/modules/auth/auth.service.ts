@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { AuthRepository } from './auth.repository';
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -9,6 +10,13 @@ export class AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
   ) {}  
+  
+  async register(registerDto: RegisterDto) {
+    return { success: true, 
+      message: 'Registration successful. Please check your email to verify your account.' 
+    };
+  }
+
   async create(createAuthDto: CreateAuthDto) {
     return await this.authRepository.create(createAuthDto);
   }
