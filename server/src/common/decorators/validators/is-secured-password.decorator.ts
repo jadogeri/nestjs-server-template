@@ -1,11 +1,13 @@
 // is-secure-password.decorator.ts
 import { applyDecorators } from '@nestjs/common';
-import { IsStrongPassword, MinLength,  } from 'class-validator';
+import { IsString, IsStrongPassword, Max, MaxLength, MinLength,IsNotEmpty  } from 'class-validator';
 
 export function IsSecuredPassword() {
   return applyDecorators(
-    // Message 1: Specifically for length
-    MinLength(8, { message: 'Password is too short (min 8 characters)' }),    
+    IsNotEmpty({ message: 'Password is required' }),
+    IsString(),
+    MinLength(8, { message: 'Password is too short (min 8 characters)' }),  
+    MaxLength(20, { message: 'Password is too long (max 20 characters)' }),  
     
     // Message 2: Specifically for complexity
     IsStrongPassword(

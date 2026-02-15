@@ -1,9 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Session } from '../../session/entities/session.entity';
 import { Audit } from '../../../common/entities/audit.entity';
+import { IsUserEmail } from '../../../common/decorators/validators/is-email.decorator';
+import { IsSecuredPassword } from '../../../common/decorators/validators/is-secured-password.decorator';
 
 @Entity("auths")
 export class Auth extends Audit {
@@ -13,15 +14,12 @@ export class Auth extends Audit {
 
   @ApiProperty({ example: 'john.doe@example.com', description: 'The unique email of the user' })
   @Column({ unique: true, type: 'varchar', length: 150 })
-  @IsString()
-  @IsNotEmpty()
-  @Length(5, 150)
-  @IsEmail()
+  @IsUserEmail() 
   email: string;
 
   //@Exclude({ toPlainOnly: true, toClassOnly: true }) // 👈 Exclude from serialization
   @Column()
-  @IsString()
+  @IsSecuredPassword()
   password: string;
 
   @Column({ default: false }) // 👈 Set to false to "ban" or deactivate an account
