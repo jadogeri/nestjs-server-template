@@ -1,7 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule } from '@nestjs/swagger';
+
+import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
+//configs
 import { swaggerConfig } from './configs/swagger.config';
+import { validationPipeConfig } from './configs/global-validation-pipe.config';
 
 class Server {
 
@@ -11,6 +15,7 @@ class Server {
 
     SwaggerModule.setup('docs', app, document ); // The documentation will be available at http://localhost:3000/docs
 
+    app.useGlobalPipes(new ValidationPipe(validationPipeConfig));
     await app.listen(process.env.PORT ?? 3000);
   }
 }
