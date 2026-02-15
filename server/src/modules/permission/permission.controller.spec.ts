@@ -8,7 +8,12 @@ describe('PermissionController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PermissionController],
-      providers: [PermissionService],
+      providers: [
+        {
+          provide: PermissionService,
+          useValue: { findOne: jest.fn(), create: jest.fn(), update: jest.fn() },
+        }
+      ],
     }).compile();
 
     controller = module.get<PermissionController>(PermissionController);
