@@ -5,6 +5,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Controller('profile')
 export class ProfileController {
+
   constructor(private readonly profileService: ProfileService) {}
 
   @Post()
