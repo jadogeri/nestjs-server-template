@@ -1,7 +1,58 @@
-import { Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
-export class User {
-    @PrimaryGeneratedColumn()   
-    id: number;
+import { Expose } from 'class-transformer';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, ManyToMany, JoinTable } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger'; // Added import
+import { Profile } from '../../profile/entities/profile.entity';
+import { Auth } from '../../auth/entities/auth.entity';
+import { Role } from '../../role/entities/role.entity';
+import { Audit } from '../../../common/entities/audit.entity';
+import { IsName } from '../../../common/decorators/validators/is-name.decorator';
+
+
+@Entity("users")
+export class User extends Audit {
+  @ApiProperty({ example: 1, description: 'The unique identifier of the user' })
+  @PrimaryGeneratedColumn()
+  id: number;
+  
+  @ApiProperty({ example: 'John', description: 'The first name of the user' })
+  @Column({ type: 'varchar', length: 100 })
+  @IsName('FirstName')
+  firstName: string;
+
+  @ApiProperty({ example: 'Doe', description: 'The last name of the user' })
+  @Column({ type: 'varchar', length: 100 })
+  @IsName('LastName')
+  lastName: string;
+
+  @Column({ type: 'date', nullable: true })
+  dateOfBirth: Date;
+  
+  // Virtual Property
+  @ApiProperty({ example: 'John Doe', description: 'The combined first and last name' })
+  @Expose()
+  get fullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
+
+  @OneToOne(() => Profile, (profile) => profile.user, { cascade: true }) 
+  profile: Profile;
+
+  @OneToOne(() => Auth, (auth) => auth.user)
+  auth: Auth;
+
+  @ManyToMany(() => Role, (role: Role) => role.users, { cascade: true })
+  @JoinTable({ 
+    name: 'users_roles',
+    joinColumn: {
+      name: 'userId',            // The column name for the User ID
+      referencedColumnName: 'id'
+    },
+    inverseJoinColumn: {
+      name: 'roleId',            // The column name for the Role ID
+      referencedColumnName: 'id'
+    }
+  })
+  roles: Role[];
+
 }

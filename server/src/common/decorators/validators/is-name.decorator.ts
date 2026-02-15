@@ -13,3 +13,4 @@ export function IsName(label: NameType = 'FirstName') {
     })
   );
 }
+
