@@ -3,7 +3,7 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 
 // 2. Services (Logic Layer)
 import { AuthRepository } from './auth.repository';
-import { HashService } from 'src/core/security/hashing/hash.service';
+import { HashingService } from '../../core/security/hashing/interfaces/hashing.service';
 
 // 3. Utilities & Helpers (Logic Layer)
 import { AuthGeneratorUtil } from 'src/common/utils/auth-generator.util';
@@ -25,7 +25,7 @@ export class AuthService {
 
   constructor(
     private readonly authRepository: AuthRepository,
-    private readonly hashService: HashService,
+    private readonly hashingService: HashingService,
   ) {}  
 
   async register(registerDto: RegisterDto) {
@@ -36,11 +36,15 @@ export class AuthService {
       throw new ConflictException(`Email address "${email}" has already been registered.`);
     }
     const userPayload = UserGeneratorUtil.generate({ firstName, lastName, dateOfBirth });
-    const hashedPassword = await this.hashService.hash(password);    
+    console.log("Generated user payload:", userPayload);
+    const hashedPassword = await this.hashingService.hash(password);    
+    console.log("Hashed password:", hashedPassword);
     const authPayload = AuthGeneratorUtil.generate({ email, password: hashedPassword });
+    console.log("Generated auth payload:", authPayload);
     authPayload.user = userPayload; // Cascading will handle the user creation
 
     const profilePayload = ProfileGeneratorUtil.generate({}); // You can pass necessary data if needed
+    console.log("Generated profile payload:", profilePayload);
     userPayload.profile = profilePayload; // Assign the profile to the user
 
     const savedAuth = await this.authRepository.create(authPayload);  
@@ -49,7 +53,6 @@ export class AuthService {
     const auth =  await this.authRepository.findOne({
       where: { id: savedAuth.id }, relations: ['user' , 'user.roles'] // Ensure roles are included
     });
-    //console.log("Newly created auth with user:", auth);
 
     if (auth?.user) {
     //Generate verification token and send email (optional)

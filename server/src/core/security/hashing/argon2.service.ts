@@ -2,9 +2,10 @@
 import { ConfigService } from '@nestjs/config';
 import * as argon2 from 'argon2';
 import { Service } from '../../../common/decorators/service.decorator';
+import { HashingService } from './interfaces/hashing.service';
 
 @Service()
-export class HashingService {
+export class Argon2Service implements HashingService {
   constructor(private readonly configService: ConfigService) {}
 
   // Argon2 uses memory, time, and parallelism instead of just "rounds"

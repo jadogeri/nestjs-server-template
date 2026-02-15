@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 // 2. Services (Logic Layer)
 import { AuthService } from './auth.service';
-import { HashService } from '../../core/security/hash/hash.service';
+import { HashingService } from '../../core/security/hashing/interfaces/hashing.service';
 
 // 3.Repositories (Data Layer)
 import { AuthRepository } from './auth.repository';
@@ -20,7 +20,7 @@ describe('AuthService', () => {
           useValue: { findOne: jest.fn(), create: jest.fn(), update: jest.fn() },
         },
         {
-          provide: HashService,
+          provide: HashingService,
           useValue: { hash: jest.fn() },
         }
         

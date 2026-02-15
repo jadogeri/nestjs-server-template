@@ -1,6 +1,6 @@
 // 1. NestJS & Third-Party Libs
 import { Module } from '@nestjs/common';
-import { HashingModule } from './hash/hash.module';
+import { HashingModule } from './hashing/hashing.module';
 
 
 @Module({

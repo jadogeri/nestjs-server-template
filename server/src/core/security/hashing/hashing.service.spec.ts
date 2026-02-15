@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HashingService } from './hash.service';
+import { HashingService } from './argon2.service';
 import { ConfigService } from '@nestjs/config';
 
 describe('HashingService', () => {
