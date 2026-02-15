@@ -18,12 +18,8 @@ export class AuthService {
     return await this.authRepository.findAll();
   }
 
-  async findOne(options: FindAuthDto) {
-    return await this.authRepository.findOne(options);
-  }
-
-  async findById(id: number) {
-    return await this.authRepository.findById(id);
+  async findOne(options: FindAuthDto) {    
+    return await this.authRepository.findOne({ where: options });
   }
 
   async update(id: number, updateAuthDto: UpdateAuthDto) {

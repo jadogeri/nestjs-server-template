@@ -6,7 +6,7 @@ import { FindAuthDto } from './dto/find-auth.dto';
 
 @Controller('auth')
 export class AuthController {
-  
+
   constructor(private readonly authService: AuthService) {}
 
   @Post()
@@ -20,13 +20,9 @@ export class AuthController {
   }
 
   @Get(':id')
-  findById(@Param('id') id: string) {
-    return this.authService.findById(+id);
-  }
-
-  @Get('find')
-  findOne(@Body() options: FindAuthDto) {
-    return this.authService.findOne(options);
+  findOne(@Param('id') id: string) {
+    const findOneOptions: FindAuthDto = { id: +id }; // Create an object that matches the FindAuthDto structure
+    return this.authService.findOne(findOneOptions);
   }
 
   @Patch(':id')
