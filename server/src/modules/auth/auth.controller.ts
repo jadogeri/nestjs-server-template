@@ -1,10 +1,18 @@
+// 1. NestJS & Third-Party Libs
+import { Controller, Get, Post, Body, Req, Res } from '@nestjs/common';
+import type { Request, Response } from 'express';
+
+// 2. Services & Helpers (Logic Layer)
 import { AuthService } from './auth.service';
 
 
-import { Controller, Get, Post, Body, Patch, Delete, HttpCode, HttpStatus, Query, UseGuards, Req, Res } from '@nestjs/common';
-import type { Request, Response } from 'express';
-import { ApiRegisterUser } from './decorators/api-register-user.decorator';
+// 3. DTOs & Entities (Data Layer)
 import { RegisterDto } from './dto/register.dto';
+
+
+
+// 4. Custom Decorators (Documentation/Metatdata)
+import { ApiRegisterUser } from './decorators/api-register-user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -15,7 +23,7 @@ export class AuthController {
   @ApiRegisterUser()
   async register(@Body() registerDto: RegisterDto) {
     console.log('Received registration data:', registerDto);
-    return { success: true, message: 'Registration successful. Please check your email to verify your account.' };
+    return this.authService.register(registerDto);
   }
-
+  
 }

@@ -1,4 +1,5 @@
 // 1. NestJS & Third-Party Libs
+import { ConfigModule } from '@nestjs/config/dist/config.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerModule } from 'nestjs-pino';
@@ -6,6 +7,7 @@ import { LoggerModule } from 'nestjs-pino';
 // 2. Feature Modules (Your Business Logic)
 import { AuthModule } from './modules/auth/auth.module';
 import { ContactModule } from './modules/contact/contact.module';
+import { CoreModule } from './core/core.module';
 import { PermissionModule } from './modules/permission/permission.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { RoleModule } from './modules/role/role.module';
@@ -18,6 +20,7 @@ import { pinoLoggerConfig } from './configs/pino.config';
 
 @Module({
   imports: [
+    CoreModule, 
     UserModule, 
     SessionModule, 
     AuthModule, 
@@ -27,6 +30,7 @@ import { pinoLoggerConfig } from './configs/pino.config';
     PermissionModule,
     TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
     LoggerModule.forRoot(pinoLoggerConfig),
+    ConfigModule.forRoot({ isGlobal: true }),   
 
   ],
   controllers: [],

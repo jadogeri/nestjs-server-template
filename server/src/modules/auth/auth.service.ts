@@ -1,14 +1,87 @@
-import { Injectable } from '@nestjs/common';
+// 1. NestJS & Third-Party Libs
+import { ConflictException, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config/dist/config.service';
+
+// 2. Services (Logic Layer)
+import { AuthRepository } from './auth.repository';
+import { HashingService } from '../../core/security/hashing/interfaces/hashing.service';
+import { MailService } from '../../core/infrastructure/mail/mail.service';
+import { TokenService } from '../../core/security/token/token.service';
+
+// 3. Utilities & Helpers (Logic Layer)
+import { AuthGeneratorUtil } from '../../common/utils/auth-generator.util';
+import { ProfileGeneratorUtil } from '../../common/utils/profile-generator.util';
+import { UserGeneratorUtil } from '../../common/utils/user-generator.util';
+
+// 4. DTOs & Entities (Data Layer)
+import { Auth } from './entities/auth.entity';
+import { Profile } from '../profile/entities/profile.entity';
+import { User } from '../user/entities/user.entity';
+
+import { RegisterDto } from './dto/register.dto';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
-import { AuthRepository } from './auth.repository';
 
-@Injectable()
+// 5. Custom Decorators (Documentation/Metatdata)
+import { Service } from '../../common/decorators/service.decorator';
+
+// 6. Interfaces (Data Layer)
+import { VerificationEmailContext } from '../../core/infrastructure/mail/interfaces/mail-context.interface';
+
+@Service()
 export class AuthService {
 
   constructor(
     private readonly authRepository: AuthRepository,
+    private readonly hashingService: HashingService,
+    private readonly tokenService: TokenService,
+    private readonly mailService: MailService, 
+    private readonly configService: ConfigService,
   ) {}  
+
+  async register(registerDto: RegisterDto) {
+    const { email, password, firstName, lastName, dateOfBirth } = registerDto;
+    
+    const existingAuth = await this.authRepository.findOne({ where: { email } });
+    if (existingAuth) {
+      throw new ConflictException(`Email address "${email}" has already been registered.`);
+    }
+    const userPayload : User = UserGeneratorUtil.generate({ firstName, lastName, dateOfBirth });
+    const hashedPassword = await this.hashingService.hash(password);    
+    const authPayload : Auth = AuthGeneratorUtil.generate({ email, password: hashedPassword });
+    authPayload.user = userPayload; // Cascading will handle the user creation
+
+    const profilePayload: Profile = ProfileGeneratorUtil.generate({}); // You can pass necessary data if needed
+    userPayload.profile = profilePayload; // Assign the profile to the user
+
+    const savedAuth = await this.authRepository.create(authPayload);  
+    
+    const auth =  await this.authRepository.findOne({
+      where: { id: savedAuth.id }, relations: ['user' , 'user.roles'] 
+    });
+
+    if (auth?.user) {
+    //Generate verification token and send email (optional)
+      const verificationTokenPayload = { id: auth?.user?.id, email: email};
+      const verificationToken = await this.tokenService.generateVerificationToken(verificationTokenPayload);
+
+      await this.authRepository.update(auth.user.id, { verificationToken });
+
+      const appUrl = this.configService.get<string>('APP_URL') || 'http://localhost:3000';
+      console.log("App URL from config:", appUrl);
+
+     const context : VerificationEmailContext = {
+      firstName: auth.user.firstName,      
+      verificationLink: `${appUrl}/auth/verify-email?token=${verificationToken}`,
+     };
+     await this.mailService.sendVerificationEmail(email, context);     
+     console.log('Verification email sent to:', email);
+      return { message: 'Registration successful. Please check your email to verify your account.' };
+    }else {   
+      throw new NotFoundException('User account not created successfully.');
+    }
+  }
+
   async create(createAuthDto: CreateAuthDto) {
     return await this.authRepository.create(createAuthDto);
   }
