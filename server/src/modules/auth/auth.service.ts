@@ -4,6 +4,8 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 // 2. Services (Logic Layer)
 import { AuthRepository } from './auth.repository';
 import { HashingService } from '../../core/security/hashing/interfaces/hashing.service';
+import { TokenService } from '../../core/security/token/token.service';
+
 
 // 3. Utilities & Helpers (Logic Layer)
 import { AuthGeneratorUtil } from 'src/common/utils/auth-generator.util';
@@ -26,6 +28,7 @@ export class AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
     private readonly hashingService: HashingService,
+    private readonly tokenService: TokenService,
   ) {}  
 
   async register(registerDto: RegisterDto) {
