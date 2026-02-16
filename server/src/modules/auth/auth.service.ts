@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid'; // Install 'uuid' package
 
 // 2. Services (Logic Layer)
 import { AccessControlService } from '../../core/security/access-control/access-control.service';
+import { CookieService } from '../../core/security/cookie/cookie.service';
 import { HashingService } from '../../core/security/hashing/interfaces/hashing.service';
 import { MailService } from '../../core/infrastructure/mail/mail.service';
 import { SessionService } from '../session/session.service';
@@ -60,6 +61,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly payloadMapperService: PayloadMapperService,
     private readonly sessionService: SessionService,
+    private readonly cookieService: CookieService,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -151,7 +153,7 @@ async resendVerification(email: string) {
 
 }
 
-  async login(req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>, res: Response<any, Record<string, any>>, userPayload: UserPayload): any {
+  async login(res: Response<any, Record<string, any>>, userPayload: UserPayload): Promise<any> {
    // A. Generate a unique Session ID immediately
     const sessionId = uuidv4();
     console.log("Generated session ID:", sessionId);

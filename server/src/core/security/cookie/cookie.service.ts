@@ -8,8 +8,6 @@ export class CookieService {
   private readonly logger = new Logger(CookieService.name);
 
   constructor(private readonly configService: ConfigService) {
-    // Note: getOrThrow in NestJS usually only takes 1 argument. 
-    // Using .get() with a fallback is safer for default values.
     this.REFRESH_COOKIE_NAME = this.configService.get<string>('REFRESH_TOKEN_COOKIE_NAME') ?? 'refreshToken';
   }
 

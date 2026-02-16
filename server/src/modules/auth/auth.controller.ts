@@ -56,13 +56,11 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   async login(
     @User() user: UserPayload,
-    @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<any> {
 
-    return await this.authService.login(req, res, user);
+    return await this.authService.login(res, user);
   }
-
 
   @Post('resend-verification')
   @ApiResendVerificationEmail()
