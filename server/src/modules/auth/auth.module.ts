@@ -23,6 +23,7 @@ import { UserModule } from '../user/user.module';
 // Strategies
 import { HashingModule } from 'src/core/security/hashing/hashing.module';
 import { LocalStrategy } from './strategies/local.strategy';
+import { AccessTokenStrategy } from './strategies/access-token.strategy';
 
 
 @Module({
@@ -34,7 +35,8 @@ import { LocalStrategy } from './strategies/local.strategy';
     PayloadMapperService, 
     Argon2Service, 
     CookieService, 
-    LocalStrategy],
+    LocalStrategy,
+    AccessTokenStrategy,],
   exports: [AuthService, AuthRepository, PayloadMapperService],
 })
 export class AuthModule {}

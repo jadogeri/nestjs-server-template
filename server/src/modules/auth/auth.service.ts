@@ -270,7 +270,8 @@ async resendVerification(email: string) {
   async verifyAccessToken(accessTokenPayload: AccessTokenPayload): Promise<AccessTokenPayload | null> {
   const { userId, email } = accessTokenPayload;
 
-    const auth = await this.findOne({ where: { email: email } });
+    const auth = await this.findOne({ where: { email: email }, relations: ['user', 'user.roles', 'user.roles.permissions'] });
+    console.log("AuthService: Verifying access token for email:", email);
     if (!auth)  return null;
    //  account status checks
     if (!this.accessControlService.isUserActive(auth)) {
@@ -286,6 +287,7 @@ async resendVerification(email: string) {
       this.logger.warn(`User not found with id: ${userId}`);
       return null;
     }
+    console.log("auth ==> ", auth);
     if (auth.user.id !== userId) {
       this.logger.warn(`User ID mismatch: token has ${userId} but auth record has ${auth.user.id}`);
       return null;
