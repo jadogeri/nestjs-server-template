@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Service } from '../../../common/decorators/service.decorator';
 import { UserPayload } from 'src/common/interfaces/user-payload.interface';
 import { JwtPayloadInterface } from 'src/common/interfaces/jwt-payload.interface';
+import { VerificationTokenPayload } from 'src/common/types/verification-token-payload.type';
 
 
 @Service()
@@ -33,14 +34,13 @@ export class TokenService {
     return { accessToken, refreshToken };
   }
 
-  async generateVerificationToken(user: any) {
-    // 2. Use a specific payload for verification
-    const payload = { sub: user.id, email: user.email, type: 'verification' };
-    const verificationToken = await this.verifyJwtService.signAsync(payload);
+  async generateVerificationToken(verificationTokenPayload: VerificationTokenPayload) {
+    
+    const verificationToken = await this.verifyJwtService.signAsync(verificationTokenPayload);
     return verificationToken;
   }
 
-  async verifyEmailToken(token: string) {
+  async verifyEmailToken(token: string) : Promise<VerificationTokenPayload> {
     // 3. This will use the verification-specific secret and expiration
     return await this.verifyJwtService.verifyAsync(token);
   }
