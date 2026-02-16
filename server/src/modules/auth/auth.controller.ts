@@ -27,6 +27,10 @@ import { TokenValidationPipe } from '../../common/pipes/token-validation.pipe';
 import { EmailValidationPipe } from '../../common/pipes/email-validation.pipe';
 import { LocalAuthGuard } from '../../core/security/guards/local-auth.guard';
 import type { UserPayload } from '../../common/interfaces/user-payload.interface';
+import { ApiGetMe } from './decorators/api-get-me.decorator';
+import type { AccessTokenPayload } from '../..//common/types/access-token-payload.type';
+import { AccessAuthGuard } from '../..//core/security/guards/access-auth.guard';
+import { AccessToken } from '../../common/decorators/access-token.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -61,6 +65,16 @@ export class AuthController {
 
     return await this.authService.login(res, user);
   }
+
+  @Get('me')
+  @ApiGetMe()
+  @UseGuards(AccessAuthGuard)
+  async me(@AccessToken() accessTokenPayload: AccessTokenPayload): Promise<any> {
+    console.log("AuthController: Fetching current user payload...");
+    console.log(accessTokenPayload);
+    return accessTokenPayload;
+  }
+
 
   @Post('resend-verification')
   @ApiResendVerificationEmail()

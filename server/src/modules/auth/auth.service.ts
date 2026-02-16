@@ -45,6 +45,8 @@ import { PayloadMapperService } from './payload-mapper.service';
 import { Request, Response } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
+import { AccessTokenPayload } from 'src/common/types/access-token-payload.type';
+import { FindOneOptions } from 'typeorm';
 
 
 @Service()
@@ -196,9 +198,6 @@ async resendVerification(email: string) {
     return await this.authRepository.findAll({});
   }
 
-  async findOne(id: number) {    
-    return await this.authRepository.findOne({ where: { id }, relations: [] });
-  }
 
   async update(id: number, updateAuthDto: UpdateAuthDto) {
     return await this.authRepository.update(id, updateAuthDto);
@@ -268,6 +267,42 @@ async resendVerification(email: string) {
     this.logger.log(`Verification email dispatched to: ${email}`);
   }
 
+  async verifyAccessToken(accessTokenPayload: AccessTokenPayload): Promise<AccessTokenPayload | null> {
+  const { userId, email } = accessTokenPayload;
 
+    const auth = await this.findOne({ where: { email: email }, relations: ['user', 'user.roles', 'user.roles.permissions'] });
+    console.log("AuthService: Verifying access token for email:", email);
+    if (!auth)  return null;
+   //  account status checks
+    if (!this.accessControlService.isUserActive(auth)) {
+      this.logger.warn(`Account for email ${email} is disabled.`);
+      return null;
+
+    }
+
+    this.logger.log(`Account for email ${email} is active.`);
+
+    const user = await this.userService.findById(userId);
+    if (!user){
+      this.logger.warn(`User not found with id: ${userId}`);
+      return null;
+    }
+    console.log("auth ==> ", auth);
+    if (auth.user.id !== userId) {
+      this.logger.warn(`User ID mismatch: token has ${userId} but auth record has ${auth.user.id}`);
+      return null;
+    }
+    console.log("JwtStrategy: Retrieved user from database:", accessTokenPayload.email);
+
+    return accessTokenPayload;
+}
+
+  async findOne(options: FindOneOptions<Auth>): Promise<Auth | null> {    
+    return await this.authRepository.findOne(options);
+  }
+
+  async findById(id: number): Promise<Auth | null> {    
+    return await this.authRepository.findOne({ where: { id }, relations: ['roles', 'roles.permissions'] });
+  }
   
 }
