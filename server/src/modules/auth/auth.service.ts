@@ -27,10 +27,10 @@ import { Service } from '../../common/decorators/service.decorator';
 
 // 6. Interfaces (Data Layer)
 import { VerificationEmailContext } from '../../core/infrastructure/mail/interfaces/mail-context.interface';
-import { VerificationTokenPayload } from 'src/common/types/verification-token-payload.type';
-import { UserNotFoundException } from 'src/common/exceptions/user-not-found.exception';
+import { VerificationTokenPayload } from '../../common/types/verification-token-payload.type';
+import { UserNotFoundException } from '../../common/exceptions/user-not-found.exception';
 import { TokenExpiredError } from '@nestjs/jwt/dist';
-import { AuthNotFoundException } from 'src/common/exceptions/auth-not-found.exception';
+import { AuthNotFoundException } from '../../common/exceptions/auth-not-found.exception';
 
 @Service()
 export class AuthService {

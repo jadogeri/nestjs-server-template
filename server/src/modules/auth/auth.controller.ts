@@ -19,7 +19,7 @@ import { ApiVerifyEmail } from './decorators/api-verify-email.decorator';
 //Other
 import { TokenValidationPipe } from '../../common/pipes/token-validation.pipe';
 import { VerifyEmailDto } from './dto/verify-email.dto';
-import { EmailValidationPipe } from 'src/common/pipes/email-validation.pipe';
+import { EmailValidationPipe } from '../../common/pipes/email-validation.pipe';
 import { ApiResendVerificationEmail } from './decorators/api-resend-verification-email.decorator';
 import { ResendVerificationEmailDto } from './dto/resend-verification-email.dto';
 
