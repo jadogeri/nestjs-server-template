@@ -4,6 +4,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 
 import dotenv from 'dotenv';
+import { TypeOrmPinoLogger } from '../common/logger/typeorm.logger';
 
 
 dotenv.config();
@@ -29,13 +30,16 @@ export const dataSourceOptions: TypeOrmModuleOptions & SeederOptions = {
   // seeds: [UserSeeder],
   // factories: [UserFactory],
   synchronize: !isProduction,
-  logging: isProduction === false ? ["query", "error", "schema"] : ["error"],
+  logging: isProduction === false ? ["warn","query", "error", "schema"] : ["error"],
+  //logger: new TypeOrmPinoLogger(), 
+  //maxQueryExecutionTime: 1000, // Trigger logQuerySlow if > 1 second
   
   // High-value for performance tuning: logs any query taking longer than 1 second
   //maxQueryExecutionTime: 1000, 
   
   // Use 'formatted-console' for readable SQL in dev
-  logger: "advanced-console", };
+  logger: "advanced-console", 
+  }
 
 
 export default dataSourceOptions;

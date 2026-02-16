@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule } from '@nestjs/swagger';
@@ -16,6 +17,7 @@ class Server {
     SwaggerModule.setup('docs', app, document ); // The documentation will be available at http://localhost:3000/docs
 
     app.useGlobalPipes(new ValidationPipe(validationPipeConfig));
+    app.use(cookieParser()); // Add cookie parser middleware    
     await app.listen(process.env.PORT ?? 3000);
   }
 }

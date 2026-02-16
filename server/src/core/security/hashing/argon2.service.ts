@@ -22,6 +22,7 @@ export class Argon2Service implements HashingService {
 
   async hash(password: string): Promise<string> {
     try {
+      console.log("options used for hashing:", this.options);
       // Argon2 automatically handles salt generation
       const hash = await argon2.hash(password, this.options);
       console.log("Generated Argon2 hash:", hash);
@@ -34,6 +35,7 @@ export class Argon2Service implements HashingService {
 
   async compare(password: string, hash: string): Promise<boolean> {
     try {
+      console.log("options used for verification:", this.options);
       // Pass the same options (especially the secret) to verify
       const isMatch = await argon2.verify(hash, password, this.options);
       console.log("Comparing password with hash:", { isMatch });

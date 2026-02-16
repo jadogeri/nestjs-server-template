@@ -170,7 +170,9 @@ async resendVerification(email: string) {
     const createSessionDto = { 
         userId: userPayload.userId, 
         refreshTokenHash: hashedRefreshToken,
-        sessionId: sessionId // Include sessionId if your DTO requires it
+        sessionId: sessionId,
+        expiresAt: new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)) // Example: 7 days expiry
+        
     };
     console.log("Creating session with DTO:", createSessionDto);
     const session = await this.sessionService.create(createSessionDto);
@@ -208,11 +210,17 @@ async resendVerification(email: string) {
 
   async verifyUser(email: string, password: string): Promise<UserPayload | null> {
     try {
-      const auth = await this.authRepository.findOne({ where: { email }, relations: ['user'] });
+      const auth = await this.authRepository.findByEmail(email);
       
       if (!auth) throw new UnauthorizedException('Invalid credentials');
 
       // ALWAYS use the service so the pepper logic stays identical
+      console.log(`Verifying user with email: ${email}`);
+      console.log("password provided:", password);
+      console.log("stored password hash:", auth.password);
+      const pepper = this.configService.get<string>('HASH_PEPPER') || '';
+      console.log("Using pepper:", pepper ? 'Yes' : 'No');
+
       const authenticated = await this.hashingService.compare(password, auth.password);
 
       if (!authenticated) throw new UnauthorizedException("Invalid credentials provided");
@@ -222,7 +230,7 @@ async resendVerification(email: string) {
 
       if (!this.accessControlService.isUserVerified(auth))  throw new ForbiddenException('Account not verified');
       // 3. Fetch Full Data & Map to Payload
-      const user = await this.userService.findOne({ where: { id: auth.user.id }, relations: ['roles', 'permissions'] });
+      const user = await this.userService.findOne({ where: { id: auth.user.id }, relations: ['roles', 'roles.permissions'] });
       if (!user) throw new UnauthorizedException('User profile not found');
 
       return this.payloadMapperService.toUserPayload(user, email);
