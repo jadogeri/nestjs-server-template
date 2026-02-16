@@ -28,6 +28,7 @@ import { EmailValidationPipe } from '../../common/pipes/email-validation.pipe';
 import { LocalAuthGuard } from '../../core/security/guards/local-auth.guard';
 import type { UserPayload } from '../../common/interfaces/user-payload.interface';
 import { ApiGetMe } from './decorators/api-get-me.decorator';
+import type { AccessTokenPayload } from 'src/common/types/access-token-payload.type';
 
 @Controller('auth')
 export class AuthController {
