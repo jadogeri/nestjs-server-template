@@ -1,5 +1,5 @@
 // 1. NestJS & Third-Party Libs
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, GoneException, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 
 // 2. Services (Logic Layer)
@@ -27,9 +27,14 @@ import { Service } from '../../common/decorators/service.decorator';
 
 // 6. Interfaces (Data Layer)
 import { VerificationEmailContext } from '../../core/infrastructure/mail/interfaces/mail-context.interface';
+import { VerificationTokenPayload } from 'src/common/types/verification-token-payload.type';
+import { UserNotFoundException } from 'src/common/exceptions/user-not-found.exception';
+import { TokenExpiredError } from '@nestjs/jwt/dist';
+import { AuthNotFoundException } from 'src/common/exceptions/auth-not-found.exception';
 
 @Service()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
 
   constructor(
     private readonly authRepository: AuthRepository,
@@ -62,7 +67,7 @@ export class AuthService {
 
     if (auth?.user) {
     //Generate verification token and send email (optional)
-      const verificationTokenPayload = { id: auth?.user?.id, email: email};
+      const verificationTokenPayload : VerificationTokenPayload = { sub: auth?.user?.id ,userId: auth?.user?.id, email: email, type: 'verification' };
       const verificationToken = await this.tokenService.generateVerificationToken(verificationTokenPayload);
 
       await this.authRepository.update(auth.user.id, { verificationToken });
@@ -86,29 +91,75 @@ export class AuthService {
     try {
       const payload = await this.tokenService.verifyEmailToken(token);
       console.log('Email verification token payload:', payload);
-      const{ id, email } = payload;
-      const userAccount = await this.authRepository.findOne({ where: { user: { id }, email }, relations: ['user'] });
+      const{ userId, email } = payload;
+      const userAccount = await this.authRepository.findOne({ where: { user: { id: userId }, email }, relations: ['user'] });
       if (!userAccount) {
-        return { message:" success" }
+        throw new UserNotFoundException("No user account found for this verification token.");
       }
       if (userAccount.isVerified) {
-       throw new ConflictException({ message: 'Your email is already verified. You can proceed to login.',
-                alreadyVerified: true });
+        throw new ConflictException({ 
+          message: 'Your email is already verified. You can proceed to login.',
+          alreadyVerified: true 
+        });
       }else{
         await this.authRepository.update(userAccount.id, { isEnabled: true, isVerified: true, verificationToken: null, verifiedAt: new Date() });
       }
       return {payload};
-      // ... update user to verified in DB  
-    } catch (error:unknown) {
+    } catch (error: unknown) {
       if (error instanceof TokenExpiredError) {
-        log('Error verifying email token:', error.message);
+        this.logger.error('Error verifying email token:', error.message);
         throw new GoneException('Verification link expired. Please request a new one.');
 
       }
-      log('Error verifying email token:', error instanceof Error ? error.message : error);
+      this.logger.error('Error verifying email token:', error instanceof Error ? error.message : error);
       throw new BadRequestException('Invalid verification token.');
     }
   }
+
+async resendVerification(email: string) {
+  const auth = await this.authRepository.findOne({ where: { email }, relations: ['user'] }); //
+  
+  if (!auth) {
+    throw new AuthNotFoundException(email, 'email');
+  }
+  
+  if (auth.isVerified) {
+    throw new BadRequestException('Email is already verified');
+  }
+
+  // Reuse your existing email sending logic here
+
+    console.log("Newly created auth with user:", auth);
+
+    if (!auth?.user) {
+      throw new NotFoundException('User not found for the provided auth information.');
+    }
+    //Generate verification token and send email (optional)
+      const verificationTokenPayload : VerificationTokenPayload = { sub: auth?.user?.id, userId: auth?.user?.id, email: email, type: 'verification' };
+      console.log("Generated verification token payload:", verificationTokenPayload);
+
+      const verificationToken = await this.tokenService.generateVerificationToken(verificationTokenPayload);
+      console.log("Generated verification token:", verificationToken);
+
+     const updatedUser = await this.authRepository.update(auth.id, { verificationToken });
+     console.log('Updated User with Verification Token:', updatedUser);
+
+     // Send verification email using MailService
+
+     const appUrl = this.configService.get<string>('APP_URL') || 'http://localhost:3000';
+     console.log("App URL from config:", appUrl);
+     const context : VerificationEmailContext = {
+      firstName: auth.user.firstName,
+      verificationLink: `${appUrl}/auth/verify-email?token=${verificationToken}`,
+     };
+     console.log("Email context for Handlebars:", context);
+
+     const result = await this.mailService.sendVerificationEmail(email, context);
+      console.log('Email sending result:', result);
+
+  return { message: 'A new verification link has been sent to your email.' };
+
+}
 
   async create(createAuthDto: CreateAuthDto) {
     return await this.authRepository.create(createAuthDto);
