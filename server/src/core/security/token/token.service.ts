@@ -20,6 +20,7 @@ export class TokenService {
     const jwtPayload: JwtPayloadInterface = {
       userId: user.userId,
       sub: user.userId, // Standard JWT subject claim
+      permissions: user.permissions,
       email: user.email,  
       roles: user.roles,
       type: 'access', // Custom claim to identify token type
