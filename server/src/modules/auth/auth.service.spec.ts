@@ -7,10 +7,19 @@ import { ConfigService } from '@nestjs/config/dist/config.service';
 import { AuthService } from './auth.service';
 import { HashingService } from '../../core/security/hashing/interfaces/hashing.service';
 import { MailService } from '../../core/infrastructure/mail/mail.service';
+import { PayloadMapperService } from './payload-mapper.service';
 import { TokenService } from '../../core/security/token/token.service';
+import { UserService } from '../user/user.service';
+
 
 // 3.Repositories (Data Layer)
 import { AuthRepository } from './auth.repository';
+
+// 4. Interfaces & Types
+import { AccessControlService } from '../../core/security/access-control/access-control.service';
+import { SessionService } from '../session/session.service';
+import { CookieService } from '../../core/security/cookie/cookie.service';
+
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -42,6 +51,26 @@ describe('AuthService', () => {
         {
           provide: ConfigService,
           useValue: { get: jest.fn((key: string) => 'test-value') } 
+        },
+        {
+          provide: AccessControlService,
+          useValue: { assignRoleToUser: jest.fn() },
+        },
+        {
+          provide: UserService,
+          useValue: { findByEmail: jest.fn() },
+        },
+        {
+          provide: PayloadMapperService,
+          useValue: { toUserPayload: jest.fn() },
+        },
+        {
+          provide: SessionService,
+          useValue: { createSession: jest.fn() },
+        },
+        {
+          provide: CookieService,
+          useValue: { setCookie: jest.fn() },
         }
         
       ],

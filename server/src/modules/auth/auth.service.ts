@@ -1,7 +1,9 @@
 // 1. NestJS & Third-Party Libs
 import { BadRequestException, ConflictException, ForbiddenException, GoneException, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
-import { v4 as uuidv4 } from 'uuid'; // Install 'uuid' package
+import { randomUUID } from 'node:crypto';
+import { TokenExpiredError } from '@nestjs/jwt/dist';
+
 
 
 // 2. Services (Logic Layer)
@@ -37,7 +39,6 @@ import { Service } from '../../common/decorators/service.decorator';
 import { VerificationEmailContext } from '../../core/infrastructure/mail/interfaces/mail-context.interface';
 import { VerificationTokenPayload } from '../../common/types/verification-token-payload.type';
 import { UserNotFoundException } from '../../common/exceptions/user-not-found.exception';
-import { TokenExpiredError } from '@nestjs/jwt/dist';
 import { AuthNotFoundException } from '../../common/exceptions/auth-not-found.exception';
 import { UserPayload } from '../../common/interfaces/user-payload.interface';
 import { PayloadMapperService } from './payload-mapper.service';
@@ -155,7 +156,7 @@ async resendVerification(email: string) {
 
   async login(res: Response<any, Record<string, any>>, userPayload: UserPayload): Promise<any> {
    // A. Generate a unique Session ID immediately
-    const sessionId = uuidv4();
+    const sessionId = randomUUID();
     console.log("Generated session ID:", sessionId);
 
     // B. Generate tokens, passing the sessionId so it can be embedded in the payload

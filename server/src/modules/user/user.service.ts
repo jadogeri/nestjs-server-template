@@ -4,7 +4,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
 import { FindOneOptions, FindOptionsRelations } from 'typeorm';
 import { User } from './entities/user.entity';
-import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -22,6 +21,10 @@ export class UserService {
 
   async findOne(options: FindOneOptions<User>): Promise<User | null> {    
     return await this.userRepository.findOne(options);
+  }
+
+  async findById(id: number): Promise<User | null> {    
+    return await this.userRepository.findOne({ where: { id }, relations: ['roles', 'roles.permissions'] });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
