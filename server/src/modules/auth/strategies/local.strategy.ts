@@ -22,6 +22,5 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
     const userPayload : UserPayload | null = await this.authService.verifyUser(email, password);
     return userPayload;
   }
-
 }
 
