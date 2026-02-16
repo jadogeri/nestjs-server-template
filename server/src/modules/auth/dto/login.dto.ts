@@ -16,7 +16,7 @@ export class LoginDto {
     description: 'The secure password for the account',
     example: 'P@ssw0rd123!',
     required: true,
-    format: 'password', // <--- THIS enables the "eye" icon and masking
+    format: 'password', 
   })
   @IsSecuredPassword()
   password: string;
