@@ -1,5 +1,5 @@
 // 1. NestJS & Third-Party Libs
-import { BadRequestException, ConflictException, GoneException, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, GoneException, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 
 // 2. Services (Logic Layer)
@@ -31,6 +31,7 @@ import { VerificationTokenPayload } from '../../common/types/verification-token-
 import { UserNotFoundException } from '../../common/exceptions/user-not-found.exception';
 import { TokenExpiredError } from '@nestjs/jwt/dist';
 import { AuthNotFoundException } from '../../common/exceptions/auth-not-found.exception';
+import { UserPayload } from 'src/common/interfaces/user-payload.interface';
 
 @Service()
 export class AuthService {
@@ -42,6 +43,7 @@ export class AuthService {
     private readonly tokenService: TokenService,
     private readonly mailService: MailService, 
     private readonly configService: ConfigService,
+    private readonly accessControlService: AccessControlService,
   ) {}  
 
   async register(registerDto: RegisterDto) {
@@ -150,6 +152,33 @@ async resendVerification(email: string) {
 
   async remove(id: number) {
     return await this.authRepository.delete(id);
+  }
+
+  async verifyUser(email: string, password: string): Promise<UserPayload | null> {
+    try {
+      const auth = await this.authRepository.findByEmail(email);
+      
+      if (!auth) throw new UnauthorizedException('Invalid credentials');
+
+      // ALWAYS use the service so the pepper logic stays identical
+      const authenticated = await this.hashService.compare(password, auth.password);
+
+      if (!authenticated) throw new UnauthorizedException("Invalid credentials provided");
+
+      // 2. Account Status Checks (Business Logic)
+      if (!this.accessControlService.isUserActive(auth)) throw new ForbiddenException('Account is disabled'); 
+
+      if (!this.accessControlService.isUserVerified(auth))  throw new ForbiddenException('Account not verified');
+      // 3. Fetch Full Data & Map to Payload
+      const user = await this.userService.findByUserId(auth.user.id);
+      if (!user) throw new UnauthorizedException('User profile not found');
+
+      return this.payloadMapperService.toUserPayload(user, email);
+
+    } catch (error) {
+      this.logger.error('Verify user error', error);
+      throw new UnauthorizedException('Failed to authenticate user');
+    }
   }
 
   private async sendVerificationProcess(auth: Auth): Promise<void> {
