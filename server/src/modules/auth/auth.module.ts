@@ -9,13 +9,14 @@ import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
 import { SessionModule } from '../session/session.module';
 import { RoleModule } from '../role/role.module';
 import { UserModule } from '../user/user.module';
+import { PayloadMapperService } from './payload-mapper.service';
 
 
 @Module({
   imports: [ UserModule, RoleModule, SessionModule, TypeOrmModule.forFeature([Auth])],
   controllers: [AuthController],
-  providers: [AuthService, AuthRepository],
-  exports: [AuthService, AuthRepository],
+  providers: [AuthService, AuthRepository, PayloadMapperService],
+  exports: [AuthService, AuthRepository, PayloadMapperService],
 })
 export class AuthModule {}
 

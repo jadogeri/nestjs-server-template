@@ -3,17 +3,21 @@ import { BadRequestException, ConflictException, ForbiddenException, GoneExcepti
 import { ConfigService } from '@nestjs/config/dist/config.service';
 
 // 2. Services (Logic Layer)
-import { AuthRepository } from './auth.repository';
+import { AccessControlService } from '../../core/security/access-control/access-control.service';
 import { HashingService } from '../../core/security/hashing/interfaces/hashing.service';
 import { MailService } from '../../core/infrastructure/mail/mail.service';
 import { TokenService } from '../../core/security/token/token.service';
+import { UserService } from '../user/user.service';
 
-// 3. Utilities & Helpers (Logic Layer)
+// 3. Repositories (Data Layer)
+import { AuthRepository } from './auth.repository';
+
+// 4. Utilities & Helpers (Logic Layer)
 import { AuthGeneratorUtil } from '../../common/utils/auth-generator.util';
 import { ProfileGeneratorUtil } from '../../common/utils/profile-generator.util';
 import { UserGeneratorUtil } from '../../common/utils/user-generator.util';
 
-// 4. DTOs & Entities (Data Layer)
+// 5. DTOs & Entities (Data Layer)
 import { Auth } from './entities/auth.entity';
 import { Profile } from '../profile/entities/profile.entity';
 import { User } from '../user/entities/user.entity';
@@ -22,16 +26,18 @@ import { RegisterDto } from './dto/register.dto';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 
-// 5. Custom Decorators (Documentation/Metatdata)
+// 6. Custom Decorators (Documentation/Metatdata)
 import { Service } from '../../common/decorators/service.decorator';
 
-// 6. Interfaces (Data Layer)
+// . Interfaces (Data Layer)
 import { VerificationEmailContext } from '../../core/infrastructure/mail/interfaces/mail-context.interface';
 import { VerificationTokenPayload } from '../../common/types/verification-token-payload.type';
 import { UserNotFoundException } from '../../common/exceptions/user-not-found.exception';
 import { TokenExpiredError } from '@nestjs/jwt/dist';
 import { AuthNotFoundException } from '../../common/exceptions/auth-not-found.exception';
-import { UserPayload } from 'src/common/interfaces/user-payload.interface';
+import { UserPayload } from '../../common/interfaces/user-payload.interface';
+import { PayloadMapperService } from './payload-mapper.service';
+
 
 @Service()
 export class AuthService {
@@ -44,6 +50,8 @@ export class AuthService {
     private readonly mailService: MailService, 
     private readonly configService: ConfigService,
     private readonly accessControlService: AccessControlService,
+    private readonly userService: UserService,
+    private readonly payloadMapperService: PayloadMapperService,
   ) {}  
 
   async register(registerDto: RegisterDto) {
@@ -156,12 +164,12 @@ async resendVerification(email: string) {
 
   async verifyUser(email: string, password: string): Promise<UserPayload | null> {
     try {
-      const auth = await this.authRepository.findByEmail(email);
+      const auth = await this.authRepository.findOne({ where: { email }, relations: ['user'] });
       
       if (!auth) throw new UnauthorizedException('Invalid credentials');
 
       // ALWAYS use the service so the pepper logic stays identical
-      const authenticated = await this.hashService.compare(password, auth.password);
+      const authenticated = await this.hashingService.compare(password, auth.password);
 
       if (!authenticated) throw new UnauthorizedException("Invalid credentials provided");
 
@@ -170,7 +178,7 @@ async resendVerification(email: string) {
 
       if (!this.accessControlService.isUserVerified(auth))  throw new ForbiddenException('Account not verified');
       // 3. Fetch Full Data & Map to Payload
-      const user = await this.userService.findByUserId(auth.user.id);
+      const user = await this.userService.findOne({ where: { id: auth.user.id }, relations: ['roles', 'permissions'] });
       if (!user) throw new UnauthorizedException('User profile not found');
 
       return this.payloadMapperService.toUserPayload(user, email);
