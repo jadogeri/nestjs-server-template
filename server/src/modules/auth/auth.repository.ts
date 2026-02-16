@@ -12,5 +12,11 @@ export class AuthRepository extends BaseRepository<Auth> {
   ) {
     super(repo); // Pass the injected TypeORM repo to the super class
   }
+  async findByEmail(email: string) {
+    return this.findOne({ 
+      where: { email } as any ,
+      relations: ['user', 'user.roles', 'user.roles.permissions'], // Eager load the related User entity and nested relations
+    });
+  }
 
 }

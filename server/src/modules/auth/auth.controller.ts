@@ -1,27 +1,32 @@
 // 1. NestJS & Third-Party Libs
-import { Controller, Get, Post, Body, Req, Res, HttpCode, HttpStatus, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Res, HttpCode, HttpStatus, Query, UseGuards } from '@nestjs/common';
 import type { Request, Response } from 'express';
 
 // 2. Services & Helpers (Logic Layer)
 import { AuthService } from './auth.service';
 
-
 // 3. DTOs & Entities (Data Layer)
 import { RegisterDto } from './dto/register.dto';
+import { ResendVerificationEmailDto } from './dto/resend-verification-email.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
+
+
 
 
 
 // 4. Custom Decorators (Documentation/Metatdata)
+import { ApiLogin } from './decorators/api-login.decorator';
 import { ApiRegisterUser } from './decorators/api-register-user.decorator';
+import { ApiResendVerificationEmail } from './decorators/api-resend-verification-email.decorator';
 import { ApiVerifyEmail } from './decorators/api-verify-email.decorator';
+import { User } from '../../common/decorators/user.decorator';
 
 
 //Other
 import { TokenValidationPipe } from '../../common/pipes/token-validation.pipe';
-import { VerifyEmailDto } from './dto/verify-email.dto';
 import { EmailValidationPipe } from '../../common/pipes/email-validation.pipe';
-import { ApiResendVerificationEmail } from './decorators/api-resend-verification-email.decorator';
-import { ResendVerificationEmailDto } from './dto/resend-verification-email.dto';
+import { LocalAuthGuard } from '../../core/security/guards/local-auth.guard';
+import type { UserPayload } from '../../common/interfaces/user-payload.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -44,6 +49,17 @@ export class AuthController {
 
     return await this.authService.verifyEmail(verificationToken);
 
+  }
+
+  @Post('login')
+  @ApiLogin()
+  @UseGuards(LocalAuthGuard)
+  async login(
+    @User() user: UserPayload,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<any> {
+
+    return await this.authService.login(res, user);
   }
 
   @Post('resend-verification')

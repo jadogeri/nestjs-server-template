@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
+import { FindOneOptions, FindOptionsRelations } from 'typeorm';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -17,8 +19,12 @@ export class UserService {
     return await this.userRepository.findAll({});
   }
 
-  async findOne(id: number) {    
-    return await this.userRepository.findOne({ where: { id }, relations: [] });
+  async findOne(options: FindOneOptions<User>): Promise<User | null> {    
+    return await this.userRepository.findOne(options);
+  }
+
+  async findById(id: number): Promise<User | null> {    
+    return await this.userRepository.findOne({ where: { id }, relations: ['roles', 'roles.permissions'] });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
