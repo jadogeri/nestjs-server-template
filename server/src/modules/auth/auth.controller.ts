@@ -20,6 +20,8 @@ import { ApiVerifyEmail } from './decorators/api-verify-email.decorator';
 import { TokenValidationPipe } from '../../common/pipes/token-validation.pipe';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { EmailValidationPipe } from 'src/common/pipes/email-validation.pipe';
+import { ApiResendVerificationEmail } from './decorators/api-resend-verification-email.decorator';
+import { ResendVerificationEmailDto } from './dto/resend-verification-email.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -45,10 +47,11 @@ export class AuthController {
   }
 
   @Post('resend-verification')
-  async resendVerification(
-    @Body('email', EmailValidationPipe) email: string // Validation happens here
-  ) {
-    console.log('Validating resend request for:', email);
+  @ApiResendVerificationEmail()
+  async resendVerification(@Body(EmailValidationPipe) resendVerificationTokenDto: ResendVerificationEmailDto ) {
+    const { email } = resendVerificationTokenDto;
+    console.log('Received resend verification request for email:', email);
+
     return await this.authService.resendVerification(email);
   }
   

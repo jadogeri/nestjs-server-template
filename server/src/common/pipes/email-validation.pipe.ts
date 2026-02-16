@@ -1,18 +1,21 @@
 import { PipeTransform, BadRequestException } from '@nestjs/common';
 import { isEmail } from 'class-validator';
 import { Pipe } from '../decorators/pipe.decorator';
+import { ResendVerificationEmailDto } from 'src/modules/auth/dto/resend-verification-email.dto';
 
 @Pipe()
 export class EmailValidationPipe implements PipeTransform {
-  transform(value: any) {
-    if (!value) {
+  transform(dto: ResendVerificationEmailDto) {
+    const { email } = dto;
+    if (!email) {
       throw new BadRequestException('Email is required');
     }
 
-    if (!isEmail(value)) {
+    if (!isEmail(email)) {
       throw new BadRequestException('Invalid email format');
     }
 
-    return value.toLowerCase().trim(); // Sanitize the input
+    dto.email = email.toLowerCase().trim();
+    return dto; 
   }
 }

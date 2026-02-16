@@ -47,43 +47,40 @@ export class AuthService {
   async register(registerDto: RegisterDto) {
     const { email, password, firstName, lastName, dateOfBirth } = registerDto;
     
-    const existingAuth = await this.authRepository.findOne({ where: { email } });
-    if (existingAuth) {
-      throw new ConflictException(`Email address "${email}" has already been registered.`);
-    }
-    const userPayload : User = UserGeneratorUtil.generate({ firstName, lastName, dateOfBirth });
-    const hashedPassword = await this.hashingService.hash(password);    
-    const authPayload : Auth = AuthGeneratorUtil.generate({ email, password: hashedPassword });
-    authPayload.user = userPayload; // Cascading will handle the user creation
+    try{
+      const existingAuth = await this.authRepository.findOne({ where: { email } });
+      if (existingAuth) {
+        throw new ConflictException(`Email address "${email}" has already been registered.`);
+      }
+      const userPayload : User = UserGeneratorUtil.generate({ firstName, lastName, dateOfBirth });
+      const hashedPassword = await this.hashingService.hash(password);    
+      const authPayload : Auth = AuthGeneratorUtil.generate({ email, password: hashedPassword });
+      authPayload.user = userPayload; // Cascading will handle the user creation
 
-    const profilePayload: Profile = ProfileGeneratorUtil.generate({}); // You can pass necessary data if needed
-    userPayload.profile = profilePayload; // Assign the profile to the user
+      const profilePayload: Profile = ProfileGeneratorUtil.generate({}); // You can pass necessary data if needed
+      userPayload.profile = profilePayload; // Assign the profile to the user
 
-    const savedAuth = await this.authRepository.create(authPayload);  
-    
-    const auth =  await this.authRepository.findOne({
-      where: { id: savedAuth.id }, relations: ['user' , 'user.roles'] 
-    });
+      const savedAuth = await this.authRepository.create(authPayload);  
+      
+      const auth =  await this.authRepository.findOne({
+        where: { id: savedAuth.id }, relations: ['user' , 'user.roles'] 
+      });
 
-    if (auth?.user) {
-    //Generate verification token and send email (optional)
-      const verificationTokenPayload : VerificationTokenPayload = { sub: auth?.user?.id ,userId: auth?.user?.id, email: email, type: 'verification' };
-      const verificationToken = await this.tokenService.generateVerificationToken(verificationTokenPayload);
+      if (!auth?.user) throw new NotFoundException('User account creation failed.');
 
-      await this.authRepository.update(auth.user.id, { verificationToken });
+      // CALL THE HELPER
+      await this.sendVerificationProcess(auth);
+      const result = { message: 'Registration successful! Please check your email to verify your account.' };
+      return result;
 
-      const appUrl = this.configService.get<string>('APP_URL') || 'http://localhost:3000';
-      console.log("App URL from config:", appUrl);
+    } catch (error: unknown) {
+      if (error instanceof TokenExpiredError) {
+        this.logger.error('Error verifying email token:', error.message);
+        throw new GoneException('Verification link expired. Please request a new one.');
 
-     const context : VerificationEmailContext = {
-      firstName: auth.user.firstName,      
-      verificationLink: `${appUrl}/auth/verify-email?token=${verificationToken}`,
-     };
-     await this.mailService.sendVerificationEmail(email, context);     
-     console.log('Verification email sent to:', email);
-      return { message: 'Registration successful. Please check your email to verify your account.' };
-    }else {   
-      throw new NotFoundException('User account not created successfully.');
+      }
+      this.logger.error('Error verifying email token:', error instanceof Error ? error.message : error);
+      throw new BadRequestException('Invalid verification token.');
     }
   }
 
@@ -117,47 +114,21 @@ export class AuthService {
   }
 
 async resendVerification(email: string) {
-  const auth = await this.authRepository.findOne({ where: { email }, relations: ['user'] }); //
-  
-  if (!auth) {
-    throw new AuthNotFoundException(email, 'email');
-  }
-  
-  if (auth.isVerified) {
-    throw new BadRequestException('Email is already verified');
-  }
+  try{
+  const auth = await this.authRepository.findOne({ where: { email }, relations: ['user'] });   
 
-  // Reuse your existing email sending logic here
+  if (!auth) throw new AuthNotFoundException(email, 'email');
+  if (auth.isVerified) throw new BadRequestException('Email is already verified');
+  if (!auth.user) throw new NotFoundException('User profile not found.');
 
-    console.log("Newly created auth with user:", auth);
-
-    if (!auth?.user) {
-      throw new NotFoundException('User not found for the provided auth information.');
-    }
-    //Generate verification token and send email (optional)
-      const verificationTokenPayload : VerificationTokenPayload = { sub: auth?.user?.id, userId: auth?.user?.id, email: email, type: 'verification' };
-      console.log("Generated verification token payload:", verificationTokenPayload);
-
-      const verificationToken = await this.tokenService.generateVerificationToken(verificationTokenPayload);
-      console.log("Generated verification token:", verificationToken);
-
-     const updatedUser = await this.authRepository.update(auth.id, { verificationToken });
-     console.log('Updated User with Verification Token:', updatedUser);
-
-     // Send verification email using MailService
-
-     const appUrl = this.configService.get<string>('APP_URL') || 'http://localhost:3000';
-     console.log("App URL from config:", appUrl);
-     const context : VerificationEmailContext = {
-      firstName: auth.user.firstName,
-      verificationLink: `${appUrl}/auth/verify-email?token=${verificationToken}`,
-     };
-     console.log("Email context for Handlebars:", context);
-
-     const result = await this.mailService.sendVerificationEmail(email, context);
-      console.log('Email sending result:', result);
+  // CALL THE HELPER
+  await this.sendVerificationProcess(auth);
 
   return { message: 'A new verification link has been sent to your email.' };
+  } catch (error: unknown) {
+    this.logger.error('Error in resendVerification:', error instanceof Error ? error.message : error);
+    throw new BadRequestException('Failed to resend verification email. Please try again later.');
+  }
 
 }
 
@@ -180,4 +151,34 @@ async resendVerification(email: string) {
   async remove(id: number) {
     return await this.authRepository.delete(id);
   }
+
+  private async sendVerificationProcess(auth: Auth): Promise<void> {
+    const { email, user } = auth;
+
+    // 1. Generate the payload and token
+    const verificationTokenPayload: VerificationTokenPayload = { 
+      sub: user.id, 
+      userId: user.id, 
+      email, 
+      type: 'verification' 
+    };
+    const verificationToken = await this.tokenService.generateVerificationToken(verificationTokenPayload);
+
+    // 2. Persist the token to the database
+    await this.authRepository.update(auth.id, { verificationToken });
+
+    // 3. Prepare the link
+    const appUrl = this.configService.get<string>('APP_URL') || 'http://localhost:3000';
+    const context: VerificationEmailContext = {
+      firstName: user.firstName,
+      verificationLink: `${appUrl}/auth/verify-email?token=${verificationToken}`,
+    };
+
+    // 4. Dispatch Email
+    await this.mailService.sendVerificationEmail(email, context);
+    this.logger.log(`Verification email dispatched to: ${email}`);
+  }
+
+
+  
 }
