@@ -38,7 +38,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'access-toke
     this.logger.log(`Validating user in JwtStrategy using extrated payload: `);
     this.logger.debug(accessTokenPayload);
 
-    const jwtUser = await this.authService.verifyJwt(accessTokenPayload);
+    const jwtUser = await this.authService.verifyAccessToken(accessTokenPayload);
     if (!jwtUser) {
       this.logger.warn(`JWT validation failed for email: ${accessTokenPayload.email}`);
       return null;
