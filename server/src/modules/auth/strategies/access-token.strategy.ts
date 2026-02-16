@@ -12,6 +12,7 @@ import { PermissionString } from 'src/common/types/permission-string.type';
 import { UserRole } from 'src/common/enums/user-role.enum';
 import { PermissionStringGeneratorUtil } from 'src/common/utils/permission-string.util';
 import { JwtPayloadInterface } from 'src/common/interfaces/jwt-payload.interface';
+import { AccessTokenPayload } from 'src/common/types/access-token-payload.type';
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'access-token') {
@@ -33,13 +34,13 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'access-toke
   }
 
 
-  async validate(jwtPayload: JwtPayloadInterface): Promise<JwtPayloadInterface | null> {
+  async validate(accessTokenPayload: AccessTokenPayload): Promise<AccessTokenPayload | null> {
     this.logger.log(`Validating user in JwtStrategy using extrated payload: `);
-    this.logger.debug(jwtPayload);
+    this.logger.debug(accessTokenPayload);
 
-    const jwtUser = await this.authService.verifyJwt(jwtPayload);
+    const jwtUser = await this.authService.verifyJwt(accessTokenPayload);
     if (!jwtUser) {
-      this.logger.warn(`JWT validation failed for email: ${jwtPayload.email}`);
+      this.logger.warn(`JWT validation failed for email: ${accessTokenPayload.email}`);
       return null;
     }
 
