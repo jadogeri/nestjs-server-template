@@ -1,9 +1,8 @@
-import { applyDecorators, Get, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { applyDecorators, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
 export function ApiGetMe() {
   return applyDecorators(
-    Get('me'),
     HttpCode(HttpStatus.OK),
     ApiBearerAuth(), // This adds the "Authorize" padlock in Swagger
     ApiOperation({ 
