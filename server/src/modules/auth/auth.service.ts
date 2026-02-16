@@ -1,11 +1,14 @@
 // 1. NestJS & Third-Party Libs
 import { BadRequestException, ConflictException, ForbiddenException, GoneException, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
+import { v4 as uuidv4 } from 'uuid'; // Install 'uuid' package
+
 
 // 2. Services (Logic Layer)
 import { AccessControlService } from '../../core/security/access-control/access-control.service';
 import { HashingService } from '../../core/security/hashing/interfaces/hashing.service';
 import { MailService } from '../../core/infrastructure/mail/mail.service';
+import { SessionService } from '../session/session.service';
 import { TokenService } from '../../core/security/token/token.service';
 import { UserService } from '../user/user.service';
 
@@ -37,10 +40,14 @@ import { TokenExpiredError } from '@nestjs/jwt/dist';
 import { AuthNotFoundException } from '../../common/exceptions/auth-not-found.exception';
 import { UserPayload } from '../../common/interfaces/user-payload.interface';
 import { PayloadMapperService } from './payload-mapper.service';
+import { Request, Response } from 'express';
+import { ParamsDictionary } from 'express-serve-static-core';
+import { ParsedQs } from 'qs';
 
 
 @Service()
 export class AuthService {
+
   private readonly logger = new Logger(AuthService.name);
 
   constructor(
@@ -52,7 +59,8 @@ export class AuthService {
     private readonly accessControlService: AccessControlService,
     private readonly userService: UserService,
     private readonly payloadMapperService: PayloadMapperService,
-  ) {}  
+    private readonly sessionService: SessionService,
+  ) {}
 
   async register(registerDto: RegisterDto) {
     const { email, password, firstName, lastName, dateOfBirth } = registerDto;
@@ -125,22 +133,55 @@ export class AuthService {
 
 async resendVerification(email: string) {
   try{
-  const auth = await this.authRepository.findOne({ where: { email }, relations: ['user'] });   
+    const auth = await this.authRepository.findOne({ where: { email }, relations: ['user'] });   
 
-  if (!auth) throw new AuthNotFoundException(email, 'email');
-  if (auth.isVerified) throw new BadRequestException('Email is already verified');
-  if (!auth.user) throw new NotFoundException('User profile not found.');
+    if (!auth) throw new AuthNotFoundException(email, 'email');
+    if (auth.isVerified) throw new BadRequestException('Email is already verified');
+    if (!auth.user) throw new NotFoundException('User profile not found.');
 
-  // CALL THE HELPER
-  await this.sendVerificationProcess(auth);
+    // CALL THE HELPER
+    await this.sendVerificationProcess(auth);
 
-  return { message: 'A new verification link has been sent to your email.' };
-  } catch (error: unknown) {
+    return { message: 'A new verification link has been sent to your email.' };
+  } 
+  catch (error: unknown) {
     this.logger.error('Error in resendVerification:', error instanceof Error ? error.message : error);
     throw new BadRequestException('Failed to resend verification email. Please try again later.');
   }
 
 }
+
+  async login(req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>, res: Response<any, Record<string, any>>, userPayload: UserPayload): any {
+   // A. Generate a unique Session ID immediately
+    const sessionId = uuidv4();
+    console.log("Generated session ID:", sessionId);
+
+    // B. Generate tokens, passing the sessionId so it can be embedded in the payload
+    const data = await this.tokenService.generateAuthTokens(userPayload, sessionId); 
+    
+    // C. Hash the refresh token
+    const hashedRefreshToken = await this.hashingService.hash(data.refreshToken);
+
+    // D. Create the session in DB using our pre-generated ID
+    // Ensure your Session entity/DTO accepts 'id' or 'sessionId'
+    const createSessionDto = { 
+        userId: userPayload.userId, 
+        refreshTokenHash: hashedRefreshToken,
+        sessionId: sessionId // Include sessionId if your DTO requires it
+    };
+    console.log("Creating session with DTO:", createSessionDto);
+    const session = await this.sessionService.create(createSessionDto);
+    console.log("Created session with pre-generated ID:", session);
+
+    // E. Set Cookie
+    await this.cookieService.createRefreshToken(res, data.refreshToken);
+
+    return {
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+        userId: userPayload.userId,
+        sessionId: sessionId // Return it if needed by the client
+    };  }
 
   async create(createAuthDto: CreateAuthDto) {
     return await this.authRepository.create(createAuthDto);
