@@ -1,6 +1,12 @@
 
 // 1. NestJS & Third-Party Libs
 import { DocumentBuilder } from '@nestjs/swagger';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const REFRESH_TOKEN_COOKIE_NAME = process.env.REFRESH_TOKEN_COOKIE_NAME || 'refreshToken';
+console.log(`Using refresh token cookie name: ${REFRESH_TOKEN_COOKIE_NAME}`);
 
   export const swaggerConfig = new DocumentBuilder()
     .setTitle('User Auth App')
@@ -24,6 +30,11 @@ import { DocumentBuilder } from '@nestjs/swagger';
     .addTag('Role', 'Operations related to roles')
     // Add bearer authentication if your API uses JWTs
     .addBearerAuth()
+    .addCookieAuth('refresh-token', { // This key must match ApiCookieAuth('refresh-token')
+      type: 'apiKey',
+      in: 'cookie',
+      name: REFRESH_TOKEN_COOKIE_NAME, // The ACTUAL name of the cookie sent in headers
+    })
     .build();
 
 
