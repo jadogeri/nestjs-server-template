@@ -29,6 +29,7 @@ import { LocalAuthGuard } from '../../core/security/guards/local-auth.guard';
 import type { UserPayload } from '../../common/interfaces/user-payload.interface';
 import { ApiGetMe } from './decorators/api-get-me.decorator';
 import type { AccessTokenPayload } from 'src/common/types/access-token-payload.type';
+import { AccessAuthGuard } from 'src/core/security/guards/access-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -66,7 +67,7 @@ export class AuthController {
 
   @Get('me')
   @ApiGetMe()
-  @UseGuards(AccessTokenAuthGuard)
+  @UseGuards(AccessAuthGuard)
   async me(@AccessTokenPayload() accessTokenPayload: AccessTokenPayload): Promise<any> {
     console.log("AuthController: Fetching current user payload...");
     console.log(accessTokenPayload);
