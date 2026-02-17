@@ -1,10 +1,10 @@
 
-export interface AccountManagementServiceInterface {     
+export abstract class AccountManagementServiceInterface {     
 
-    deactivate(): Promise<void>;
+    abstract deactivate(): Promise<void>;
 
-    delete(): Promise<void> ;
+    abstract delete(): Promise<void> ;
 
-    reactivate(): Promise<void>;
+    abstract reactivate(): Promise<void>;
 }
 

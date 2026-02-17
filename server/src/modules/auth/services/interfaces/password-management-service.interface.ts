@@ -1,8 +1,8 @@
 
-export interface PasswordManagementServiceInterface {     
+export abstract class PasswordManagementServiceInterface {     
 
-    forgotPassword(): Promise<void>;
+    abstract forgotPassword(): Promise<void>;
 
-    resetPassword(): Promise<void> ;
+    abstract resetPassword(): Promise<void> ;
 }
 

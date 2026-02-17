@@ -1,11 +1,11 @@
 import { RegisterDto } from "../../dto/register.dto";
 
-export interface RegistrationServiceInterface {     
+export abstract class RegistrationServiceInterface {     
 
-    register(registerDto: RegisterDto): Promise<void>;
+    abstract register(registerDto: RegisterDto): Promise<void>;
 
-    verifyEmail(token: string): Promise<void> ;
+    abstract verifyEmail(token: string): Promise<void> ;
 
-    resendVerification(email: string): Promise<void> ;
+    abstract resendVerification(email: string): Promise<void> ;
 }
 
