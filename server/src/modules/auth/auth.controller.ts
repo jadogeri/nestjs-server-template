@@ -33,7 +33,8 @@ import { AccessAuthGuard } from '../..//core/security/guards/access-auth.guard';
 import { AccessToken } from '../../common/decorators/access-token.decorator';
 import { ApiRefresh } from './decorators/api-refresh-token.decorator';
 import type { RefreshTokenPayload } from 'src/common/types/refresh-token-payload.type';
-import { RefreshToken } from 'src/common/decorators/refresh-token.decorator';
+import { RefreshToken } from '../../common/decorators/refresh-token.decorator';
+import { RefreshAuthGuard } from '../../core/security/guards/refresh-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -89,8 +90,8 @@ export class AuthController {
   }
 
   @Post('/refresh')
-
   @ApiRefresh()
+  @UseGuards(RefreshAuthGuard)
   async refreshToken(@RefreshToken() refreshToken: RefreshTokenPayload, @Req() req: Request,@Res({ passthrough: true }) res: Response): Promise<any> {
 
   //@UseGuards(RefreshAuthGuard) // Use the custom refresh token guard
@@ -102,8 +103,8 @@ export class AuthController {
   // Use the cookie name you set, e.g., 'refreshToken'
   console.log("Cookie received:", refreshToken);
   
-  return { message: "Refresh token retrieved from cookie" };  }
-
-  
+  return this.authService.refreshToken( refreshToken, res);
+    
+  }
 }
   

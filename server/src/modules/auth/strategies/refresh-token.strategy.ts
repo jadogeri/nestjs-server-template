@@ -27,7 +27,11 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'refresh-to
     ) {
     super({
       // 1. Where to find the token -- in this case, from the Authorization header as a Bearer token
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), 
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        cookieExtractor,
+        // Optional: Keep this if you want to support both headers and cookies
+        ExtractJwt.fromAuthHeaderAsBearerToken(), 
+      ]),
       // 2. Secret key used to sign the token
       secretOrKey: configService.getOrThrow('JWT_REFRESH_TOKEN_SECRET'), 
       ignoreExpiration: false,
@@ -44,8 +48,18 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'refresh-to
       this.logger.warn(`JWT validation failed for refresh token: ${JSON.stringify(refreshTokenPayload)}`);
       return null;
     }
+    console.log("Refresh token validated successfully, payload:", jwtUser);
 
     return jwtUser;
   }
+
+
 }
 
+  const cookieExtractor = (req: Request): string | null => {
+    let token = null;
+    if (req?.cookies) {
+      token = req.cookies['refreshToken']; // Use the exact name of your cookie
+    }
+    return token;
+  };

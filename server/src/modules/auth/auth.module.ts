@@ -16,14 +16,15 @@ import { AuthRepository } from './auth.repository';
 import { Auth } from './entities/auth.entity';
 
 // modules
+import { HashingModule } from 'src/core/security/hashing/hashing.module';
 import { RoleModule } from '../role/role.module';
 import { SessionModule } from '../session/session.module';
 import { UserModule } from '../user/user.module';
 
 // Strategies
-import { HashingModule } from 'src/core/security/hashing/hashing.module';
-import { LocalStrategy } from './strategies/local.strategy';
 import { AccessTokenStrategy } from './strategies/access-token.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
+import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 
 
 @Module({
@@ -36,9 +37,11 @@ import { AccessTokenStrategy } from './strategies/access-token.strategy';
     Argon2Service, 
     CookieService, 
     LocalStrategy,
-    AccessTokenStrategy,],
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
+  ],
   exports: [AuthService, AuthRepository, PayloadMapperService],
+
 })
 export class AuthModule {}
-
   

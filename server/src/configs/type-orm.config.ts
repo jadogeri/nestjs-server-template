@@ -40,6 +40,7 @@ export const dataSourceOptions: TypeOrmModuleOptions & SeederOptions = {
   // Use 'formatted-console' for readable SQL in dev
   logger: "advanced-console", 
   }
+  
 
 
 export default dataSourceOptions;
