@@ -26,6 +26,14 @@ export class TokenService {
       roles: user.roles,
       type: 'access', // Custom claim to identify token type
     }
+    const refreshTokenPayload: RefreshTokenPayload = {
+      userId: user.userId,
+      sub: user.userId, // Standard JWT subject claim
+      type: 'refresh', // Custom claim to identify token type
+      sessionId: sessionId, // Include session ID for refresh tokens
+    };
+
+
 
     // Secrets and expiration are already baked into the services
     const [accessToken, refreshToken] = await Promise.all([
