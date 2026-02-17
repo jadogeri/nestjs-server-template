@@ -17,6 +17,8 @@ import { UserModule } from './modules/user/user.module';
 // 3. Configurations
 import dataSourceOptions from './configs/type-orm.config';
 import { pinoLoggerConfig } from './configs/pino.config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { RegistrationEventListener } from './core/infrastructure/mail/listener/registration.listener';
 
 @Module({
   imports: [
@@ -28,12 +30,15 @@ import { pinoLoggerConfig } from './configs/pino.config';
     RoleModule, 
     ContactModule, 
     PermissionModule,
+    EventEmitterModule.forRoot(),
     TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
     LoggerModule.forRoot(pinoLoggerConfig),
     ConfigModule.forRoot({ isGlobal: true }),   
 
   ],
   controllers: [],
-  providers: [],
+  providers: [
+
+  ],
 })
 export class AppModule {}
