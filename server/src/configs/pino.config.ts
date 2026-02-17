@@ -27,11 +27,11 @@ export const pinoLoggerConfig: Params = {
             mkdir: true,
           },
         },
-        {          
-          target: 'pino/file',
-          level: 'error',
-          options: { destination: './logs/database-errors.log', mkdir: true },
-        },
+        // {          
+        //   target: 'pino/file',
+        //   level: 'error',
+        //   options: { destination: './logs/database-errors.log', mkdir: true },
+        // },
       ],
     },
   },

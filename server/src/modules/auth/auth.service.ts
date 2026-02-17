@@ -47,6 +47,7 @@ import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 import { AccessTokenPayload } from 'src/common/types/access-token-payload.type';
 import { FindOneOptions } from 'typeorm';
+import { is } from 'date-fns/locale';
 
 
 @Service()
@@ -211,7 +212,7 @@ async resendVerification(email: string) {
     try {
       const auth = await this.authRepository.findByEmail(email);
       
-      if (!auth) throw new UnauthorizedException('Invalid credentials');
+      if (!auth) throw new UnauthorizedException('Invalid credentials');      
 
       // ALWAYS use the service so the pepper logic stays identical
       console.log(`Verifying user with email: ${email}`);
@@ -220,9 +221,31 @@ async resendVerification(email: string) {
       const pepper = this.configService.get<string>('HASH_PEPPER') || '';
       console.log("Using pepper:", pepper ? 'Yes' : 'No');
 
-      const authenticated = await this.hashingService.compare(password, auth.password);
+      const isMatch = await this.hashingService.compare(password, auth.password);
 
-      if (!authenticated) throw new UnauthorizedException("Invalid credentials provided");
+      if (!isMatch) {
+        this.logger.warn(`Password mismatch for email: ${email}`);
+        throw new UnauthorizedException('Invalid credentials');
+      }
+      /*
+    
+      if(!isMatch && auth.isVerified){
+        auth.failedLoginAttempts += 1;
+        if (auth.failedLoginAttempts >= 3) {
+          auth.isEnabled = false; // Disable the account after 3 failed attempts
+          this.logger.warn(`Account for email ${email} has been disabled due to too many failed login attempts.`);
+          throw new ForbiddenException('Account disabled due to too many failed login attempts. Please contact support.');
+        } else {
+          this.logger.warn(`Failed login attempt ${auth.failedLoginAttempts} for email ${email}.`);
+          throw new ForbiddenException('Invalid credentials. Please try again.');          
+        }        
+      }else{
+        // 3. Reset attempts on success
+        auth.failedLoginAttempts = 0;
+        await this.authRepository.update(auth.id, auth);
+      }
+
+      */
 
       // 2. Account Status Checks (Business Logic)
       if (!this.accessControlService.isUserActive(auth)) throw new ForbiddenException('Account is disabled'); 
