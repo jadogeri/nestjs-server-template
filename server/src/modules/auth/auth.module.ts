@@ -25,7 +25,7 @@ import { UserModule } from '../user/user.module';
 import { AccessTokenStrategy } from './strategies/access-token.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
-import { RegistrationService } from './services/registration.service';
+import { RegistrationEventListener } from '../../core/infrastructure/mail/listener/registration.listener';
 
 
 @Module({
@@ -37,11 +37,12 @@ import { RegistrationService } from './services/registration.service';
     PayloadMapperService, 
     Argon2Service, 
     CookieService, 
+
+    RegistrationEventListener,
     LocalStrategy,
     AccessTokenStrategy,
     RefreshTokenStrategy,
 
-    RegistrationService,
   ],
   exports: [AuthService, AuthRepository, PayloadMapperService],
 

@@ -104,7 +104,8 @@ export class AuthController {
 
   @Post('registration')
   async registration(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    await this.authService.registration();
+    //await this.authService.registration();
+    return { message: 'Registration endpoint' };
   }
 }
   

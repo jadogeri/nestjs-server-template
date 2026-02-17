@@ -19,6 +19,7 @@ import { AuthRepository } from './auth.repository';
 import { AccessControlService } from '../../core/security/access-control/access-control.service';
 import { SessionService } from '../session/session.service';
 import { CookieService } from '../../core/security/cookie/cookie.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 
 describe('AuthService', () => {
@@ -71,6 +72,10 @@ describe('AuthService', () => {
         {
           provide: CookieService,
           useValue: { setCookie: jest.fn() },
+        },
+        {
+          provide: EventEmitter2,
+          useValue: { emit: jest.fn() },
         }
         
       ],

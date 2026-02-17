@@ -51,6 +51,7 @@ import { is } from 'date-fns/locale';
 import { RefreshTokenPayload } from 'src/common/types/refresh-token-payload.type';
 import { CreateSessionDto } from '../session/dto/create-session.dto';
 import { UpdateSessionDto } from '../session/dto/update-session.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 
 @Service()
@@ -69,6 +70,7 @@ export class AuthService {
     private readonly payloadMapperService: PayloadMapperService,
     private readonly sessionService: SessionService,
     private readonly cookieService: CookieService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -149,7 +151,9 @@ async resendVerification(email: string) {
     if (!auth.user) throw new NotFoundException('User profile not found.');
 
     // CALL THE HELPER
-    await this.sendVerificationProcess(auth);
+    //await this.sendVerificationProcess(auth);
+    this.eventEmitter.emit('user.registered', auth);
+
 
     return { message: 'A new verification link has been sent to your email.' };
   } 
