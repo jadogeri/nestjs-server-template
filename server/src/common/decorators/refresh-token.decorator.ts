@@ -1,32 +1,17 @@
-import { applyDecorators, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiCookieAuth } from '@nestjs/swagger';
 
-export function ApiRefresh() {
-  return applyDecorators(
-    HttpCode(HttpStatus.OK),
-    ApiCookieAuth('refresh-token'), // Indicates the cookie name defined in Swagger config
-    ApiOperation({ 
-      summary: 'Refresh access tokens via Cookie',
-      description: 'Reads the refresh token from an HTTP-only cookie to issue new tokens.' 
-    }),
-    ApiResponse({
-      status: 200,
-      description: 'Tokens successfully refreshed.',
-      schema: {
-        example: { 
-          accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-          refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
-        }
-      }
-    }),
-    ApiResponse({ status: 400, description: 'Cookie missing or expired.' }),
-    ApiResponse({ 
-      status: 401, 
-      description: 'Unauthorized - Invalid or expired refresh token.' 
-    }),
-    ApiResponse({ 
-      status: 403, 
-      description: 'Forbidden - Token has been revoked or reuse detected.' 
-    })
-  );
-}
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { RefreshTokenPayload } from '../types/refresh-token-payload.type';
+
+export const RefreshToken = createParamDecorator(
+  (data: keyof RefreshTokenPayload | undefined, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    // Logic: Look at .user, but your code treats it as the JWT payload
+
+    const cookies = request.cookies;
+    const token = cookies?.['refreshToken'];
+    
+    return data ? token?.[data] : token as RefreshTokenPayload;
+  },
+);
+
+
