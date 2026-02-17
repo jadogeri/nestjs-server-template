@@ -10,17 +10,12 @@ import { RegisterDto } from './dto/register.dto';
 import { ResendVerificationEmailDto } from './dto/resend-verification-email.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 
-
-
-
-
 // 4. Custom Decorators (Documentation/Metatdata)
 import { ApiLogin } from './decorators/api-login.decorator';
 import { ApiRegisterUser } from './decorators/api-register-user.decorator';
 import { ApiResendVerificationEmail } from './decorators/api-resend-verification-email.decorator';
 import { ApiVerifyEmail } from './decorators/api-verify-email.decorator';
 import { User } from '../../common/decorators/user.decorator';
-
 
 //Other
 import { TokenValidationPipe } from '../../common/pipes/token-validation.pipe';
@@ -105,6 +100,11 @@ export class AuthController {
   
   return this.authService.refreshToken( refreshToken, res);
     
+  }
+
+  @Post('registration')
+  async registration(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    await this.authService.registration();
   }
 }
   

@@ -56,7 +56,7 @@ import { UpdateSessionDto } from '../session/dto/update-session.dto';
 @Service()
 export class AuthService {
 
-  private readonly logger = new Logger(AuthService.name);
+  private readonly logger = new Logger(AuthService.name);g
 
   constructor(
     private readonly authRepository: AuthRepository,

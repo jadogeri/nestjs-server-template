@@ -25,6 +25,7 @@ import { UserModule } from '../user/user.module';
 import { AccessTokenStrategy } from './strategies/access-token.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
+import { RegistrationService } from './services/registration.service';
 
 
 @Module({
@@ -39,6 +40,8 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
     LocalStrategy,
     AccessTokenStrategy,
     RefreshTokenStrategy,
+
+    RegistrationService,
   ],
   exports: [AuthService, AuthRepository, PayloadMapperService],
 
