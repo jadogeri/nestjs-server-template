@@ -1,11 +1,11 @@
 import { Service } from "../../../common/decorators/service.decorator";
-//import { RegistrationInterface } from "../interfaces/registration.interface";
+import { RegisterDto } from "../dto/register.dto";
+import { RegistrationServiceInterface } from "./interfaces/registration-service.interface";
 
 @Service()
-export class RegistrationService {     
+export class RegistrationService implements RegistrationServiceInterface {     
 
-
-    async register(): Promise<void> {
+    async register(registerDto: RegisterDto): Promise<void> {
         // Implementation for user registration
     }
 
