@@ -32,6 +32,10 @@ import { RegistrationService } from './services/registration.service';
 import { AccountManagementService } from './services/account-management.service';
 import { AuthenticationService } from './services/authentication.service';
 import { PasswordManagementService } from './services/password-management.service';
+import { RegistrationServiceInterface } from './services/interfaces/registration-service.interface';
+import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
+import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
+import { AuthenticationServiceInterface } from './services/interfaces/authentication-service.interface';
 
 
 @Module({
@@ -43,12 +47,22 @@ import { PasswordManagementService } from './services/password-management.servic
     PayloadMapperService, 
     Argon2Service, 
     CookieService, 
-    
-    RegistrationService,
-    AuthenticationService,
-    PasswordManagementService,
-    AccountManagementService,
-
+    {
+      provide: RegistrationServiceInterface,
+      useClass: RegistrationService,
+    },
+    {
+      provide: AccountManagementServiceInterface,
+      useClass: AccountManagementService,
+    },
+    {
+      provide: AuthenticationServiceInterface,
+      useClass: AuthenticationService,
+    },
+    {
+      provide: PasswordManagementServiceInterface,
+      useClass: PasswordManagementService,
+    },
     RegistrationEventListener,
     LocalStrategy,
     AccessTokenStrategy,

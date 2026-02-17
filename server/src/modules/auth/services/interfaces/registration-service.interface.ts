@@ -6,6 +6,6 @@ export abstract class RegistrationServiceInterface {
 
     abstract verifyEmail(token: string): Promise<void> ;
 
-    abstract resendVerification(email: string): Promise<void> ;
+    abstract resendVerification(email: string): Promise<any> ;
 }
 
