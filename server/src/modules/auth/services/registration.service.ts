@@ -13,7 +13,7 @@ export class RegistrationService implements RegistrationServiceInterface {
         // Implementation for email verification
     }
 
-    async resendVerificationEmail(email: string): Promise<void> {
+    async resendVerification(email: string): Promise<void> {
         // Implementation for resending verification email
     }
 }

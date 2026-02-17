@@ -6,6 +6,6 @@ export interface RegistrationServiceInterface {
 
     verifyEmail(token: string): Promise<void> ;
 
-    resendVerificationEmail(email: string): Promise<void> ;
+    resendVerification(email: string): Promise<void> ;
 }
 
