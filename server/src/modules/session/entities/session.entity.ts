@@ -1,12 +1,12 @@
 import { Auth } from "../../auth/entities/auth.entity";
-import { BaseEntity, Entity, Column, ManyToOne, CreateDateColumn, PrimaryColumn } from "typeorm";
+import { BaseEntity, Entity, Column, ManyToOne, CreateDateColumn, PrimaryColumn, JoinColumn } from "typeorm";
 
 @Entity('sessions')
 export class Session extends BaseEntity{
   @PrimaryColumn({    
     type: 'varchar', 
     length: 36, 
-    generated: 'uuid' 
+    //generated: 'uuid' 
   })
   id: string;
 
@@ -21,5 +21,6 @@ export class Session extends BaseEntity{
   createdAt: Date;
 
   @ManyToOne(() => Auth, (auth) => auth.sessions, { onDelete: 'CASCADE' })
+  @JoinColumn()
   auth: Auth;
 }

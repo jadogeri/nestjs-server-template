@@ -37,6 +37,9 @@ export class Auth extends Audit {
   @Column({ type: 'datetime', nullable: true, default: null })
   lastLoginAt: Date;
 
+  @Column({ default: 0 })
+  failedLoginAttempts: number;
+
   @OneToOne(() => User, (user) => user.auth, { onDelete: 'CASCADE', cascade: true }) // CRITICAL: This allows saving User via Auth
   @JoinColumn({ name: 'userId' })
   user: User;

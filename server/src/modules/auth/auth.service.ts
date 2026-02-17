@@ -47,6 +47,10 @@ import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 import { AccessTokenPayload } from 'src/common/types/access-token-payload.type';
 import { FindOneOptions } from 'typeorm';
+import { is } from 'date-fns/locale';
+import { RefreshTokenPayload } from 'src/common/types/refresh-token-payload.type';
+import { CreateSessionDto } from '../session/dto/create-session.dto';
+import { UpdateSessionDto } from '../session/dto/update-session.dto';
 
 
 @Service()
@@ -167,14 +171,16 @@ async resendVerification(email: string) {
     // C. Hash the refresh token
     const hashedRefreshToken = await this.hashingService.hash(data.refreshToken);
 
+    const auth = await this.authRepository.findOne({ where: { user: { id: userPayload.userId } } });
+    if (!auth) throw new UnauthorizedException('User not found for token generation');
+
     // D. Create the session in DB using our pre-generated ID
     // Ensure your Session entity/DTO accepts 'id' or 'sessionId'
-    const createSessionDto = { 
-        userId: userPayload.userId, 
+    const createSessionDto : CreateSessionDto = { 
         refreshTokenHash: hashedRefreshToken,
-        sessionId: sessionId,
-        expiresAt: new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)) // Example: 7 days expiry
-        
+        id: sessionId, // Use the same ID for the session record
+        expiresAt: new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)), // Example: 7 days expiry
+        auth: auth
     };
     console.log("Creating session with DTO:", createSessionDto);
     const session = await this.sessionService.create(createSessionDto);
@@ -189,6 +195,47 @@ async resendVerification(email: string) {
         userId: userPayload.userId,
         sessionId: sessionId // Return it if needed by the client
     };  }
+
+    async refreshToken(refreshTokenPayload: RefreshTokenPayload, res: Response<any, Record<string, any>>): Promise<any> { 
+    const { userId, sessionId } = refreshTokenPayload;
+    console.log("Attempting to refresh token for userId:", userId, "sessionId:", sessionId);
+    //const auth = await this.authRepository.findOne({ where: { user: { id: userId } }, relations: ['user'] }); 
+    //create user payload from auth
+    const auth = await this.authRepository.findOne({ where: { user: { id: userId } }, relations: ['user', 'user.roles', 'user.roles.permissions'] });
+    if (!auth?.user) {
+      this.logger.warn(`Auth or User not found for userId: ${userId}`);
+      throw new UnauthorizedException('User not found for token refresh');
+    }
+    const userPayload = this.payloadMapperService.toUserPayload(auth.user, auth.email);
+
+    // B. Generate tokens, passing the sessionId so it can be embedded in the payload
+    const data = await this.tokenService.generateAuthTokens(userPayload, sessionId); 
+    
+    // C. Hash the refresh token
+    const hashedRefreshToken = await this.hashingService.hash(data.refreshToken);
+
+
+    // D. Create the session in DB using our pre-generated ID
+    // Ensure your Session entity/DTO accepts 'id' or 'sessionId'
+    const updateSessionDto : UpdateSessionDto = { 
+        refreshTokenHash: hashedRefreshToken,
+        expiresAt: new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)), // Example: 7 days expiry
+    };
+    console.log("Creating session with DTO:", updateSessionDto);
+    const session = await this.sessionService.update(sessionId, updateSessionDto);
+    console.log("Created session with pre-generated ID:", session);
+
+    // E. Set Cookie
+    await this.cookieService.updateRefreshToken(res, data.refreshToken);
+
+    return {
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+        userId: userPayload.userId,
+        sessionId: sessionId // Return it if needed by the client
+    };  
+}
+
 
   async create(createAuthDto: CreateAuthDto) {
     return await this.authRepository.create(createAuthDto);
@@ -211,7 +258,7 @@ async resendVerification(email: string) {
     try {
       const auth = await this.authRepository.findByEmail(email);
       
-      if (!auth) throw new UnauthorizedException('Invalid credentials');
+      if (!auth) throw new UnauthorizedException('Invalid credentials');      
 
       // ALWAYS use the service so the pepper logic stays identical
       console.log(`Verifying user with email: ${email}`);
@@ -220,9 +267,31 @@ async resendVerification(email: string) {
       const pepper = this.configService.get<string>('HASH_PEPPER') || '';
       console.log("Using pepper:", pepper ? 'Yes' : 'No');
 
-      const authenticated = await this.hashingService.compare(password, auth.password);
+      const isMatch = await this.hashingService.compare(password, auth.password);
 
-      if (!authenticated) throw new UnauthorizedException("Invalid credentials provided");
+      if (!isMatch) {
+        this.logger.warn(`Password mismatch for email: ${email}`);
+        throw new UnauthorizedException('Invalid credentials');
+      }
+      /*
+    
+      if(!isMatch && auth.isVerified){
+        auth.failedLoginAttempts += 1;
+        if (auth.failedLoginAttempts >= 3) {
+          auth.isEnabled = false; // Disable the account after 3 failed attempts
+          this.logger.warn(`Account for email ${email} has been disabled due to too many failed login attempts.`);
+          throw new ForbiddenException('Account disabled due to too many failed login attempts. Please contact support.');
+        } else {
+          this.logger.warn(`Failed login attempt ${auth.failedLoginAttempts} for email ${email}.`);
+          throw new ForbiddenException('Invalid credentials. Please try again.');          
+        }        
+      }else{
+        // 3. Reset attempts on success
+        auth.failedLoginAttempts = 0;
+        await this.authRepository.update(auth.id, auth);
+      }
+
+      */
 
       // 2. Account Status Checks (Business Logic)
       if (!this.accessControlService.isUserActive(auth)) throw new ForbiddenException('Account is disabled'); 
@@ -295,6 +364,42 @@ async resendVerification(email: string) {
     console.log("JwtStrategy: Retrieved user from database:", accessTokenPayload.email);
 
     return accessTokenPayload;
+}
+
+  async verifyRefreshToken(refreshTokenPayload: RefreshTokenPayload): Promise<RefreshTokenPayload | null> {
+  const { userId, sessionId} = refreshTokenPayload;
+  const auth  = await this.authRepository.findOne({ where: { user: { id: userId } } , relations: ['user'] });
+  const session = await this.sessionService.findOne(sessionId);
+  console.log("seesionId from token:", sessionId);
+  console.log("session ==> ", session);
+  console.log("AuthService: Verifying refresh token for user ID:", JSON.stringify(auth, null,4));
+  if (!auth) throw new UnauthorizedException('User not found for this token');
+  if (auth.user.id !== userId) throw new UnauthorizedException('Token user ID does not match auth record');
+  if (!session) throw new UnauthorizedException('Session not found for this token');
+  if (session.auth.id !== auth.id) throw new UnauthorizedException('Session does not belong to the user');
+  if (session.expiresAt < new Date()) throw new UnauthorizedException('Session has expired');
+
+  const isUserActive = this.accessControlService.isUserActive(auth);
+  if (!isUserActive) {
+    this.logger.warn(`Account for user ID ${userId} is disabled.`);
+    return null;  
+  }
+
+    this.logger.log(`Account for email ${auth.email} is active.`);
+
+    const user = await this.userService.findById(userId);
+    if (!user){
+      this.logger.warn(`User not found with id: ${userId}`);
+      return null;
+    }
+    console.log("auth ==> ", auth);
+    if (auth.user.id !== userId) {
+      this.logger.warn(`User ID mismatch: token has ${userId} but auth record has ${auth.user.id}`);
+      return null;
+    }
+    console.log("refresh token: Retrieved user from database:", refreshTokenPayload);
+
+    return refreshTokenPayload;
 }
 
   async findOne(options: FindOneOptions<Auth>): Promise<Auth | null> {    

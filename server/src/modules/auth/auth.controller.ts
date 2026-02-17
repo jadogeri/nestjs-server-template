@@ -31,6 +31,10 @@ import { ApiGetMe } from './decorators/api-get-me.decorator';
 import type { AccessTokenPayload } from '../..//common/types/access-token-payload.type';
 import { AccessAuthGuard } from '../..//core/security/guards/access-auth.guard';
 import { AccessToken } from '../../common/decorators/access-token.decorator';
+import { ApiRefresh } from './decorators/api-refresh-token.decorator';
+import type { RefreshTokenPayload } from 'src/common/types/refresh-token-payload.type';
+import { RefreshToken } from '../../common/decorators/refresh-token.decorator';
+import { RefreshAuthGuard } from '../../core/security/guards/refresh-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -84,6 +88,23 @@ export class AuthController {
 
     return await this.authService.resendVerification(email);
   }
+
+  @Post('/refresh')
+  @ApiRefresh()
+  @UseGuards(RefreshAuthGuard)
+  async refreshToken(@RefreshToken() refreshToken: RefreshTokenPayload, @Req() req: Request,@Res({ passthrough: true }) res: Response): Promise<any> {
+
+  //@UseGuards(RefreshAuthGuard) // Use the custom refresh token guard
+  //async refreshToken(@Req() req: Request,@Res({ passthrough: true }) res: Response): Promise<any> {
+   // const jwtPayload = req.user as any; // The RefreshStrategy will attach the user payload here
+
+    //console.log("jwt payload: " + JSON.stringify(jwtPayload));
+    //return this.authService.refreshTokens(req, res, jwtPayload);
+  // Use the cookie name you set, e.g., 'refreshToken'
+  console.log("Cookie received:", refreshToken);
   
+  return this.authService.refreshToken( refreshToken, res);
+    
+  }
 }
   
