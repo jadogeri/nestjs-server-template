@@ -1,19 +1,127 @@
+import { ConflictException, NotFoundException, GoneException, BadRequestException, Logger } from "@nestjs/common";
+import { TokenExpiredError } from "@nestjs/jwt";
+import { AuthGeneratorUtil } from "../../../common/utils/auth-generator.util";
+import { ProfileGeneratorUtil } from "../../../common/utils/profile-generator.util";
+import { UserGeneratorUtil } from "../../../common/utils/user-generator.util";
+import { User } from "../../../modules/user/entities/user.entity";
+import{ Auth } from "../../../modules/auth/entities/auth.entity";
 import { Service } from "../../../common/decorators/service.decorator";
-//import { RegistrationInterface } from "../interfaces/registration.interface";
+import { RegisterDto } from "../dto/register.dto";
+import { RegistrationServiceInterface } from "./interfaces/registration-service.interface";
+import { AuthRepository } from "../auth.repository";
+import { TokenService } from "../../../core/security/token/token.service";
+import { HashingService } from "../../../core/security/hashing/interfaces/hashing.service";
+import { ConfigService } from "@nestjs/config/dist/config.service";
+import { MailService } from "../../../core/infrastructure/mail/mail.service";
+import { Profile } from "src/modules/profile/entities/profile.entity";
+import { EventEmitter2 } from "@nestjs/event-emitter";
+import { UserNotFoundException } from "src/common/exceptions/user-not-found.exception";
+import { AuthNotFoundException } from "src/common/exceptions/auth-not-found.exception";
 
 @Service()
-export class RegistrationService {     
+export class RegistrationService implements RegistrationServiceInterface {  
+
+  private readonly logger = new Logger(RegistrationService.name);
+  
+  constructor(
+      private readonly authRepository: AuthRepository, // Also injected here
+      private readonly hashingService: HashingService,
+      private readonly tokenService: TokenService,     
+      private readonly configService: ConfigService,
+      private readonly mailService: MailService, // Injecting MailService directly for simplicity   
+      private readonly eventEmitter: EventEmitter2, // For emitting events
+  ){ }
+
+  async register(registerDto: RegisterDto): Promise<any> {
+    
+    const { email, password, firstName, lastName, dateOfBirth } = registerDto;    
+    try{
+      const existingAuth = await this.authRepository.findOne({ where: { email } });
+      if (existingAuth) {
+        throw new ConflictException(`Email address "${email}" has already been registered.`);
+      }
+      const userPayload : User = UserGeneratorUtil.generate({ firstName, lastName, dateOfBirth });
+      const hashedPassword = await this.hashingService.hash(password);    
+      const authPayload : Auth = AuthGeneratorUtil.generate({ email, password: hashedPassword });
+      authPayload.user = userPayload; // Cascading will handle the user creation
+
+      const profilePayload : Profile = ProfileGeneratorUtil.generate(); // You can pass necessary data if needed      
+      userPayload.profile = profilePayload; // Assign the profile to the user
+
+      const savedAuth = await this.authRepository.create(authPayload);  
+      
+      const auth =  await this.authRepository.findOne({
+        where: { id: savedAuth.id }, relations: ['user' , 'user.roles'] 
+      });
+
+      if (!auth?.user) throw new NotFoundException('User account creation failed.');
+
+      // CALL THE HELPER
+      //await this.sendVerificationProcess(auth);
+      this.eventEmitter.emit('user.registered', auth);
+
+      const result = { message: 'Registration successful! Please check your email to verify your account.' };
+      return result;
+
+    } catch (error: unknown) {
+      if (error instanceof TokenExpiredError) {
+        this.logger.error('Error verifying email token:', error.message);
+        throw new GoneException('Verification link expired. Please request a new one.');
+
+      }
+      this.logger.error('Error verifying email token:', error instanceof Error ? error.message : error);
+      throw new BadRequestException('Invalid verification token.');
+    }
+  }
+
+  async verifyEmail(token: string): Promise<any> {
+    try {
+      const payload = await this.tokenService.verifyEmailToken(token);
+      console.log('Email verification token payload:', payload);
+      const{ userId, email } = payload;
+      const userAccount = await this.authRepository.findOne({ where: { user: { id: userId }, email }, relations: ['user'] });
+      if (!userAccount) {
+        throw new UserNotFoundException("No user account found for this verification token.");
+      }
+      if (userAccount.isVerified) {
+        throw new ConflictException({ 
+          message: 'Your email is already verified. You can proceed to login.',
+          alreadyVerified: true 
+        });
+      }else{
+        await this.authRepository.update(userAccount.id, { isEnabled: true, isVerified: true, verificationToken: null, verifiedAt: new Date() });
+      }
+      return {payload};
+    } catch (error: unknown) {
+      if (error instanceof TokenExpiredError) {
+        this.logger.error('Error verifying email token:', error.message);
+        throw new GoneException('Verification link expired. Please request a new one.');
+      }
+      this.logger.error('Error verifying email token:', error instanceof Error ? error.message : error);
+      throw new BadRequestException('Invalid verification token.');
+    }
+  }
+
+  async resendVerification(email: string): Promise<any> {
+    try{
+      const auth = await this.authRepository.findOne({ where: { email }, relations: ['user'] });   
+
+      if (!auth) throw new AuthNotFoundException(email, 'email');
+      if (auth.isVerified) throw new BadRequestException('Email is already verified');
+      if (!auth.user) throw new NotFoundException('User profile not found.');
+
+      // CALL THE HELPER
+      //await this.sendVerificationProcess(auth);
+      this.eventEmitter.emit('user.registered', auth);
 
 
-    async register(): Promise<void> {
-        // Implementation for user registration
+      return { message: 'A new verification link has been sent to your email.' };
+    } 
+    catch (error: unknown) {
+      this.logger.error('Error in resendVerification:', error instanceof Error ? error.message : error);
+      throw new BadRequestException('Failed to resend verification email. Please try again later.');
     }
 
-    async verifyEmail(token: string): Promise<void> {
-        // Implementation for email verification
-    }
-
-    async resendVerificationEmail(email: string): Promise<void> {
-        // Implementation for resending verification email
-    }
+  }
+ 
 }

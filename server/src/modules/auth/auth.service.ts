@@ -38,7 +38,6 @@ import { Service } from '../../common/decorators/service.decorator';
 // . Interfaces (Data Layer)
 import { VerificationEmailContext } from '../../core/infrastructure/mail/interfaces/mail-context.interface';
 import { VerificationTokenPayload } from '../../common/types/verification-token-payload.type';
-import { UserNotFoundException } from '../../common/exceptions/user-not-found.exception';
 import { AuthNotFoundException } from '../../common/exceptions/auth-not-found.exception';
 import { UserPayload } from '../../common/interfaces/user-payload.interface';
 import { PayloadMapperService } from './payload-mapper.service';
@@ -52,6 +51,11 @@ import { RefreshTokenPayload } from 'src/common/types/refresh-token-payload.type
 import { CreateSessionDto } from '../session/dto/create-session.dto';
 import { UpdateSessionDto } from '../session/dto/update-session.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { RegistrationServiceInterface } from './services/interfaces/registration-service.interface';
+import { AuthenticationServiceInterface } from './services/interfaces/authentication-service.interface';
+import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
+import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
+import { ProfilePayload } from 'src/common/interfaces/profile-payload.interface';
 
 
 @Service()
@@ -60,6 +64,10 @@ export class AuthService {
   private readonly logger = new Logger(AuthService.name);g
 
   constructor(
+    private readonly registration: RegistrationServiceInterface, 
+    private readonly session: AuthenticationServiceInterface,
+    private readonly passwords: PasswordManagementServiceInterface,
+    private readonly account: AccountManagementServiceInterface,
     private readonly authRepository: AuthRepository,
     private readonly hashingService: HashingService,
     private readonly tokenService: TokenService,
@@ -74,72 +82,15 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { email, password, firstName, lastName, dateOfBirth } = registerDto;
-    
-    try{
-      const existingAuth = await this.authRepository.findOne({ where: { email } });
-      if (existingAuth) {
-        throw new ConflictException(`Email address "${email}" has already been registered.`);
-      }
-      const userPayload : User = UserGeneratorUtil.generate({ firstName, lastName, dateOfBirth });
-      const hashedPassword = await this.hashingService.hash(password);    
-      const authPayload : Auth = AuthGeneratorUtil.generate({ email, password: hashedPassword });
-      authPayload.user = userPayload; // Cascading will handle the user creation
 
-      const profilePayload: Profile = ProfileGeneratorUtil.generate({}); // You can pass necessary data if needed
-      userPayload.profile = profilePayload; // Assign the profile to the user
+    return await this.registration.register(registerDto);
 
-      const savedAuth = await this.authRepository.create(authPayload);  
-      
-      const auth =  await this.authRepository.findOne({
-        where: { id: savedAuth.id }, relations: ['user' , 'user.roles'] 
-      });
-
-      if (!auth?.user) throw new NotFoundException('User account creation failed.');
-
-      // CALL THE HELPER
-      await this.sendVerificationProcess(auth);
-      const result = { message: 'Registration successful! Please check your email to verify your account.' };
-      return result;
-
-    } catch (error: unknown) {
-      if (error instanceof TokenExpiredError) {
-        this.logger.error('Error verifying email token:', error.message);
-        throw new GoneException('Verification link expired. Please request a new one.');
-
-      }
-      this.logger.error('Error verifying email token:', error instanceof Error ? error.message : error);
-      throw new BadRequestException('Invalid verification token.');
-    }
   }
 
   async verifyEmail(token: string) {
-    try {
-      const payload = await this.tokenService.verifyEmailToken(token);
-      console.log('Email verification token payload:', payload);
-      const{ userId, email } = payload;
-      const userAccount = await this.authRepository.findOne({ where: { user: { id: userId }, email }, relations: ['user'] });
-      if (!userAccount) {
-        throw new UserNotFoundException("No user account found for this verification token.");
-      }
-      if (userAccount.isVerified) {
-        throw new ConflictException({ 
-          message: 'Your email is already verified. You can proceed to login.',
-          alreadyVerified: true 
-        });
-      }else{
-        await this.authRepository.update(userAccount.id, { isEnabled: true, isVerified: true, verificationToken: null, verifiedAt: new Date() });
-      }
-      return {payload};
-    } catch (error: unknown) {
-      if (error instanceof TokenExpiredError) {
-        this.logger.error('Error verifying email token:', error.message);
-        throw new GoneException('Verification link expired. Please request a new one.');
+    
+    return await this.registration.verifyEmail(token);
 
-      }
-      this.logger.error('Error verifying email token:', error instanceof Error ? error.message : error);
-      throw new BadRequestException('Invalid verification token.');
-    }
   }
 
 async resendVerification(email: string) {
@@ -277,26 +228,7 @@ async resendVerification(email: string) {
         this.logger.warn(`Password mismatch for email: ${email}`);
         throw new UnauthorizedException('Invalid credentials');
       }
-      /*
-    
-      if(!isMatch && auth.isVerified){
-        auth.failedLoginAttempts += 1;
-        if (auth.failedLoginAttempts >= 3) {
-          auth.isEnabled = false; // Disable the account after 3 failed attempts
-          this.logger.warn(`Account for email ${email} has been disabled due to too many failed login attempts.`);
-          throw new ForbiddenException('Account disabled due to too many failed login attempts. Please contact support.');
-        } else {
-          this.logger.warn(`Failed login attempt ${auth.failedLoginAttempts} for email ${email}.`);
-          throw new ForbiddenException('Invalid credentials. Please try again.');          
-        }        
-      }else{
-        // 3. Reset attempts on success
-        auth.failedLoginAttempts = 0;
-        await this.authRepository.update(auth.id, auth);
-      }
-
-      */
-
+     
       // 2. Account Status Checks (Business Logic)
       if (!this.accessControlService.isUserActive(auth)) throw new ForbiddenException('Account is disabled'); 
 

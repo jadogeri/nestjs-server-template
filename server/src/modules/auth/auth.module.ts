@@ -8,6 +8,8 @@ import { AuthService } from './auth.service';
 import { CookieService } from '../../core/security/cookie/cookie.service';
 import { PayloadMapperService } from './payload-mapper.service';
 
+
+
 // 3. Controllers (Presentation Layer)
 import { AuthController } from './auth.controller';
 
@@ -26,6 +28,14 @@ import { AccessTokenStrategy } from './strategies/access-token.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 import { RegistrationEventListener } from '../../core/infrastructure/mail/listener/registration.listener';
+import { RegistrationService } from './services/registration.service';
+import { AccountManagementService } from './services/account-management.service';
+import { AuthenticationService } from './services/authentication.service';
+import { PasswordManagementService } from './services/password-management.service';
+import { RegistrationServiceInterface } from './services/interfaces/registration-service.interface';
+import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
+import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
+import { AuthenticationServiceInterface } from './services/interfaces/authentication-service.interface';
 
 
 @Module({
@@ -37,7 +47,22 @@ import { RegistrationEventListener } from '../../core/infrastructure/mail/listen
     PayloadMapperService, 
     Argon2Service, 
     CookieService, 
-
+    {
+      provide: RegistrationServiceInterface,
+      useClass: RegistrationService,
+    },
+    {
+      provide: AccountManagementServiceInterface,
+      useClass: AccountManagementService,
+    },
+    {
+      provide: AuthenticationServiceInterface,
+      useClass: AuthenticationService,
+    },
+    {
+      provide: PasswordManagementServiceInterface,
+      useClass: PasswordManagementService,
+    },
     RegistrationEventListener,
     LocalStrategy,
     AccessTokenStrategy,
