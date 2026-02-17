@@ -31,7 +31,7 @@ import { ApiGetMe } from './decorators/api-get-me.decorator';
 import type { AccessTokenPayload } from '../..//common/types/access-token-payload.type';
 import { AccessAuthGuard } from '../..//core/security/guards/access-auth.guard';
 import { AccessToken } from '../../common/decorators/access-token.decorator';
-import { ApiRefresh } from 'src/common/decorators/refresh-token.decorator';
+import { ApiRefresh } from '../../common/decorators/refresh-token.decorator';
 
 @Controller('auth')
 export class AuthController {

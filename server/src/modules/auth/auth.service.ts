@@ -320,6 +320,36 @@ async resendVerification(email: string) {
     return accessTokenPayload;
 }
 
+  async verifyRefreshToken(refreshTokenPayload: AccessTokenPayload): Promise<AccessTokenPayload | null> {
+  const { userId, email } = refreshTokenPayload;
+
+    const auth = await this.findOne({ where: { email: email }, relations: ['user', 'user.roles', 'user.roles.permissions'] });
+    console.log("AuthService: Verifying refresh token for email:", email);
+    if (!auth)  return null;
+   //  account status checks
+    if (!this.accessControlService.isUserActive(auth)) {
+      this.logger.warn(`Account for email ${email} is disabled.`);
+      return null;
+
+    }
+
+    this.logger.log(`Account for email ${email} is active.`);
+
+    const user = await this.userService.findById(userId);
+    if (!user){
+      this.logger.warn(`User not found with id: ${userId}`);
+      return null;
+    }
+    console.log("auth ==> ", auth);
+    if (auth.user.id !== userId) {
+      this.logger.warn(`User ID mismatch: token has ${userId} but auth record has ${auth.user.id}`);
+      return null;
+    }
+    console.log("JwtStrategy: Retrieved user from database:", accessTokenPayload.email);
+
+    return accessTokenPayload;
+}
+
   async findOne(options: FindOneOptions<Auth>): Promise<Auth | null> {    
     return await this.authRepository.findOne(options);
   }
