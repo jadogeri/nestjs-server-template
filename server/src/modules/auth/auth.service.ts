@@ -48,6 +48,7 @@ import { ParsedQs } from 'qs';
 import { AccessTokenPayload } from 'src/common/types/access-token-payload.type';
 import { FindOneOptions } from 'typeorm';
 import { is } from 'date-fns/locale';
+import { RefreshTokenPayload } from 'src/common/types/refresh-token-payload.type';
 
 
 @Service()
@@ -320,20 +321,21 @@ async resendVerification(email: string) {
     return accessTokenPayload;
 }
 
-  async verifyRefreshToken(refreshTokenPayload: AccessTokenPayload): Promise<AccessTokenPayload | null> {
-  const { userId, email } = refreshTokenPayload;
+  async verifyRefreshToken(refreshTokenPayload: RefreshTokenPayload): Promise<RefreshTokenPayload | null> {
+  const { userId, sessionId} = refreshTokenPayload;
+  const auth  = await this.authRepository.findOne({ where: { user: { id: userId } } , relations: ['user', 'sessions'] });
+  if (!auth) throw new UnauthorizedException('User not found for this token');
+  if (auth.user.id !== userId) throw new UnauthorizedException('Token user ID does not match auth record');
+  if (!auth.sessions || auth.sessions.length === 0) throw new UnauthorizedException('No active sessions found for this user');
+  if (!auth.sessions.some(session => session.id === sessionId)) throw new UnauthorizedException('Session not found for this token');
 
-    const auth = await this.findOne({ where: { email: email }, relations: ['user', 'user.roles', 'user.roles.permissions'] });
-    console.log("AuthService: Verifying refresh token for email:", email);
-    if (!auth)  return null;
-   //  account status checks
-    if (!this.accessControlService.isUserActive(auth)) {
-      this.logger.warn(`Account for email ${email} is disabled.`);
-      return null;
+  const isUserActive = this.accessControlService.isUserActive(auth);
+  if (!isUserActive) {
+    this.logger.warn(`Account for user ID ${userId} is disabled.`);
+    return null;  
+  }
 
-    }
-
-    this.logger.log(`Account for email ${email} is active.`);
+    this.logger.log(`Account for email ${auth.email} is active.`);
 
     const user = await this.userService.findById(userId);
     if (!user){
@@ -345,9 +347,9 @@ async resendVerification(email: string) {
       this.logger.warn(`User ID mismatch: token has ${userId} but auth record has ${auth.user.id}`);
       return null;
     }
-    console.log("JwtStrategy: Retrieved user from database:", accessTokenPayload.email);
+    console.log("refresh token: Retrieved user from database:", refreshTokenPayload);
 
-    return accessTokenPayload;
+    return refreshTokenPayload;
 }
 
   async findOne(options: FindOneOptions<Auth>): Promise<Auth | null> {    

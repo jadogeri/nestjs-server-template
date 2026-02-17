@@ -13,6 +13,7 @@ import { UserRole } from 'src/common/enums/user-role.enum';
 import { PermissionStringGeneratorUtil } from 'src/common/utils/permission-string.util';
 import { JwtPayloadInterface } from 'src/common/interfaces/jwt-payload.interface';
 import { AccessTokenPayload } from 'src/common/types/access-token-payload.type';
+import { RefreshTokenPayload } from 'src/common/types/refresh-token-payload.type';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'refresh-token') {
@@ -34,13 +35,13 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'refresh-to
   }
 
 
-  async validate(refreshTokenPayload: AccessTokenPayload): Promise<AccessTokenPayload | null> {
+  async validate(refreshTokenPayload: RefreshTokenPayload): Promise<RefreshTokenPayload | null> {
     this.logger.log(`Validating user in RefreshTokenStrategy using extracted payload: `);
     this.logger.debug(refreshTokenPayload);
 
     const jwtUser = await this.authService.verifyRefreshToken(refreshTokenPayload);
     if (!jwtUser) {
-      this.logger.warn(`JWT validation failed for email: ${refreshTokenPayload.email}`);
+      this.logger.warn(`JWT validation failed for refresh token: ${JSON.stringify(refreshTokenPayload)}`);
       return null;
     }
 
