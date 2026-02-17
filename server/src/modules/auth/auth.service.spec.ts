@@ -20,6 +20,12 @@ import { AccessControlService } from '../../core/security/access-control/access-
 import { SessionService } from '../session/session.service';
 import { CookieService } from '../../core/security/cookie/cookie.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { RegistrationServiceInterface } from './services/interfaces/registration-service.interface';
+import { AuthenticationServiceInterface } from './services/interfaces/authentication-service.interface';
+import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
+import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
+import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
+import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
 
 
 describe('AuthService', () => {
@@ -76,7 +82,23 @@ describe('AuthService', () => {
         {
           provide: EventEmitter2,
           useValue: { emit: jest.fn() },
-        }
+        },        
+        {
+          provide: RegistrationServiceInterface,
+          useValue: { register: jest.fn(), verify: jest.fn() }, // Mock methods
+        },
+        {
+          provide: AuthenticationServiceInterface,
+          useValue: { login: jest.fn(), logout: jest.fn() },
+        },
+        {
+          provide: PasswordManagementServiceInterface,
+          useValue: { forgotPassword: jest.fn(), resetPassword: jest.fn() },
+        },
+        {
+          provide: AccountManagementServiceInterface,
+          useValue: { deactivate: jest.fn() },
+        },
         
       ],
     }).compile();
