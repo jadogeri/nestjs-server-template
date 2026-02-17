@@ -2,10 +2,10 @@
 import { Inject, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Service } from '../../../common/decorators/service.decorator';
-import { UserPayload } from 'src/common/interfaces/user-payload.interface';
-import { JwtPayloadInterface } from 'src/common/interfaces/jwt-payload.interface';
-import { VerificationTokenPayload } from 'src/common/types/verification-token-payload.type';
+import { UserPayload } from '../../../common/interfaces/user-payload.interface';
+import { VerificationTokenPayload } from '../../../common/types/verification-token-payload.type';
 import { AccessTokenPayload } from '../../../common/types/access-token-payload.type';
+import { RefreshTokenPayload } from '../../../common/types/refresh-token-payload.type';
 
 
 @Service()
@@ -38,7 +38,7 @@ export class TokenService {
     // Secrets and expiration are already baked into the services
     const [accessToken, refreshToken] = await Promise.all([
       this.accessJwtService.signAsync(accessTokenPayload),
-      this.refreshJwtService.signAsync({ userId: user.userId, type: 'refresh', sessionId: sessionId }) // Minimal payload for refresh token, include sessionId
+      this.refreshJwtService.signAsync(refreshTokenPayload) 
     ]);
 
     return { accessToken, refreshToken };
