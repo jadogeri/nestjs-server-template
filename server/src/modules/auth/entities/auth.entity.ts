@@ -50,6 +50,30 @@ export class Auth extends Audit {
   
 }
 
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+
+// 1. Define the Enum
+export enum StatusEnum {
+  ENABLED = 'enabled',
+  DISABLED = 'disabled',
+  LOCKED = 'locked',
+}
+
+@Entity()
+export class User {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  // 2. Use Enum in TypeORM Column
+  @Column({
+    type: 'enum',
+    enum: StatusEnum,
+    default: StatusEnum.ENABLED, // Optional: set a default
+  })
+  status: StatusEnum;
+}
+
+
 
 
 

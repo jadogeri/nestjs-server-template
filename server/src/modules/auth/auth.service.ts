@@ -86,27 +86,11 @@ export class AuthService {
 
   }
 
-async resendVerification(email: string) {
-  try{
-    const auth = await this.authRepository.findOne({ where: { email }, relations: ['user'] });   
+  async resendVerification(email: string) {
 
-    if (!auth) throw new AuthNotFoundException(email, 'email');
-    if (auth.isVerified) throw new BadRequestException('Email is already verified');
-    if (!auth.user) throw new NotFoundException('User profile not found.');
-
-    // CALL THE HELPER
-    //await this.sendVerificationProcess(auth);
-    this.eventEmitter.emit('user.registered', auth);
-
-
-    return { message: 'A new verification link has been sent to your email.' };
-  } 
-  catch (error: unknown) {
-    this.logger.error('Error in resendVerification:', error instanceof Error ? error.message : error);
-    throw new BadRequestException('Failed to resend verification email. Please try again later.');
+    return await this.registration.resendVerification(email);
+  
   }
-
-}
 
   async login(res: Response<any, Record<string, any>>, userPayload: UserPayload): Promise<any> {
    // A. Generate a unique Session ID immediately
@@ -177,12 +161,12 @@ async resendVerification(email: string) {
     await this.cookieService.updateRefreshToken(res, data.refreshToken);
 
     return {
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
-        userId: userPayload.userId,
-        sessionId: sessionId // Return it if needed by the client
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+      userId: userPayload.userId,
+      sessionId: sessionId // Return it if needed by the client
     };  
-}
+  }
 
 
   async create(createAuthDto: CreateAuthDto) {
@@ -205,8 +189,14 @@ async resendVerification(email: string) {
   async verifyUser(email: string, password: string): Promise<UserPayload | null> {
     try {
       const auth = await this.authRepository.findByEmail(email);
+            if (!auth) throw new UnauthorizedException('Invalid credentials');  
+
+      const isEnabled = this.accessControlService.isUserActive(auth);
+      const isVerified = this.accessControlService.isUserVerified(auth);
+      if (!isVerified) throw new ForbiddenException('Account not verified, please verify your email before logging in');
+      if (isVerified && !isEnabled) throw new ForbiddenException('Account is locked, use forget account to access account');
       
-      if (!auth) throw new UnauthorizedException('Invalid credentials');      
+
 
       // ALWAYS use the service so the pepper logic stays identical
       console.log(`Verifying user with email: ${email}`);
@@ -216,6 +206,12 @@ async resendVerification(email: string) {
       console.log("Using pepper:", pepper ? 'Yes' : 'No');
 
       const isMatch = await this.hashingService.compare(password, auth.password);
+      if (auth && !isMatch) {
+        if(auth.isEnabled === false) throw new ForbiddenException('Account is disabled');
+        if(auth.isVerified === false) throw new ForbiddenException('Account not verified');
+      }else{
+
+      }
 
       if (!isMatch) {
         this.logger.warn(`Password mismatch for email: ${email}`);
@@ -236,33 +232,6 @@ async resendVerification(email: string) {
       this.logger.error('Verify user error', error);
       throw new UnauthorizedException('Failed to authenticate user');
     }
-  }
-
-  private async sendVerificationProcess(auth: Auth): Promise<void> {
-    const { email, user } = auth;
-
-    // 1. Generate the payload and token
-    const verificationTokenPayload: VerificationTokenPayload = { 
-      sub: user.id, 
-      userId: user.id, 
-      email, 
-      type: 'verification' 
-    };
-    const verificationToken = await this.tokenService.generateVerificationToken(verificationTokenPayload);
-
-    // 2. Persist the token to the database
-    await this.authRepository.update(auth.id, { verificationToken });
-
-    // 3. Prepare the link
-    const appUrl = this.configService.get<string>('APP_URL') || 'http://localhost:3000';
-    const context: VerificationEmailContext = {
-      firstName: user.firstName,
-      verificationLink: `${appUrl}/auth/verify-email?token=${verificationToken}`,
-    };
-
-    // 4. Dispatch Email
-    await this.mailService.sendVerificationEmail(email, context);
-    this.logger.log(`Verification email dispatched to: ${email}`);
   }
 
   async verifyAccessToken(accessTokenPayload: AccessTokenPayload): Promise<AccessTokenPayload | null> {
@@ -340,3 +309,96 @@ async resendVerification(email: string) {
   }
   
 }
+
+/**
+ * 
+ 
+export const loginUser = asyncHandler(async (req : Request, res: Response)  => {
+
+  const { email, password } : IUser = req.body;
+  console.log(email,password)
+  if (!email || !password) {
+    res.status(400);
+    throw new Error("All fields are mandatory!");
+  }
+
+  if(!isValidEmail(email)){
+    errorBroadcaster(res,400,"not a valid standard email address")
+  }
+
+  const user  = await userService.getByEmail(email);
+
+  if(user){
+
+    if(user.isEnabled === false){      
+      errorBroadcaster(res,423,"Account is locked, use forget account to access acount")
+    }
+
+    //compare password with hashedpassword 
+    if (user &&  await bcrypt.compare(password,user.password as string)) {
+
+      let payload = {
+        user: {
+          username: user.username as string , email: user.email as string , id: user._id ,
+        },
+      }
+      //post fix operator   knowing value cant be undefined
+      let secretKey  = process.env.JSON_WEB_TOKEN_SECRET! ;
+      const accessToken  =  jwt.sign( payload,secretKey as jwt.Secret,  { expiresIn: "30m" } );
+      //add token and id to auth 
+      const authUser : IAuth = {
+        id : user._id,
+        token : accessToken
+      }
+
+      const authenticatedUser = await authService.getById(user._id);
+      if(!authenticatedUser){
+
+        await authService.create(authUser);
+      }else{
+
+        await authService.update(authUser);;     
+      }
+
+      //if failed logins > 0, 
+      //reset to zero if account is not locked
+      if(user.failedLogins as number > 0){
+
+        const resetUser : IUser ={
+          failedLogins: 0
+        }
+
+        await userService.update(user._id, resetUser)
+      }
+        res.status(200).json({ accessToken }); 
+    }else{ 
+      user.failedLogins = user.failedLogins  as number + 1      
+      if(user.failedLogins === 3){
+
+        user.isEnabled = false;
+        await userService.update(user._id, user)
+              const recipient : Recipient = {
+                username : user.username,
+                email : user.email,
+                company : process.env.COMPANY
+              }
+        sendEmail("locked-account",recipient )
+        res.status(400).json("Account is locked beacause of too many failed login attempts. Use forget account to access acount");
+
+      }else{
+        await userService.update(user._id, user)    
+      }      
+      res.status(400).json({ message: "email or password is incorrect" });
+    }
+  }else{
+    res.status(400).json({ message: "email does not exist" });
+  }
+
+});
+  
+
+
+
+
+
+ */
