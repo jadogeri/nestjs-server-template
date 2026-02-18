@@ -18,7 +18,6 @@ import { UserModule } from './modules/user/user.module';
 import dataSourceOptions from './configs/type-orm.config';
 import { pinoLoggerConfig } from './configs/pino.config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { RegistrationEventListener } from './core/infrastructure/mail/listener/registration.listener';
 
 @Module({
   imports: [

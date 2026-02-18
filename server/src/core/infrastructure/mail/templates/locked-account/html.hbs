@@ -63,20 +63,20 @@
 <body>
 <div class="email-container">
     <div class="header">
-        <img src="{{logoUrl}}" alt="Company Logo">
+        <img src="{{logoUrl}}" alt="{{company}} Logo">
     </div>
     <div class="content">
-        <h1>Account Locked for {{username}}</h1>
-        <p>Hello {{username}},</p>
+        <h1>Account Locked for {{firstName}}</h1>
+        <p>Hello {{firstName}},</p>
         <p>For security reasons, your account has been temporarily locked due to too many failed login attempts.</p>
 <!--        <p>To regain access, please contact our support team to have your account unlocked manually. This action is necessary to protect your account from unauthorized access.</p>-->
         <p>To regain access, please use route <b>/users/forgot-paasword</b> to unlock your account manually. This action is necessary to protect your account from unauthorized access.</p>-->
         <p>We take your account security very seriously and apologize for any inconvenience.</p>
         <p>Thank you,</p>
-        <p>The {{companyName}} Team</p>
+        <p>The {{company}} Team</p>
     </div>
     <div class="footer">
-        <p>&copy; {{year}} {{companyName}}. All rights reserved.</p>
+        <p>&copy; {{year}} {{company}}. All rights reserved.</p>
     </div>
 </div>
 </body>

@@ -111,6 +111,9 @@ export class AuthenticationService implements AuthenticationServiceInterface {
         }
 
       }
+      if (auth.failedLoginAttempts > 0) {
+        await this.authRepository.update(auth.id, { failedLoginAttempts: 0 });
+      }
 
 
       // ALWAYS use the service so the pepper logic stays identical

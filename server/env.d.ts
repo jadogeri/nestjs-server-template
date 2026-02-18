@@ -31,6 +31,9 @@ declare global {
             ARGON2_PARALLELISM: string | number;
             ARGON2_SECRET: string;
             APP_URL: string;
+            LOGO_URL: string;
+            COMPANY: string;
+            SUPPORT_EMAIL: string;
         }
     }
 }

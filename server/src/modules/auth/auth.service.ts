@@ -60,6 +60,7 @@ export class AuthService {
 
   constructor(
     private readonly registration: RegistrationServiceInterface, 
+    private readonly authentication: AuthenticationServiceInterface,
     private readonly session: AuthenticationServiceInterface,
     private readonly passwords: PasswordManagementServiceInterface,
     private readonly account: AccountManagementServiceInterface,
@@ -189,6 +190,7 @@ export class AuthService {
     return await this.authRepository.delete(id);
   }
 
+  /*
   async verifyUser(email: string, password: string): Promise<UserPayload | null> {
       const auth = await this.authRepository.findByEmail(email);
       if (!auth) throw new UnauthorizedException('Invalid credentials provided - auth record not found');  
@@ -239,6 +241,8 @@ export class AuthService {
       return this.payloadMapperService.toUserPayload(user, email);
 
   }
+
+  */
 
   async verifyAccessToken(accessTokenPayload: AccessTokenPayload): Promise<AccessTokenPayload | null> {
   const { userId, email } = accessTokenPayload;
@@ -312,6 +316,10 @@ export class AuthService {
 
   async findById(id: number): Promise<Auth | null> {    
     return await this.authRepository.findOne({ where: { id }, relations: ['roles', 'roles.permissions'] });
+  }
+
+  public getAuthenticationService(): AuthenticationServiceInterface {
+    return this.authentication
   }
   
 }

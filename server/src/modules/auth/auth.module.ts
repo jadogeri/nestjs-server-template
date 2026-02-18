@@ -36,6 +36,7 @@ import { RegistrationServiceInterface } from './services/interfaces/registration
 import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
 import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
 import { AuthenticationServiceInterface } from './services/interfaces/authentication-service.interface';
+import { AuthenticationEventListener } from 'src/core/infrastructure/mail/listener/authentication.listener';
 
 
 @Module({
@@ -64,6 +65,7 @@ import { AuthenticationServiceInterface } from './services/interfaces/authentica
       useClass: PasswordManagementService,
     },
     RegistrationEventListener,
+    AuthenticationEventListener,
     LocalStrategy,
     AccessTokenStrategy,
     RefreshTokenStrategy,

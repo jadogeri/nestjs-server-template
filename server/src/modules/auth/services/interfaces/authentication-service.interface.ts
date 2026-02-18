@@ -9,4 +9,6 @@ export abstract class AuthenticationServiceInterface {
     abstract logout(token: string): Promise<void> ;
 
     abstract refreshToken(refreshTokenPayload: RefreshTokenPayload, res: Response<any, Record<string, any>>): Promise<any>;
+
+    abstract verifyUser(email: string, password: string): Promise<UserPayload | null>;
 }
