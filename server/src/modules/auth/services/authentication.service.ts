@@ -4,7 +4,7 @@ import { RefreshTokenPayload } from "../../../common/types/refresh-token-payload
 import { Service } from "../../../common/decorators/service.decorator";
 import { AuthenticationServiceInterface } from "./interfaces/authentication-service.interface";
 import { randomUUID } from "node:crypto";
-import { UnauthorizedException } from "@nestjs/common";
+import { ForbiddenException, Logger, UnauthorizedException } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { HashingService } from "../../../core/security/hashing/interfaces/hashing.service";
 import { TokenService } from "../../../core/security/token/token.service";
@@ -12,10 +12,17 @@ import { CreateSessionDto } from "../../../modules/session/dto/create-session.dt
 import { AuthRepository } from "../auth.repository";
 import { SessionService } from "../../../modules/session/session.service";
 import { CookieService } from "../../../core/security/cookie/cookie.service";
+import { StatusEnum } from "src/common/enums/user-status.enum";
+import { AccessControlService } from "src/core/security/access-control/access-control.service";
+import { UserService } from "src/modules/user/user.service";
+import { ConfigService } from "@nestjs/config";
+import { PayloadMapperService } from "../payload-mapper.service";
 
 
 @Service()
 export class AuthenticationService implements AuthenticationServiceInterface {
+    private readonly MAX_FAILED_LOGIN_ATTEMPTS = 4; // Example threshold
+    private readonly logger = new Logger(AuthenticationService.name);
     constructor(
       private readonly authRepository: AuthRepository, // Also injected here
       private readonly hashingService: HashingService,
@@ -23,6 +30,10 @@ export class AuthenticationService implements AuthenticationServiceInterface {
       private readonly sessionService: SessionService, // Inject your SessionService
       private readonly cookieService: CookieService, // Inject your CookieService
       private readonly eventEmitter: EventEmitter2, // For emitting events
+      private readonly accessControlService: AccessControlService, // For checking user status
+      private readonly configService: ConfigService, // For accessing config values like pepper
+      private readonly payloadMapperService: PayloadMapperService, // For mapping to UserPayload
+      private readonly userService: UserService, // For fetching user details
     ){ }
 
     async login(res: Response<any, Record<string, any>>, userPayload: UserPayload): Promise<any> {
@@ -69,97 +80,52 @@ export class AuthenticationService implements AuthenticationServiceInterface {
     }     
 
 
-}
+  async verifyUser(email: string, password: string): Promise<UserPayload | null> {
+      const auth = await this.authRepository.findByEmail(email);
+      if (!auth) throw new UnauthorizedException('Invalid credentials provided - auth record not found');  
+      console.log("auth record found for email:", auth);
 
-/**
- * 
- 
-export const loginUser = asyncHandler(async (req : Request, res: Response)  => {
+      const isVerified = this.accessControlService.isUserVerified(auth);
+      if (!isVerified) throw new ForbiddenException('Account not verified, please verify your email before logging in');
+      if (auth.status === StatusEnum.LOCKED) throw new ForbiddenException('Account is locked, use forget account to access account');
+      
+      const isMatch = await this.hashingService.compare(password, auth.password);
+      if (!isMatch) {
+        auth.failedLoginAttempts = auth.failedLoginAttempts + 1;
+        if(auth.failedLoginAttempts >= this.MAX_FAILED_LOGIN_ATTEMPTS){
+          auth.status = StatusEnum.LOCKED;
+          auth.isEnabled = false; 
+          await this.authRepository.update(auth.id, auth);
 
-  const { email, password } : IUser = req.body;
-  console.log(email,password)
-  if (!email || !password) {
-    res.status(400);
-    throw new Error("All fields are mandatory!");
-  }
+          //sendEmail("locked-account",recipient )
+           this.eventEmitter.emit('account.locked', auth);
 
-  if(!isValidEmail(email)){
-    errorBroadcaster(res,400,"not a valid standard email address")
-  }
 
-  const user  = await userService.getByEmail(email);
+          this.logger.warn(`Account is locked due to too many failed login attempts. Use forget account to access account: ${email}`);
+          throw new ForbiddenException('Account is locked due to too many failed login attempts. Use forget account to access account');
 
-  if(user){
+        }else{
+          await this.authRepository.update(auth.id, { failedLoginAttempts: auth.failedLoginAttempts });
+          throw new UnauthorizedException('Invalid credentials provided - password mismatch');
 
-    if(user.isEnabled === false){      
-      errorBroadcaster(res,423,"Account is locked, use forget account to access acount")
-    }
-
-    //compare password with hashedpassword 
-    if (user &&  await bcrypt.compare(password,user.password as string)) {
-
-      let payload = {
-        user: {
-          username: user.username as string , email: user.email as string , id: user._id ,
-        },
-      }
-      //post fix operator   knowing value cant be undefined
-      let secretKey  = process.env.JSON_WEB_TOKEN_SECRET! ;
-      const accessToken  =  jwt.sign( payload,secretKey as jwt.Secret,  { expiresIn: "30m" } );
-      //add token and id to auth 
-      const authUser : IAuth = {
-        id : user._id,
-        token : accessToken
-      }
-
-      const authenticatedUser = await authService.getById(user._id);
-      if(!authenticatedUser){
-
-        await authService.create(authUser);
-      }else{
-
-        await authService.update(authUser);;     
-      }
-
-      //if failed logins > 0, 
-      //reset to zero if account is not locked
-      if(user.failedLogins as number > 0){
-
-        const resetUser : IUser ={
-          failedLogins: 0
         }
 
-        await userService.update(user._id, resetUser)
       }
-        res.status(200).json({ accessToken }); 
-    }else{ 
-      user.failedLogins = user.failedLogins  as number + 1      
-      if(user.failedLogins === 3){
 
-        user.isEnabled = false;
-        await userService.update(user._id, user)
-              const recipient : Recipient = {
-                username : user.username,
-                email : user.email,
-                company : process.env.COMPANY
-              }
-        sendEmail("locked-account",recipient )
-        res.status(400).json("Account is locked beacause of too many failed login attempts. Use forget account to access acount");
 
-      }else{
-        await userService.update(user._id, user)    
-      }      
-      res.status(400).json({ message: "email or password is incorrect" });
-    }
-  }else{
-    res.status(400).json({ message: "email does not exist" });
+      // ALWAYS use the service so the pepper logic stays identical
+      console.log(`Verifying user with email: ${email}`);
+      console.log("password provided:", password);
+      console.log("stored password hash:", auth.password);
+      const pepper = this.configService.get<string>('HASH_PEPPER') || '';
+      console.log("Using pepper:", pepper ? 'Yes' : 'No');
+
+      const user = await this.userService.findOne({ where: { id: auth.user.id }, relations: ['roles', 'roles.permissions'] });
+      if (!user) throw new UnauthorizedException('User profile not found');
+
+      return this.payloadMapperService.toUserPayload(user, email);
+
   }
 
-});
-  
 
-
-
-
-
- */
+}

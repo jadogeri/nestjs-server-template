@@ -17,6 +17,7 @@ import { Profile } from "src/modules/profile/entities/profile.entity";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { UserNotFoundException } from "src/common/exceptions/user-not-found.exception";
 import { AuthNotFoundException } from "src/common/exceptions/auth-not-found.exception";
+import { StatusEnum } from "src/common/enums/user-status.enum";
 
 @Service()
 export class RegistrationService implements RegistrationServiceInterface {  
@@ -88,7 +89,7 @@ export class RegistrationService implements RegistrationServiceInterface {
           alreadyVerified: true 
         });
       }else{
-        await this.authRepository.update(auth.id, { isEnabled: true, isVerified: true, verificationToken: null, verifiedAt: new Date() });
+        await this.authRepository.update(auth.id, { status: StatusEnum.ENABLED, isVerified: true, verificationToken: null, verifiedAt: new Date() });
       }
       // CALL THE HELPER
       this.eventEmitter.emit('user.register', auth);

@@ -49,12 +49,14 @@ import { AuthenticationServiceInterface } from './services/interfaces/authentica
 import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
 import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
 import { ProfilePayload } from 'src/common/interfaces/profile-payload.interface';
+import { StatusEnum } from 'src/common/enums/user-status.enum';
 
 
 @Service()
 export class AuthService {
 
-  private readonly logger = new Logger(AuthService.name);g
+  private readonly logger = new Logger(AuthService.name);
+  private readonly MAX_FAILED_LOGIN_ATTEMPTS = 4; // Example threshold for locking accounts
 
   constructor(
     private readonly registration: RegistrationServiceInterface, 
@@ -105,6 +107,7 @@ export class AuthService {
 
     const auth = await this.authRepository.findOne({ where: { user: { id: userPayload.userId } } });
     if (!auth) throw new UnauthorizedException('User not found for token generation');
+    
 
     // D. Create the session in DB using our pre-generated ID
     // Ensure your Session entity/DTO accepts 'id' or 'sessionId'
@@ -187,15 +190,34 @@ export class AuthService {
   }
 
   async verifyUser(email: string, password: string): Promise<UserPayload | null> {
-    try {
       const auth = await this.authRepository.findByEmail(email);
-            if (!auth) throw new UnauthorizedException('Invalid credentials');  
+      if (!auth) throw new UnauthorizedException('Invalid credentials provided - auth record not found');  
+      console.log("auth record found for email:", auth);
 
-      const isEnabled = this.accessControlService.isUserActive(auth);
       const isVerified = this.accessControlService.isUserVerified(auth);
       if (!isVerified) throw new ForbiddenException('Account not verified, please verify your email before logging in');
-      if (isVerified && !isEnabled) throw new ForbiddenException('Account is locked, use forget account to access account');
+      if (auth.status === StatusEnum.LOCKED) throw new ForbiddenException('Account is locked, use forget account to access account');
       
+      const isMatch = await this.hashingService.compare(password, auth.password);
+      if (!isMatch) {
+        auth.failedLoginAttempts = auth.failedLoginAttempts + 1;
+        if(auth.failedLoginAttempts >= this.MAX_FAILED_LOGIN_ATTEMPTS){
+          auth.status = StatusEnum.LOCKED;
+          auth.isEnabled = false; 
+          await this.authRepository.update(auth.id, auth);
+
+          //sendEmail("locked-account",recipient )
+
+          this.logger.warn(`Account is locked due to too many failed login attempts. Use forget account to access account: ${email}`);
+          throw new ForbiddenException('Account is locked due to too many failed login attempts. Use forget account to access account');
+
+        }else{
+          await this.authRepository.update(auth.id, { failedLoginAttempts: auth.failedLoginAttempts });
+          throw new UnauthorizedException('Invalid credentials provided - password mismatch');
+
+        }
+
+      }
 
 
       // ALWAYS use the service so the pepper logic stays identical
@@ -205,33 +227,17 @@ export class AuthService {
       const pepper = this.configService.get<string>('HASH_PEPPER') || '';
       console.log("Using pepper:", pepper ? 'Yes' : 'No');
 
-      const isMatch = await this.hashingService.compare(password, auth.password);
-      if (auth && !isMatch) {
-        if(auth.isEnabled === false) throw new ForbiddenException('Account is disabled');
-        if(auth.isVerified === false) throw new ForbiddenException('Account not verified');
-      }else{
 
-      }
-
-      if (!isMatch) {
-        this.logger.warn(`Password mismatch for email: ${email}`);
-        throw new UnauthorizedException('Invalid credentials');
-      }
-     
       // 2. Account Status Checks (Business Logic)
-      if (!this.accessControlService.isUserActive(auth)) throw new ForbiddenException('Account is disabled'); 
+      // if (!this.accessControlService.isUserActive(auth)) throw new ForbiddenException('Account is disabled'); 
 
-      if (!this.accessControlService.isUserVerified(auth))  throw new ForbiddenException('Account not verified');
+      // if (!this.accessControlService.isUserVerified(auth))  throw new ForbiddenException('Account not verified');
       // 3. Fetch Full Data & Map to Payload
       const user = await this.userService.findOne({ where: { id: auth.user.id }, relations: ['roles', 'roles.permissions'] });
       if (!user) throw new UnauthorizedException('User profile not found');
 
       return this.payloadMapperService.toUserPayload(user, email);
 
-    } catch (error) {
-      this.logger.error('Verify user error', error);
-      throw new UnauthorizedException('Failed to authenticate user');
-    }
   }
 
   async verifyAccessToken(accessTokenPayload: AccessTokenPayload): Promise<AccessTokenPayload | null> {
@@ -309,96 +315,3 @@ export class AuthService {
   }
   
 }
-
-/**
- * 
- 
-export const loginUser = asyncHandler(async (req : Request, res: Response)  => {
-
-  const { email, password } : IUser = req.body;
-  console.log(email,password)
-  if (!email || !password) {
-    res.status(400);
-    throw new Error("All fields are mandatory!");
-  }
-
-  if(!isValidEmail(email)){
-    errorBroadcaster(res,400,"not a valid standard email address")
-  }
-
-  const user  = await userService.getByEmail(email);
-
-  if(user){
-
-    if(user.isEnabled === false){      
-      errorBroadcaster(res,423,"Account is locked, use forget account to access acount")
-    }
-
-    //compare password with hashedpassword 
-    if (user &&  await bcrypt.compare(password,user.password as string)) {
-
-      let payload = {
-        user: {
-          username: user.username as string , email: user.email as string , id: user._id ,
-        },
-      }
-      //post fix operator   knowing value cant be undefined
-      let secretKey  = process.env.JSON_WEB_TOKEN_SECRET! ;
-      const accessToken  =  jwt.sign( payload,secretKey as jwt.Secret,  { expiresIn: "30m" } );
-      //add token and id to auth 
-      const authUser : IAuth = {
-        id : user._id,
-        token : accessToken
-      }
-
-      const authenticatedUser = await authService.getById(user._id);
-      if(!authenticatedUser){
-
-        await authService.create(authUser);
-      }else{
-
-        await authService.update(authUser);;     
-      }
-
-      //if failed logins > 0, 
-      //reset to zero if account is not locked
-      if(user.failedLogins as number > 0){
-
-        const resetUser : IUser ={
-          failedLogins: 0
-        }
-
-        await userService.update(user._id, resetUser)
-      }
-        res.status(200).json({ accessToken }); 
-    }else{ 
-      user.failedLogins = user.failedLogins  as number + 1      
-      if(user.failedLogins === 3){
-
-        user.isEnabled = false;
-        await userService.update(user._id, user)
-              const recipient : Recipient = {
-                username : user.username,
-                email : user.email,
-                company : process.env.COMPANY
-              }
-        sendEmail("locked-account",recipient )
-        res.status(400).json("Account is locked beacause of too many failed login attempts. Use forget account to access acount");
-
-      }else{
-        await userService.update(user._id, user)    
-      }      
-      res.status(400).json({ message: "email or password is incorrect" });
-    }
-  }else{
-    res.status(400).json({ message: "email does not exist" });
-  }
-
-});
-  
-
-
-
-
-
- */
