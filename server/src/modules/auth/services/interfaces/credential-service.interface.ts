@@ -2,7 +2,7 @@ import { UserPayload } from "../../../../common/interfaces/user-payload.interfac
 import { Response } from "express";
 import { RefreshTokenPayload } from "../../../../common/types/refresh-token-payload.type";
 
-export abstract class AuthenticationServiceInterface {     
+export abstract class CredentialServiceInterface {     
 
     abstract login(res: Response<any, Record<string, any>>, userPayload: UserPayload): Promise<any>;
 

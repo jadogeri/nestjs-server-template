@@ -2,15 +2,15 @@ import { Response } from "express";
 import { UserPayload } from "../../../common/interfaces/user-payload.interface";
 import { RefreshTokenPayload } from "../../../common/types/refresh-token-payload.type";
 import { Service } from "../../../common/decorators/service.decorator";
-import { AuthenticationServiceInterface } from "./interfaces/authentication-service.interface";
+import { CredentialServiceInterface } from "./interfaces/credential-service.interface";
 import { randomUUID } from "node:crypto";
 import { ForbiddenException, Logger, UnauthorizedException } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { HashingService } from "../../../core/security/hashing/interfaces/hashing.service";
 import { TokenService } from "../../../core/security/token/token.service";
-import { CreateSessionDto } from "../../../modules/session/dto/create-session.dto";
+import { CreateSessionDto } from "../../session/dto/create-session.dto";
 import { AuthRepository } from "../auth.repository";
-import { SessionService } from "../../../modules/session/session.service";
+import { SessionService } from "../../session/session.service";
 import { CookieService } from "../../../core/security/cookie/cookie.service";
 import { StatusEnum } from "src/common/enums/user-status.enum";
 import { AccessControlService } from "src/core/security/access-control/access-control.service";
@@ -20,9 +20,9 @@ import { PayloadMapperService } from "../payload-mapper.service";
 
 
 @Service()
-export class AuthenticationService implements AuthenticationServiceInterface {
+export class CredentialService implements CredentialServiceInterface {
     private readonly MAX_FAILED_LOGIN_ATTEMPTS = 4; // Example threshold
-    private readonly logger = new Logger(AuthenticationService.name);
+    private readonly logger = new Logger(CredentialService.name);
     constructor(
       private readonly authRepository: AuthRepository, // Also injected here
       private readonly hashingService: HashingService,

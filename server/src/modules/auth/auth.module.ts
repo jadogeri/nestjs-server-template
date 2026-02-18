@@ -30,12 +30,12 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 import { RegistrationEventListener } from '../../core/infrastructure/mail/listener/registration.listener';
 import { RegistrationService } from './services/registration.service';
 import { AccountManagementService } from './services/account-management.service';
-import { AuthenticationService } from './services/authentication.service';
+import { CredentialService } from './services/credential.service';
 import { PasswordManagementService } from './services/password-management.service';
 import { RegistrationServiceInterface } from './services/interfaces/registration-service.interface';
 import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
 import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
-import { AuthenticationServiceInterface } from './services/interfaces/authentication-service.interface';
+import { CredentialServiceInterface } from './services/interfaces/credential-service.interface';
 import { AuthenticationEventListener } from 'src/core/infrastructure/mail/listener/authentication.listener';
 
 
@@ -57,8 +57,8 @@ import { AuthenticationEventListener } from 'src/core/infrastructure/mail/listen
       useClass: AccountManagementService,
     },
     {
-      provide: AuthenticationServiceInterface,
-      useClass: AuthenticationService,
+      provide: CredentialServiceInterface,
+      useClass: CredentialService,
     },
     {
       provide: PasswordManagementServiceInterface,

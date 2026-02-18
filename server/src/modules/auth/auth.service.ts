@@ -45,7 +45,7 @@ import { CreateSessionDto } from '../session/dto/create-session.dto';
 import { UpdateSessionDto } from '../session/dto/update-session.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { RegistrationServiceInterface } from './services/interfaces/registration-service.interface';
-import { AuthenticationServiceInterface } from './services/interfaces/authentication-service.interface';
+import { CredentialServiceInterface } from './services/interfaces/credential-service.interface';
 import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
 import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
 import { ProfilePayload } from 'src/common/interfaces/profile-payload.interface';
@@ -59,9 +59,9 @@ export class AuthService {
   private readonly MAX_FAILED_LOGIN_ATTEMPTS = 4; // Example threshold for locking accounts
 
   constructor(
-    private readonly registration: RegistrationServiceInterface, 
-    private readonly authentication: AuthenticationServiceInterface,
-    private readonly session: AuthenticationServiceInterface,
+    private readonly registrationSercive: RegistrationServiceInterface, 
+    private readonly credentialService: CredentialServiceInterface,
+    private readonly session: SessionService,
     private readonly passwords: PasswordManagementServiceInterface,
     private readonly account: AccountManagementServiceInterface,
     private readonly authRepository: AuthRepository,
@@ -79,19 +79,19 @@ export class AuthService {
 
   async register(registerDto: RegisterDto) {
 
-    return await this.registration.register(registerDto);
+    return await this.registrationSercive.register(registerDto);
 
   }
 
   async verifyEmail(token: string) {
     
-    return await this.registration.verifyEmail(token);
+    return await this.registrationSercive.verifyEmail(token);
 
   }
 
   async resendVerification(email: string) {
 
-    return await this.registration.resendVerification(email);
+    return await this.registrationSercive.resendVerification(email);
   
   }
 
@@ -318,8 +318,8 @@ export class AuthService {
     return await this.authRepository.findOne({ where: { id }, relations: ['roles', 'roles.permissions'] });
   }
 
-  public getAuthenticationService(): AuthenticationServiceInterface {
-    return this.authentication
+  public getCredentialService(): CredentialServiceInterface {
+    return this.credentialService;
   }
   
 }
