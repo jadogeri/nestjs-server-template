@@ -26,9 +26,7 @@ export class RegistrationService implements RegistrationServiceInterface {
   constructor(
       private readonly authRepository: AuthRepository, // Also injected here
       private readonly hashingService: HashingService,
-      private readonly tokenService: TokenService,     
-      private readonly configService: ConfigService,
-      private readonly mailService: MailService, // Injecting MailService directly for simplicity   
+      private readonly tokenService: TokenService,   
       private readonly eventEmitter: EventEmitter2, // For emitting events
   ){ }
 
@@ -58,9 +56,10 @@ export class RegistrationService implements RegistrationServiceInterface {
 
       // CALL THE HELPER
       //await this.sendVerificationProcess(auth);
-      this.eventEmitter.emit('user.registered', auth);
+      this.eventEmitter.emit('user.register', auth);
 
       const result = { message: 'Registration successful! Please check your email to verify your account.' };
+      this.eventEmitter.emit('user.verify', auth);
       return result;
 
     } catch (error: unknown) {
@@ -79,18 +78,21 @@ export class RegistrationService implements RegistrationServiceInterface {
       const payload = await this.tokenService.verifyEmailToken(token);
       console.log('Email verification token payload:', payload);
       const{ userId, email } = payload;
-      const userAccount = await this.authRepository.findOne({ where: { user: { id: userId }, email }, relations: ['user'] });
-      if (!userAccount) {
+      const auth = await this.authRepository.findOne({ where: { user: { id: userId }, email }, relations: ['user'] });
+      if (!auth) {
         throw new UserNotFoundException("No user account found for this verification token.");
       }
-      if (userAccount.isVerified) {
+      if (auth.isVerified) {
         throw new ConflictException({ 
           message: 'Your email is already verified. You can proceed to login.',
           alreadyVerified: true 
         });
       }else{
-        await this.authRepository.update(userAccount.id, { isEnabled: true, isVerified: true, verificationToken: null, verifiedAt: new Date() });
+        await this.authRepository.update(auth.id, { isEnabled: true, isVerified: true, verificationToken: null, verifiedAt: new Date() });
       }
+      // CALL THE HELPER
+      this.eventEmitter.emit('user.register', auth);
+
       return {payload};
     } catch (error: unknown) {
       if (error instanceof TokenExpiredError) {
@@ -111,9 +113,7 @@ export class RegistrationService implements RegistrationServiceInterface {
       if (!auth.user) throw new NotFoundException('User profile not found.');
 
       // CALL THE HELPER
-      //await this.sendVerificationProcess(auth);
-      this.eventEmitter.emit('user.registered', auth);
-
+      this.eventEmitter.emit('user.verify', auth);
 
       return { message: 'A new verification link has been sent to your email.' };
     } 

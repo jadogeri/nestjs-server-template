@@ -1,10 +1,7 @@
 // 1. NestJS & Third-Party Libs
-import { BadRequestException, ConflictException, ForbiddenException, GoneException, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, GoneException, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { randomUUID } from 'node:crypto';
-import { TokenExpiredError } from '@nestjs/jwt/dist';
-
-
 
 // 2. Services (Logic Layer)
 import { AccessControlService } from '../../core/security/access-control/access-control.service';
@@ -18,10 +15,6 @@ import { UserService } from '../user/user.service';
 // 3. Repositories (Data Layer)
 import { AuthRepository } from './auth.repository';
 
-// 4. Utilities & Helpers (Logic Layer)
-import { AuthGeneratorUtil } from '../../common/utils/auth-generator.util';
-import { ProfileGeneratorUtil } from '../../common/utils/profile-generator.util';
-import { UserGeneratorUtil } from '../../common/utils/user-generator.util';
 
 // 5. DTOs & Entities (Data Layer)
 import { Auth } from './entities/auth.entity';

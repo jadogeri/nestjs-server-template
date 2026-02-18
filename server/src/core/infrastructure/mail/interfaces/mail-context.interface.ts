@@ -6,7 +6,7 @@ export interface BaseEmailContext {
 }
 
 export interface WelcomeEmailContext extends BaseEmailContext {
-  loginUrl: string;
+  email: string;
 }
 
 export interface VerificationEmailContext extends BaseEmailContext {

@@ -2,7 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { OnEvent } from '@nestjs/event-emitter';
 import { TokenService } from '../../../security/token/token.service';
 import { Repository } from 'typeorm';
-import { VerificationEmailContext } from '../interfaces/mail-context.interface';
+import { VerificationEmailContext, WelcomeEmailContext } from '../interfaces/mail-context.interface';
 import { MailService } from '../mail.service';
 import { InjectRepository } from '@nestjs/typeorm/dist/common/typeorm.decorators';
 import { Service } from '../../../../common/decorators/service.decorator';
@@ -22,8 +22,8 @@ export class RegistrationEventListener implements RegistrationEventListenerInter
     private readonly configService: ConfigService,
   ) {}
 
-  @OnEvent('user.registered', { async: true }) // Runs in the background
-  async handleUserRegisteredEvent(auth: Auth) {
+  @OnEvent('user.verify', { async: true }) // Runs in the background
+  async handleUserVerificationEvent(auth: Auth) {
     const { email, id, user } = auth;
 
     // 1. Generate token
@@ -47,5 +47,24 @@ export class RegistrationEventListener implements RegistrationEventListenerInter
     // 4. Dispatch Email
     await this.mailService.sendVerificationEmail(email, context);
     this.logger.log(`Verification email dispatched to: ${email}`);
+  }
+
+ @OnEvent('user.register', { async: true }) // Runs in the background
+  async handleUserRegistrationEvent(auth: Auth): Promise<void> {
+    const { email } = auth;
+    this.logger.log(`Handling user registration event for: ${email}`);
+    // You can add additional logic here if needed, such as logging or analytics
+
+        // 3. Prepare the link
+    const context: WelcomeEmailContext = {
+      firstName: auth.user.firstName, 
+      email: auth.email,
+
+    };
+
+    // 4. Dispatch Email
+    await this.mailService.sendWelcomeEmail(email, context);
+    this.logger.log(`Welcome email dispatched to: ${email}`);
+
   }
 }
