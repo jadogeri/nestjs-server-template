@@ -5,7 +5,7 @@ import { Session } from '../../session/entities/session.entity';
 import { Audit } from '../../../common/entities/audit.entity';
 import { IsUserEmail } from '../../../common/decorators/validators/is-email.decorator';
 import { IsSecuredPassword } from '../../../common/decorators/validators/is-secured-password.decorator';
-import { StatusEnum } from 'src/common/enums/user-status.enum';
+import { StatusEnum } from '../../../common/enums/user-status.enum';
 import { IsEnum } from 'class-validator';
 
 @Entity("auths")

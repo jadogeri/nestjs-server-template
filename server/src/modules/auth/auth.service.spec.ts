@@ -21,11 +21,9 @@ import { SessionService } from '../session/session.service';
 import { CookieService } from '../../core/security/cookie/cookie.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { RegistrationServiceInterface } from './services/interfaces/registration-service.interface';
-import { AuthenticationServiceInterface } from './services/interfaces/credential-service.interface';
-import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
-import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
 import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
 import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
+import { CredentialServiceInterface } from './services/interfaces/credential-service.interface';
 
 
 describe('AuthService', () => {
@@ -84,11 +82,7 @@ describe('AuthService', () => {
           useValue: { emit: jest.fn() },
         },        
         {
-          provide: RegistrationServiceInterface,
-          useValue: { register: jest.fn(), verify: jest.fn() }, // Mock methods
-        },
-        {
-          provide: AuthenticationServiceInterface,
+          provide: CredentialServiceInterface,
           useValue: { login: jest.fn(), logout: jest.fn() },
         },
         {
@@ -99,6 +93,10 @@ describe('AuthService', () => {
           provide: AccountManagementServiceInterface,
           useValue: { deactivate: jest.fn() },
         },
+        {
+          provide: RegistrationServiceInterface,
+          useValue: { register: jest.fn(), verifyEmail: jest.fn(), resendVerification: jest.fn() },
+      },
         
       ],
     }).compile();
