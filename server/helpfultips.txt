@@ -81,3 +81,20 @@ export const loginUser = asyncHandler(async (req : Request, res: Response)  => {
 
 });
   
+
+src/core/
+├── infrastructure/             # Performance & External Services
+│   ├── database/               # Database providers & config
+│   ├── cache/                  # Redis implementation for speed
+│   ├── logger/                 # Centralized logging (Winston/Pino)
+│   ├── storage/                # Cloud storage (S3/GCP)
+│   ├── mail/                   # Handlebars mailing service
+│   ├── queue/                  # Background jobs (BullMQ)
+│   ├── compression/            # Gzip/Brotli to shrink response sizes
+│   └── metrics/                # Prometheus/Grafana for app health
+└── security/                   # Protection & Access Control
+    ├── auth/                   # JWT, Passport, OIDC logic
+    ├── throttling/             # Rate limiting to prevent Brute Force
+    ├── encryption/             # Hashing (Bcrypt) & Crypto utilities
+    ├── helmet/                 # Security headers (XSS, Clickjacking)
+    └── cors/                   # Cross-Origin Resource Sharing config

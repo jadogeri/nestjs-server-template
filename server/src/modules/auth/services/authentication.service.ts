@@ -1,6 +1,6 @@
 import { Response } from "express";
-import { UserPayload } from "src/common/interfaces/user-payload.interface";
-import { RefreshTokenPayload } from "src/common/types/refresh-token-payload.type";
+import { UserPayload } from "../../../common/interfaces/user-payload.interface";
+import { RefreshTokenPayload } from "../../../common/types/refresh-token-payload.type";
 import { Service } from "../../../common/decorators/service.decorator";
 import { AuthenticationServiceInterface } from "./interfaces/authentication-service.interface";
 
