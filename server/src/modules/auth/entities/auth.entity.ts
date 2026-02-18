@@ -5,6 +5,7 @@ import { Session } from '../../session/entities/session.entity';
 import { Audit } from '../../../common/entities/audit.entity';
 import { IsUserEmail } from '../../../common/decorators/validators/is-email.decorator';
 import { IsSecuredPassword } from '../../../common/decorators/validators/is-secured-password.decorator';
+import { StatusEnum } from 'src/common/enums/user-status.enum';
 
 @Entity("auths")
 export class Auth extends Audit {
@@ -40,6 +41,13 @@ export class Auth extends Audit {
   @Column({ default: 0 })
   failedLoginAttempts: number;
 
+  @Column({
+    type: 'simple-enum',
+    enum: StatusEnum,
+    default: StatusEnum.ENABLED,
+  })
+  status: StatusEnum;
+
   @OneToOne(() => User, (user) => user.auth, { onDelete: 'CASCADE', cascade: true }) // CRITICAL: This allows saving User via Auth
   @JoinColumn({ name: 'userId' })
   user: User;
@@ -49,37 +57,4 @@ export class Auth extends Audit {
   sessions: Session[];
   
 }
-
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-
-// 1. Define the Enum
-export enum StatusEnum {
-  ENABLED = 'enabled',
-  DISABLED = 'disabled',
-  LOCKED = 'locked',
-}
-
-@Entity()
-export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  // 2. Use Enum in TypeORM Column
-  @Column({
-    type: 'enum',
-    enum: StatusEnum,
-    default: StatusEnum.ENABLED, // Optional: set a default
-  })
-  status: StatusEnum;
-}
-
-
-
-
-
-
-
-
-
-
-
+  
