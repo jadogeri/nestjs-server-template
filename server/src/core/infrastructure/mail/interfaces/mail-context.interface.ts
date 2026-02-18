@@ -1,5 +1,5 @@
 export interface BaseEmailContext {
-  companyName?: string;
+  company?: string;
   year?: number;
   logoUrl?: string;
   firstName?: string;
@@ -12,6 +12,10 @@ export interface WelcomeEmailContext extends BaseEmailContext {
 export interface VerificationEmailContext extends BaseEmailContext {
   verificationLink: string;
 
+}
+
+export interface AccountLockedEmailContext extends BaseEmailContext {
+  email: string;
 }
 
 // A union type for your reusable sendEmail method

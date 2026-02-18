@@ -21,7 +21,7 @@ import { SessionService } from '../session/session.service';
 import { CookieService } from '../../core/security/cookie/cookie.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { RegistrationServiceInterface } from './services/interfaces/registration-service.interface';
-import { AuthenticationServiceInterface } from './services/interfaces/authentication-service.interface';
+import { AuthenticationServiceInterface } from './services/interfaces/credential-service.interface';
 import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
 import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
 import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';

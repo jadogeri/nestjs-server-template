@@ -45,20 +45,23 @@ import { CreateSessionDto } from '../session/dto/create-session.dto';
 import { UpdateSessionDto } from '../session/dto/update-session.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { RegistrationServiceInterface } from './services/interfaces/registration-service.interface';
-import { AuthenticationServiceInterface } from './services/interfaces/authentication-service.interface';
+import { CredentialServiceInterface } from './services/interfaces/credential-service.interface';
 import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
 import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
 import { ProfilePayload } from 'src/common/interfaces/profile-payload.interface';
+import { StatusEnum } from 'src/common/enums/user-status.enum';
 
 
 @Service()
 export class AuthService {
 
-  private readonly logger = new Logger(AuthService.name);g
+  private readonly logger = new Logger(AuthService.name);
+  private readonly MAX_FAILED_LOGIN_ATTEMPTS = 4; // Example threshold for locking accounts
 
   constructor(
-    private readonly registration: RegistrationServiceInterface, 
-    private readonly session: AuthenticationServiceInterface,
+    private readonly registrationSercive: RegistrationServiceInterface, 
+    private readonly credentialService: CredentialServiceInterface,
+    private readonly session: SessionService,
     private readonly passwords: PasswordManagementServiceInterface,
     private readonly account: AccountManagementServiceInterface,
     private readonly authRepository: AuthRepository,
@@ -76,37 +79,21 @@ export class AuthService {
 
   async register(registerDto: RegisterDto) {
 
-    return await this.registration.register(registerDto);
+    return await this.registrationSercive.register(registerDto);
 
   }
 
   async verifyEmail(token: string) {
     
-    return await this.registration.verifyEmail(token);
+    return await this.registrationSercive.verifyEmail(token);
 
   }
 
-async resendVerification(email: string) {
-  try{
-    const auth = await this.authRepository.findOne({ where: { email }, relations: ['user'] });   
+  async resendVerification(email: string) {
 
-    if (!auth) throw new AuthNotFoundException(email, 'email');
-    if (auth.isVerified) throw new BadRequestException('Email is already verified');
-    if (!auth.user) throw new NotFoundException('User profile not found.');
-
-    // CALL THE HELPER
-    //await this.sendVerificationProcess(auth);
-    this.eventEmitter.emit('user.registered', auth);
-
-
-    return { message: 'A new verification link has been sent to your email.' };
-  } 
-  catch (error: unknown) {
-    this.logger.error('Error in resendVerification:', error instanceof Error ? error.message : error);
-    throw new BadRequestException('Failed to resend verification email. Please try again later.');
+    return await this.registrationSercive.resendVerification(email);
+  
   }
-
-}
 
   async login(res: Response<any, Record<string, any>>, userPayload: UserPayload): Promise<any> {
    // A. Generate a unique Session ID immediately
@@ -121,6 +108,7 @@ async resendVerification(email: string) {
 
     const auth = await this.authRepository.findOne({ where: { user: { id: userPayload.userId } } });
     if (!auth) throw new UnauthorizedException('User not found for token generation');
+    
 
     // D. Create the session in DB using our pre-generated ID
     // Ensure your Session entity/DTO accepts 'id' or 'sessionId'
@@ -177,12 +165,12 @@ async resendVerification(email: string) {
     await this.cookieService.updateRefreshToken(res, data.refreshToken);
 
     return {
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
-        userId: userPayload.userId,
-        sessionId: sessionId // Return it if needed by the client
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+      userId: userPayload.userId,
+      sessionId: sessionId // Return it if needed by the client
     };  
-}
+  }
 
 
   async create(createAuthDto: CreateAuthDto) {
@@ -202,11 +190,37 @@ async resendVerification(email: string) {
     return await this.authRepository.delete(id);
   }
 
+  /*
   async verifyUser(email: string, password: string): Promise<UserPayload | null> {
-    try {
       const auth = await this.authRepository.findByEmail(email);
+      if (!auth) throw new UnauthorizedException('Invalid credentials provided - auth record not found');  
+      console.log("auth record found for email:", auth);
+
+      const isVerified = this.accessControlService.isUserVerified(auth);
+      if (!isVerified) throw new ForbiddenException('Account not verified, please verify your email before logging in');
+      if (auth.status === StatusEnum.LOCKED) throw new ForbiddenException('Account is locked, use forget account to access account');
       
-      if (!auth) throw new UnauthorizedException('Invalid credentials');      
+      const isMatch = await this.hashingService.compare(password, auth.password);
+      if (!isMatch) {
+        auth.failedLoginAttempts = auth.failedLoginAttempts + 1;
+        if(auth.failedLoginAttempts >= this.MAX_FAILED_LOGIN_ATTEMPTS){
+          auth.status = StatusEnum.LOCKED;
+          auth.isEnabled = false; 
+          await this.authRepository.update(auth.id, auth);
+
+          //sendEmail("locked-account",recipient )
+
+          this.logger.warn(`Account is locked due to too many failed login attempts. Use forget account to access account: ${email}`);
+          throw new ForbiddenException('Account is locked due to too many failed login attempts. Use forget account to access account');
+
+        }else{
+          await this.authRepository.update(auth.id, { failedLoginAttempts: auth.failedLoginAttempts });
+          throw new UnauthorizedException('Invalid credentials provided - password mismatch');
+
+        }
+
+      }
+
 
       // ALWAYS use the service so the pepper logic stays identical
       console.log(`Verifying user with email: ${email}`);
@@ -215,55 +229,20 @@ async resendVerification(email: string) {
       const pepper = this.configService.get<string>('HASH_PEPPER') || '';
       console.log("Using pepper:", pepper ? 'Yes' : 'No');
 
-      const isMatch = await this.hashingService.compare(password, auth.password);
 
-      if (!isMatch) {
-        this.logger.warn(`Password mismatch for email: ${email}`);
-        throw new UnauthorizedException('Invalid credentials');
-      }
-     
       // 2. Account Status Checks (Business Logic)
-      if (!this.accessControlService.isUserActive(auth)) throw new ForbiddenException('Account is disabled'); 
+      // if (!this.accessControlService.isUserActive(auth)) throw new ForbiddenException('Account is disabled'); 
 
-      if (!this.accessControlService.isUserVerified(auth))  throw new ForbiddenException('Account not verified');
+      // if (!this.accessControlService.isUserVerified(auth))  throw new ForbiddenException('Account not verified');
       // 3. Fetch Full Data & Map to Payload
       const user = await this.userService.findOne({ where: { id: auth.user.id }, relations: ['roles', 'roles.permissions'] });
       if (!user) throw new UnauthorizedException('User profile not found');
 
       return this.payloadMapperService.toUserPayload(user, email);
 
-    } catch (error) {
-      this.logger.error('Verify user error', error);
-      throw new UnauthorizedException('Failed to authenticate user');
-    }
   }
 
-  private async sendVerificationProcess(auth: Auth): Promise<void> {
-    const { email, user } = auth;
-
-    // 1. Generate the payload and token
-    const verificationTokenPayload: VerificationTokenPayload = { 
-      sub: user.id, 
-      userId: user.id, 
-      email, 
-      type: 'verification' 
-    };
-    const verificationToken = await this.tokenService.generateVerificationToken(verificationTokenPayload);
-
-    // 2. Persist the token to the database
-    await this.authRepository.update(auth.id, { verificationToken });
-
-    // 3. Prepare the link
-    const appUrl = this.configService.get<string>('APP_URL') || 'http://localhost:3000';
-    const context: VerificationEmailContext = {
-      firstName: user.firstName,
-      verificationLink: `${appUrl}/auth/verify-email?token=${verificationToken}`,
-    };
-
-    // 4. Dispatch Email
-    await this.mailService.sendVerificationEmail(email, context);
-    this.logger.log(`Verification email dispatched to: ${email}`);
-  }
+  */
 
   async verifyAccessToken(accessTokenPayload: AccessTokenPayload): Promise<AccessTokenPayload | null> {
   const { userId, email } = accessTokenPayload;
@@ -337,6 +316,10 @@ async resendVerification(email: string) {
 
   async findById(id: number): Promise<Auth | null> {    
     return await this.authRepository.findOne({ where: { id }, relations: ['roles', 'roles.permissions'] });
+  }
+
+  public getCredentialService(): CredentialServiceInterface {
+    return this.credentialService;
   }
   
 }

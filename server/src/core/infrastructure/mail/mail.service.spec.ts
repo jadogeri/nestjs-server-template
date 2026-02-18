@@ -22,7 +22,7 @@ describe('MailService', () => {
           provide: ConfigService,
           useValue: {
             get: jest.fn((key: string) => {
-              if (key === 'COMPANY_NAME') return 'Test Company';
+              if (key === 'COMPANY') return 'Test Company';
               return null;
             }),
           },

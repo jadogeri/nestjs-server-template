@@ -5,6 +5,8 @@ import { Session } from '../../session/entities/session.entity';
 import { Audit } from '../../../common/entities/audit.entity';
 import { IsUserEmail } from '../../../common/decorators/validators/is-email.decorator';
 import { IsSecuredPassword } from '../../../common/decorators/validators/is-secured-password.decorator';
+import { StatusEnum } from 'src/common/enums/user-status.enum';
+import { IsEnum } from 'class-validator';
 
 @Entity("auths")
 export class Auth extends Audit {
@@ -37,8 +39,16 @@ export class Auth extends Audit {
   @Column({ type: 'datetime', nullable: true, default: null })
   lastLoginAt: Date;
 
-  @Column({ default: 0 })
+  @Column({ default: 0, nullable: false })
   failedLoginAttempts: number;
+
+  @Column({
+    type: 'simple-enum',
+    enum: StatusEnum,
+    default: StatusEnum.DISABLED,    
+  })
+  @IsEnum(StatusEnum, { message: `Status must be one of the following: ${Object.values(StatusEnum).join(', ')}` })
+  status: StatusEnum;
 
   @OneToOne(() => User, (user) => user.auth, { onDelete: 'CASCADE', cascade: true }) // CRITICAL: This allows saving User via Auth
   @JoinColumn({ name: 'userId' })
@@ -49,13 +59,4 @@ export class Auth extends Audit {
   sessions: Session[];
   
 }
-
-
-
-
-
-
-
-
-
-
+  

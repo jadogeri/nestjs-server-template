@@ -19,7 +19,10 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
 
 
   async validate(email: string, password: string): Promise<UserPayload | null> {
-    const userPayload : UserPayload | null = await this.authService.verifyUser(email, password);
+    const userPayload : UserPayload | null = await this.authService.getCredentialService().verifyUser(email, password);
+    if (!userPayload) {
+      return null; // Passport will handle this as an authentication failure
+    }
     return userPayload;
   }
 }

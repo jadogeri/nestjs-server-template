@@ -4,7 +4,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as handlebars from 'handlebars';
 import { Service } from '../../../common/decorators/service.decorator';
-import { WelcomeEmailContext, VerificationEmailContext, MailContext, BaseEmailContext } from './interfaces/mail-context.interface';
+import { WelcomeEmailContext, VerificationEmailContext, MailContext, BaseEmailContext, AccountLockedEmailContext } from './interfaces/mail-context.interface';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 
 // Assuming these are imported from your interfaces file
@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config/dist/config.service';
 
 @Service()
 export class MailService {
+
   constructor(
     private readonly mailerService: MailerService,
     private readonly configService: ConfigService) {}
@@ -41,7 +42,7 @@ export class MailService {
    */
   private getBaseContext(): BaseEmailContext {
     return {
-      companyName: this.configService.get<string>('COMPANY_NAME') || 'Your Company Name',
+      company: this.configService.get<string>('COMPANY') || 'Your Company Name',
       year: new Date().getFullYear(),
       logoUrl: this.configService.get<string>('LOGO_URL') || 'https://yourdomain.com', // Optional in interface, but provided here
     };
@@ -70,6 +71,15 @@ export class MailService {
     };
     console.log('Full context for welcome email:', fullContext); // Debugging log
     return await this.sendEmail(to, 'welcome', fullContext);
+  }
+
+  async sendAccountLockedEmail(email: string, context: AccountLockedEmailContext) {
+    const fullContext: AccountLockedEmailContext = {
+      ...this.getBaseContext(),
+      ...context,
+    };
+    console.log('Full context for account locked email:', fullContext); // Debugging log
+    return await this.sendEmail(email, 'locked-account', fullContext);
   }
 
 

@@ -2,11 +2,13 @@ import { UserPayload } from "../../../../common/interfaces/user-payload.interfac
 import { Response } from "express";
 import { RefreshTokenPayload } from "../../../../common/types/refresh-token-payload.type";
 
-export abstract class AuthenticationServiceInterface {     
+export abstract class CredentialServiceInterface {     
 
     abstract login(res: Response<any, Record<string, any>>, userPayload: UserPayload): Promise<any>;
 
     abstract logout(token: string): Promise<void> ;
 
     abstract refreshToken(refreshTokenPayload: RefreshTokenPayload, res: Response<any, Record<string, any>>): Promise<any>;
+
+    abstract verifyUser(email: string, password: string): Promise<UserPayload | null>;
 }
