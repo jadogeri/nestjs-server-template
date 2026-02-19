@@ -50,10 +50,14 @@ import { AccountManagementServiceInterface } from './services/interfaces/account
 import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
 import { ProfilePayload } from 'src/common/interfaces/profile-payload.interface';
 import { StatusEnum } from 'src/common/enums/user-status.enum';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 
 
 @Service()
 export class AuthService {
+  forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    throw new Error('Method not implemented.');
+  }
 
   private readonly logger = new Logger(AuthService.name);
   private readonly MAX_FAILED_LOGIN_ATTEMPTS = 4; // Example threshold for locking accounts

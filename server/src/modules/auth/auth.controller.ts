@@ -30,6 +30,8 @@ import { ApiRefresh } from './decorators/api-refresh-token.decorator';
 import type { RefreshTokenPayload } from 'src/common/types/refresh-token-payload.type';
 import { RefreshToken } from '../../common/decorators/refresh-token.decorator';
 import { RefreshAuthGuard } from '../../core/security/guards/refresh-auth.guard';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ApiForgotPassword } from './decorators/api-forgot-password.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -107,6 +109,12 @@ export class AuthController {
     //await this.authService.registration();
     return { message: 'Registration endpoint' };
   }
-  
+
+  @Post('forgot-password')
+  @ApiForgotPassword()
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    console.log('Received forgot password request:', forgotPasswordDto);
+    return this.authService.forgotPassword(forgotPasswordDto);
+  }
+
 }
-  
