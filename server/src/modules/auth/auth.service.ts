@@ -15,11 +15,8 @@ import { UserService } from '../user/user.service';
 // 3. Repositories (Data Layer)
 import { AuthRepository } from './auth.repository';
 
-
 // 5. DTOs & Entities (Data Layer)
 import { Auth } from './entities/auth.entity';
-import { Profile } from '../profile/entities/profile.entity';
-import { User } from '../user/entities/user.entity';
 
 import { RegisterDto } from './dto/register.dto';
 import { CreateAuthDto } from './dto/create-auth.dto';
@@ -29,17 +26,10 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 import { Service } from '../../common/decorators/service.decorator';
 
 // . Interfaces (Data Layer)
-import { VerificationEmailContext } from '../../core/infrastructure/mail/interfaces/mail-context.interface';
-import { VerificationTokenPayload } from '../../common/types/verification-token-payload.type';
-import { AuthNotFoundException } from '../../common/exceptions/auth-not-found.exception';
 import { UserPayload } from '../../common/interfaces/user-payload.interface';
 import { PayloadMapperService } from './payload-mapper.service';
 import { Request, Response } from 'express';
-import { ParamsDictionary } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
-import { AccessTokenPayload } from 'src/common/types/access-token-payload.type';
 import { FindOneOptions } from 'typeorm';
-import { is } from 'date-fns/locale';
 import { RefreshTokenPayload } from 'src/common/types/refresh-token-payload.type';
 import { CreateSessionDto } from '../session/dto/create-session.dto';
 import { UpdateSessionDto } from '../session/dto/update-session.dto';
@@ -58,7 +48,6 @@ import { IdentityServiceInterface } from './services/interfaces/identity-service
 export class AuthService {
 
   private readonly logger = new Logger(AuthService.name);
-  private readonly MAX_FAILED_LOGIN_ATTEMPTS = 4; // Example threshold for locking accounts
 
   constructor(
     private readonly registrationSercive: RegistrationServiceInterface, 
