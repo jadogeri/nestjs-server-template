@@ -7,7 +7,7 @@ import { Service } from "../../../common/decorators/service.decorator";
 import { AuthRepository } from "../auth.repository";
 import { PasswordManagementServiceInterface } from "./interfaces/password-management-service.interface";
 import { AccessControlService } from "src/core/security/access-control/access-control.service";
-import { AccessControlService } from "src/core/security/access-control/access-control.service";
+import { PasswordGeneratorUtil } from "src/common/utils/password-generator.util";
 
 @Service()
 export class PasswordManagementService implements PasswordManagementServiceInterface {
@@ -20,7 +20,7 @@ export class PasswordManagementService implements PasswordManagementServiceInter
           private readonly eventEmitter: EventEmitter2, // For emitting events
           private readonly accessControlService: AccessControlService, // For checking user status
       ){ }
-    async forgotPassword(email: string): Promise<void> {
+    async forgotPassword(email: string): Promise<any> {
       const auth = await this.authRepository.findByEmail(email);
       if (!auth) throw new UnauthorizedException('Invalid credentials provided - auth record not found');  
       console.log("auth record found for email:", auth);
@@ -30,7 +30,7 @@ export class PasswordManagementService implements PasswordManagementServiceInter
       if (auth.status === StatusEnum.LOCKED) throw new ForbiddenException('Account is locked, use forget account to access account');
       if (auth.status === StatusEnum.DISABLED) throw new ForbiddenException('Account is disabled, Please contact support for assistance');
 
-      
+      return PasswordGeneratorUtil.generateRandomPassword()
     
 
 
