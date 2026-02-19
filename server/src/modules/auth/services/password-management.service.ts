@@ -30,12 +30,18 @@ export class PasswordManagementService implements PasswordManagementServiceInter
       if (auth.status === StatusEnum.LOCKED) throw new ForbiddenException('Account is locked, use forget account to access account');
       if (auth.status === StatusEnum.DISABLED) throw new ForbiddenException('Account is disabled, Please contact support for assistance');
 
-      return PasswordGeneratorUtil.generateRandomPassword()
-    
+      const generatedPassword = PasswordGeneratorUtil.generateRandomPassword();
+      // hash the generated password
+      const hashedPassword = await this.hashingService.hash(generatedPassword);
 
+      // update the auth record with the new hashed password
+      const updatedAuth = await this.authRepository.update(auth.id, { password: hashedPassword });
 
+       this.eventEmitter.emit('password.reset', { auth: updatedAuth, generatedPassword });
 
-     }
+       return { message: 'A new password has been generated and sent to your email address.' };
+
+    }
     async resetPassword(): Promise<void> {
         throw new Error("Method not implemented.");
     }    
