@@ -50,6 +50,8 @@ import { AccountManagementServiceInterface } from './services/interfaces/account
 import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
 import { ProfilePayload } from 'src/common/interfaces/profile-payload.interface';
 import { StatusEnum } from 'src/common/enums/user-status.enum';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 
 @Service()
@@ -62,7 +64,7 @@ export class AuthService {
     private readonly registrationSercive: RegistrationServiceInterface, 
     private readonly credentialService: CredentialServiceInterface,
     private readonly session: SessionService,
-    private readonly passwords: PasswordManagementServiceInterface,
+    private readonly passwordManagementService: PasswordManagementServiceInterface,
     private readonly account: AccountManagementServiceInterface,
     private readonly authRepository: AuthRepository,
     private readonly hashingService: HashingService,
@@ -320,6 +322,18 @@ export class AuthService {
 
   public getCredentialService(): CredentialServiceInterface {
     return this.credentialService;
+  }
+
+  public getPasswordManagementService(): PasswordManagementServiceInterface {
+    return this.passwordManagementService;
+  }
+
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<any> {
+    return this.passwordManagementService.forgotPassword(forgotPasswordDto.email);
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void> {
+    return this.passwordManagementService.resetPassword(resetPasswordDto); 
   }
   
 }

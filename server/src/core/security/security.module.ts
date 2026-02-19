@@ -8,8 +8,8 @@ import { HashingModule } from './hashing/hashing.module';
 import { TokenModule } from './token/token.module';
 
 @Module({
-  imports: [HashingModule, TokenModule, AccessControlModule, AccessControlModule, CookieModule], 
-  exports: [HashingModule, TokenModule, AccessControlModule, AccessControlModule, CookieModule], 
+  imports: [HashingModule, TokenModule, AccessControlModule,  CookieModule], 
+  exports: [HashingModule, TokenModule, AccessControlModule, CookieModule],  
   providers: [],
 })
 export class SecurityModule {}
