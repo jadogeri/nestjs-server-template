@@ -55,9 +55,6 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 
 @Service()
 export class AuthService {
-  forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-    throw new Error('Method not implemented.');
-  }
 
   private readonly logger = new Logger(AuthService.name);
   private readonly MAX_FAILED_LOGIN_ATTEMPTS = 4; // Example threshold for locking accounts
@@ -66,7 +63,7 @@ export class AuthService {
     private readonly registrationSercive: RegistrationServiceInterface, 
     private readonly credentialService: CredentialServiceInterface,
     private readonly session: SessionService,
-    private readonly passwords: PasswordManagementServiceInterface,
+    private readonly passwordManagementService: PasswordManagementServiceInterface,
     private readonly account: AccountManagementServiceInterface,
     private readonly authRepository: AuthRepository,
     private readonly hashingService: HashingService,
@@ -324,6 +321,14 @@ export class AuthService {
 
   public getCredentialService(): CredentialServiceInterface {
     return this.credentialService;
+  }
+
+  public getPasswordManagementService(): PasswordManagementServiceInterface {
+    return this.passwordManagementService;
+  }
+
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    return this.passwordManagementService.forgotPassword(forgotPasswordDto.email);
   }
   
 }

@@ -1,7 +1,7 @@
 
 export abstract class PasswordManagementServiceInterface {     
 
-    abstract forgotPassword(): Promise<void>;
+    abstract forgotPassword(email: string): Promise<void>;
 
     abstract resetPassword(): Promise<void> ;
 }
