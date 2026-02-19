@@ -32,6 +32,8 @@ import { RefreshToken } from '../../common/decorators/refresh-token.decorator';
 import { RefreshAuthGuard } from '../../core/security/guards/refresh-auth.guard';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ApiForgotPassword } from './decorators/api-forgot-password.decorator';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ApiResetPassword } from './decorators/api-reset-password.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -116,5 +118,13 @@ export class AuthController {
     console.log('Received forgot password request:', forgotPasswordDto);
     return this.authService.forgotPassword(forgotPasswordDto);
   }
+
+  @Post('reset-password')
+  @ApiResetPassword() // The custom decorator
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    console.log('Received reset password request:', resetPasswordDto);
+    //return this.authService.resetPassword(resetPasswordDto);
+  }
+    
 
 }
