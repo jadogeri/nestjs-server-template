@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsString, Length, IsJWT, Matches, MinLength, } from 'class-validator';
+import { IsNotEmpty, IsString, IsJWT, MinLength, } from 'class-validator';
 
 export class VerifyEmailDto {
 
