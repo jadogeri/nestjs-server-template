@@ -192,60 +192,6 @@ export class AuthService {
     return await this.authRepository.delete(id);
   }
 
-  /*
-  async verifyUser(email: string, password: string): Promise<UserPayload | null> {
-      const auth = await this.authRepository.findByEmail(email);
-      if (!auth) throw new UnauthorizedException('Invalid credentials provided - auth record not found');  
-      console.log("auth record found for email:", auth);
-
-      const isVerified = this.accessControlService.isUserVerified(auth);
-      if (!isVerified) throw new ForbiddenException('Account not verified, please verify your email before logging in');
-      if (auth.status === StatusEnum.LOCKED) throw new ForbiddenException('Account is locked, use forget account to access account');
-      
-      const isMatch = await this.hashingService.compare(password, auth.password);
-      if (!isMatch) {
-        auth.failedLoginAttempts = auth.failedLoginAttempts + 1;
-        if(auth.failedLoginAttempts >= this.MAX_FAILED_LOGIN_ATTEMPTS){
-          auth.status = StatusEnum.LOCKED;
-          auth.isEnabled = false; 
-          await this.authRepository.update(auth.id, auth);
-
-          //sendEmail("locked-account",recipient )
-
-          this.logger.warn(`Account is locked due to too many failed login attempts. Use forget account to access account: ${email}`);
-          throw new ForbiddenException('Account is locked due to too many failed login attempts. Use forget account to access account');
-
-        }else{
-          await this.authRepository.update(auth.id, { failedLoginAttempts: auth.failedLoginAttempts });
-          throw new UnauthorizedException('Invalid credentials provided - password mismatch');
-
-        }
-
-      }
-
-
-      // ALWAYS use the service so the pepper logic stays identical
-      console.log(`Verifying user with email: ${email}`);
-      console.log("password provided:", password);
-      console.log("stored password hash:", auth.password);
-      const pepper = this.configService.get<string>('HASH_PEPPER') || '';
-      console.log("Using pepper:", pepper ? 'Yes' : 'No');
-
-
-      // 2. Account Status Checks (Business Logic)
-      // if (!this.accessControlService.isUserActive(auth)) throw new ForbiddenException('Account is disabled'); 
-
-      // if (!this.accessControlService.isUserVerified(auth))  throw new ForbiddenException('Account not verified');
-      // 3. Fetch Full Data & Map to Payload
-      const user = await this.userService.findOne({ where: { id: auth.user.id }, relations: ['roles', 'roles.permissions'] });
-      if (!user) throw new UnauthorizedException('User profile not found');
-
-      return this.payloadMapperService.toUserPayload(user, email);
-
-  }
-
-  */
-
   async verifyAccessToken(accessTokenPayload: AccessTokenPayload): Promise<AccessTokenPayload | null> {
   const { userId, email } = accessTokenPayload;
 
@@ -320,20 +266,20 @@ export class AuthService {
     return await this.authRepository.findOne({ where: { id }, relations: ['roles', 'roles.permissions'] });
   }
 
-  public getCredentialService(): CredentialServiceInterface {
-    return this.credentialService;
-  }
-
-  public getPasswordManagementService(): PasswordManagementServiceInterface {
-    return this.passwordManagementService;
-  }
-
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<any> {
     return this.passwordManagementService.forgotPassword(forgotPasswordDto.email);
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void> {
     return this.passwordManagementService.resetPassword(resetPasswordDto); 
+  }
+
+  public getCredentialService(): CredentialServiceInterface {
+    return this.credentialService;
+  }
+
+  public getPasswordManagementService(): PasswordManagementServiceInterface {
+    return this.passwordManagementService;
   }
   
 }

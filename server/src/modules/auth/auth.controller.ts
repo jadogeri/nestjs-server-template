@@ -93,24 +93,12 @@ export class AuthController {
   @UseGuards(RefreshAuthGuard)
   async refreshToken(@RefreshToken() refreshToken: RefreshTokenPayload, @Req() req: Request,@Res({ passthrough: true }) res: Response): Promise<any> {
 
-  //@UseGuards(RefreshAuthGuard) // Use the custom refresh token guard
-  //async refreshToken(@Req() req: Request,@Res({ passthrough: true }) res: Response): Promise<any> {
-   // const jwtPayload = req.user as any; // The RefreshStrategy will attach the user payload here
-
-    //console.log("jwt payload: " + JSON.stringify(jwtPayload));
-    //return this.authService.refreshTokens(req, res, jwtPayload);
-  // Use the cookie name you set, e.g., 'refreshToken'
   console.log("Cookie received:", refreshToken);
   
   return this.authService.refreshToken( refreshToken, res);
     
   }
 
-  @Post('registration')
-  async registration(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    //await this.authService.registration();
-    return { message: 'Registration endpoint' };
-  }
 
   @Post('forgot-password')
   @ApiForgotPassword()
