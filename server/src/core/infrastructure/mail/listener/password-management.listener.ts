@@ -14,20 +14,23 @@ export class PasswordManagementEventListener implements PasswordManagementEventL
     private readonly mailService: MailService,
   ) {}
 
-  @OnEvent('password.reset', { async: true }) // Runs in the background
-  async handleAccountLockedEvent({auth, generatedPassword}: {auth: Auth, generatedPassword: string}) {
-    const { email, user } = auth;
+  @OnEvent('password.forgot', { async: true }) // Runs in the background
+  async handleForgotPasswordEvent(auth: Auth, generatedPassword: string){
+    console.log("auth details in event listener:", auth); // Debugging log
  
     // 3. Prepare the link
     const context: PasswordResetEmailContext = {
-      firstName: user.firstName,
-      email: email,
-      generatedPassword: generatedPassword,
+      firstName: auth.user.firstName,
+      email: auth.email,
+      temporaryPassword: generatedPassword,
+      supportEmail: process.env.SUPPORT_EMAIL || 'support@example.com',
     };
 
+    console.log("Email context for password reset:", context); // Debugging log
+
     // 4. Dispatch Email
-    await this.mailService.sendPasswordResetEmail(email, context);
-    this.logger.log(`Password reset email dispatched to: ${email}`);
+    await this.mailService.sendPasswordResetEmail(auth.email, context);
+    this.logger.log(`Password reset email dispatched to: ${auth.email}`);
   }
 
 }

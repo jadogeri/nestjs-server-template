@@ -327,7 +327,7 @@ export class AuthService {
     return this.passwordManagementService;
   }
 
-  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<any> {
     return this.passwordManagementService.forgotPassword(forgotPasswordDto.email);
   }
   

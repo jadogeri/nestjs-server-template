@@ -20,7 +20,8 @@ export interface AccountLockedEmailContext extends BaseEmailContext {
 
 export interface PasswordResetEmailContext extends BaseEmailContext {
   email: string;
-  generatedPassword: string;
+  temporaryPassword: string;
+  supportEmail: string;
 }
 
 // A union type for your reusable sendEmail method

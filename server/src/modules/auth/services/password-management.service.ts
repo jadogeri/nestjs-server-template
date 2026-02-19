@@ -35,9 +35,12 @@ export class PasswordManagementService implements PasswordManagementServiceInter
       const hashedPassword = await this.hashingService.hash(generatedPassword);
 
       // update the auth record with the new hashed password
-      const updatedAuth = await this.authRepository.update(auth.id, { password: hashedPassword });
+      await this.authRepository.update(auth.id, { password: hashedPassword });
+        const updatedAuth = await this.authRepository.findOne({ where: { id: auth.id }, relations: ['user'] });
 
-       this.eventEmitter.emit('password.reset', { auth: updatedAuth, generatedPassword });
+        console.log("Updated auth record after password reset:", updatedAuth);
+      
+       this.eventEmitter.emit('password.forgot', updatedAuth, generatedPassword );
 
        return { message: 'A new password has been generated and sent to your email address.' };
 
