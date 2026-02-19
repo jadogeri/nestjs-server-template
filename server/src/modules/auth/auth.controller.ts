@@ -107,5 +107,6 @@ export class AuthController {
     //await this.authService.registration();
     return { message: 'Registration endpoint' };
   }
+  
 }
   
