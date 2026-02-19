@@ -14,7 +14,7 @@ class Server {
   static async bootstrap() {
     const app = await NestFactory.create(AppModule);
     const document = SwaggerModule.createDocument(app, swaggerConfig);
-
+    
     SwaggerModule.setup('docs', app, document ); // The documentation will be available at http://localhost:3000/docs
 
     app.useGlobalFilters(new TypeOrmExceptionFilter());

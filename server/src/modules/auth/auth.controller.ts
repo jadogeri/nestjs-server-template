@@ -30,6 +30,10 @@ import { ApiRefresh } from './decorators/api-refresh-token.decorator';
 import type { RefreshTokenPayload } from 'src/common/types/refresh-token-payload.type';
 import { RefreshToken } from '../../common/decorators/refresh-token.decorator';
 import { RefreshAuthGuard } from '../../core/security/guards/refresh-auth.guard';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ApiForgotPassword } from './decorators/api-forgot-password.decorator';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ApiResetPassword } from './decorators/api-reset-password.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -89,23 +93,27 @@ export class AuthController {
   @UseGuards(RefreshAuthGuard)
   async refreshToken(@RefreshToken() refreshToken: RefreshTokenPayload, @Req() req: Request,@Res({ passthrough: true }) res: Response): Promise<any> {
 
-  //@UseGuards(RefreshAuthGuard) // Use the custom refresh token guard
-  //async refreshToken(@Req() req: Request,@Res({ passthrough: true }) res: Response): Promise<any> {
-   // const jwtPayload = req.user as any; // The RefreshStrategy will attach the user payload here
-
-    //console.log("jwt payload: " + JSON.stringify(jwtPayload));
-    //return this.authService.refreshTokens(req, res, jwtPayload);
-  // Use the cookie name you set, e.g., 'refreshToken'
   console.log("Cookie received:", refreshToken);
   
   return this.authService.refreshToken( refreshToken, res);
     
   }
 
-  @Post('registration')
-  async registration(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    //await this.authService.registration();
-    return { message: 'Registration endpoint' };
+
+  @Post('forgot-password')
+  @ApiForgotPassword()
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    console.log('Received forgot password request:', forgotPasswordDto);
+    return this.authService.forgotPassword(forgotPasswordDto);
   }
+
+  @Post('reset-password')
+  @ApiResetPassword() // The custom decorator
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+
+    console.log('Received reset password request:', resetPasswordDto);
+    return this.authService.resetPassword(resetPasswordDto);
+  }
+    
+
 }
-  
