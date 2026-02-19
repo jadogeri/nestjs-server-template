@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsUserEmail } from '../../../common/decorators/validators/is-email.decorator'; 
 import { IsSecuredPassword } from '../../../common/decorators/validators/is-secured-password.decorator';
-import { IsMatch } from 'src/common/decorators/validators/is-match.decorator';
+import { IsMatch } from '../../../common/decorators/validators/is-match.decorator';
 
 export class ResetPasswordDto {
 

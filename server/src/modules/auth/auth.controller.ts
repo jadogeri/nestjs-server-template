@@ -122,8 +122,9 @@ export class AuthController {
   @Post('reset-password')
   @ApiResetPassword() // The custom decorator
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+
     console.log('Received reset password request:', resetPasswordDto);
-    //return this.authService.resetPassword(resetPasswordDto);
+    return this.authService.resetPassword(resetPasswordDto);
   }
     
 

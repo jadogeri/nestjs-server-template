@@ -51,6 +51,7 @@ import { PasswordManagementServiceInterface } from './services/interfaces/passwo
 import { ProfilePayload } from 'src/common/interfaces/profile-payload.interface';
 import { StatusEnum } from 'src/common/enums/user-status.enum';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 
 @Service()
@@ -329,6 +330,10 @@ export class AuthService {
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<any> {
     return this.passwordManagementService.forgotPassword(forgotPasswordDto.email);
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void> {
+    return this.passwordManagementService.resetPassword(resetPasswordDto); 
   }
   
 }

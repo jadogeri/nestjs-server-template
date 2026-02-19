@@ -4,7 +4,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as handlebars from 'handlebars';
 import { Service } from '../../../common/decorators/service.decorator';
-import { WelcomeEmailContext, VerificationEmailContext, MailContext, BaseEmailContext, AccountLockedEmailContext, PasswordResetEmailContext } from './interfaces/mail-context.interface';
+import { WelcomeEmailContext, VerificationEmailContext, MailContext, BaseEmailContext, AccountLockedEmailContext, PasswordResetEmailContext, PasswordForgotEmailContext } from './interfaces/mail-context.interface';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 
 // Assuming these are imported from your interfaces file
@@ -82,13 +82,22 @@ export class MailService {
     return await this.sendEmail(email, 'locked-account', fullContext);
   }
 
+  async sendPasswordForgotEmail(email: string, context: PasswordForgotEmailContext) {
+    const fullContext: PasswordForgotEmailContext = {
+      ...this.getBaseContext(),
+      ...context,
+    };
+    console.log('Full context for password forgot email:', fullContext); // Debugging log
+    return await this.sendEmail(email, 'forgot-password', fullContext);
+  }
+
   async sendPasswordResetEmail(email: string, context: PasswordResetEmailContext) {
     const fullContext: PasswordResetEmailContext = {
       ...this.getBaseContext(),
       ...context,
     };
     console.log('Full context for password reset email:', fullContext); // Debugging log
-    return await this.sendEmail(email, 'forgot-password', fullContext);
+    return await this.sendEmail(email, 'reset-password', fullContext);
   }
 
 
