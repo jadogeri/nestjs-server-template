@@ -36,7 +36,8 @@ import { RegistrationServiceInterface } from './services/interfaces/registration
 import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
 import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
 import { CredentialServiceInterface } from './services/interfaces/credential-service.interface';
-import { AuthenticationEventListener } from 'src/core/infrastructure/mail/listener/authentication.listener';
+import { AuthenticationEventListener } from '../../core/infrastructure/mail/listener/authentication.listener';
+import { PasswordManagementEventListener } from '../../core/infrastructure/mail/listener/password-management.listener';
 
 
 @Module({
@@ -66,6 +67,7 @@ import { AuthenticationEventListener } from 'src/core/infrastructure/mail/listen
     },
     RegistrationEventListener,
     AuthenticationEventListener,
+    PasswordManagementEventListener,
     LocalStrategy,
     AccessTokenStrategy,
     RefreshTokenStrategy,
