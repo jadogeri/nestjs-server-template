@@ -48,10 +48,10 @@ import { RegistrationServiceInterface } from './services/interfaces/registration
 import { CredentialServiceInterface } from './services/interfaces/credential-service.interface';
 import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
 import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
-import { ProfilePayload } from 'src/common/interfaces/profile-payload.interface';
-import { StatusEnum } from 'src/common/enums/user-status.enum';
+
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { IdentityServiceInterface } from './services/interfaces/identity-service.interface';
 
 
 @Service()
@@ -77,6 +77,7 @@ export class AuthService {
     private readonly sessionService: SessionService,
     private readonly cookieService: CookieService,
     private readonly eventEmitter: EventEmitter2,
+    private readonly identityService: IdentityServiceInterface
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -192,72 +193,6 @@ export class AuthService {
     return await this.authRepository.delete(id);
   }
 
-  async verifyAccessToken(accessTokenPayload: AccessTokenPayload): Promise<AccessTokenPayload | null> {
-  const { userId, email } = accessTokenPayload;
-
-    const auth = await this.findOne({ where: { email: email }, relations: ['user', 'user.roles', 'user.roles.permissions'] });
-    console.log("AuthService: Verifying access token for email:", email);
-    if (!auth)  return null;
-   //  account status checks
-    if (!this.accessControlService.isUserActive(auth)) {
-      this.logger.warn(`Account for email ${email} is disabled.`);
-      return null;
-
-    }
-
-    this.logger.log(`Account for email ${email} is active.`);
-
-    const user = await this.userService.findById(userId);
-    if (!user){
-      this.logger.warn(`User not found with id: ${userId}`);
-      return null;
-    }
-    console.log("auth ==> ", auth);
-    if (auth.user.id !== userId) {
-      this.logger.warn(`User ID mismatch: token has ${userId} but auth record has ${auth.user.id}`);
-      return null;
-    }
-    console.log("JwtStrategy: Retrieved user from database:", accessTokenPayload.email);
-
-    return accessTokenPayload;
-}
-
-  async verifyRefreshToken(refreshTokenPayload: RefreshTokenPayload): Promise<RefreshTokenPayload | null> {
-  const { userId, sessionId} = refreshTokenPayload;
-  const auth  = await this.authRepository.findOne({ where: { user: { id: userId } } , relations: ['user'] });
-  const session = await this.sessionService.findOne(sessionId);
-  console.log("seesionId from token:", sessionId);
-  console.log("session ==> ", session);
-  console.log("AuthService: Verifying refresh token for user ID:", JSON.stringify(auth, null,4));
-  if (!auth) throw new UnauthorizedException('User not found for this token');
-  if (auth.user.id !== userId) throw new UnauthorizedException('Token user ID does not match auth record');
-  if (!session) throw new UnauthorizedException('Session not found for this token');
-  if (session.auth.id !== auth.id) throw new UnauthorizedException('Session does not belong to the user');
-  if (session.expiresAt < new Date()) throw new UnauthorizedException('Session has expired');
-
-  const isUserActive = this.accessControlService.isUserActive(auth);
-  if (!isUserActive) {
-    this.logger.warn(`Account for user ID ${userId} is disabled.`);
-    return null;  
-  }
-
-    this.logger.log(`Account for email ${auth.email} is active.`);
-
-    const user = await this.userService.findById(userId);
-    if (!user){
-      this.logger.warn(`User not found with id: ${userId}`);
-      return null;
-    }
-    console.log("auth ==> ", auth);
-    if (auth.user.id !== userId) {
-      this.logger.warn(`User ID mismatch: token has ${userId} but auth record has ${auth.user.id}`);
-      return null;
-    }
-    console.log("refresh token: Retrieved user from database:", refreshTokenPayload);
-
-    return refreshTokenPayload;
-}
-
   async findOne(options: FindOneOptions<Auth>): Promise<Auth | null> {    
     return await this.authRepository.findOne(options);
   }
@@ -280,6 +215,10 @@ export class AuthService {
 
   public getPasswordManagementService(): PasswordManagementServiceInterface {
     return this.passwordManagementService;
+  }
+
+  public getIdentityService(): IdentityServiceInterface {
+    return this.identityService;
   }
   
 }

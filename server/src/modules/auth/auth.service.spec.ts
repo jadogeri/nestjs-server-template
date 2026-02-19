@@ -24,6 +24,7 @@ import { RegistrationServiceInterface } from './services/interfaces/registration
 import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
 import { PasswordManagementServiceInterface } from './services/interfaces/password-management-service.interface';
 import { CredentialServiceInterface } from './services/interfaces/credential-service.interface';
+import { IdentityServiceInterface } from './services/interfaces/identity-service.interface';
 
 
 describe('AuthService', () => {
@@ -96,7 +97,11 @@ describe('AuthService', () => {
         {
           provide: RegistrationServiceInterface,
           useValue: { register: jest.fn(), verifyEmail: jest.fn(), resendVerification: jest.fn() },
-      },
+        },
+        {
+          provide: IdentityServiceInterface,
+          useValue: { verifyUser: jest.fn(), verifyRefreshToken: jest.fn(), verifyAccessToken: jest.fn() },
+        },
         
       ],
     }).compile();

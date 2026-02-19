@@ -43,7 +43,7 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'refresh-to
     this.logger.log(`Validating user in RefreshTokenStrategy using extracted payload: `);
     this.logger.debug(refreshTokenPayload);
 
-    const jwtUser = await this.authService.verifyRefreshToken(refreshTokenPayload);
+    const jwtUser = await this.authService.getIdentityService().verifyRefreshToken(refreshTokenPayload);
     if (!jwtUser) {
       this.logger.warn(`JWT validation failed for refresh token: ${JSON.stringify(refreshTokenPayload)}`);
       return null;

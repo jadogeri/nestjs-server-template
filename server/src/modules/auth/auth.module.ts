@@ -38,6 +38,8 @@ import { PasswordManagementServiceInterface } from './services/interfaces/passwo
 import { CredentialServiceInterface } from './services/interfaces/credential-service.interface';
 import { AuthenticationEventListener } from '../../core/infrastructure/mail/listener/authentication.listener';
 import { PasswordManagementEventListener } from '../../core/infrastructure/mail/listener/password-management.listener';
+import { IdentityServiceInterface } from './services/interfaces/identity-service.interface';
+import { IdentityService } from './services/identity.service';
 
 
 @Module({
@@ -64,6 +66,10 @@ import { PasswordManagementEventListener } from '../../core/infrastructure/mail/
     {
       provide: PasswordManagementServiceInterface,
       useClass: PasswordManagementService,
+    },
+    {
+      provide: IdentityServiceInterface,
+      useClass: IdentityService,
     },
     RegistrationEventListener,
     AuthenticationEventListener,
