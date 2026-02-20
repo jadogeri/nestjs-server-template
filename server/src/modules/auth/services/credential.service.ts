@@ -75,6 +75,16 @@ export class CredentialService implements CredentialServiceInterface {
         };  
     }
   async logout(res: Response<any, Record<string, any>>, refreshTokenPayload: RefreshTokenPayload): Promise<any> {
+    // A. Extract sessionId from the refreshTokenPayload
+    // B. Delete the session from the database using the sessionId if it exists if it does not exist, it means the token is already invalidated, so we can just proceed to clear the cookie and return success
+    // B.1. If session exists, delete it and proceed to clear cookie and return success
+    // B.2. If session does not exist, log a warning but still proceed to clear cookie and return success (idempotent logout)
+    // Note: We do not need to worry about blacklisting the refresh token here because we are using a hashed version in the database. Once the session is deleted, the hashed token is also removed, so even if someone tries to reuse the old refresh token, it won't find a matching hash in the database and will be rejected.
+    // If user has multiple sessions, only the session corresponding to the provided refresh token will be deleted, allowing other sessions to remain active. This is a more user-friendly approach as it does not force logout from all devices when one device logs out.
+    // C. Clear the refresh token cookie
+    // D. Optionally, emit an event for logout
+    // E. Return a response indicating successful logout
+
     const { userId, sessionId } = refreshTokenPayload;
     console.log("Attempting to refresh token for userId:", userId, "sessionId:", sessionId);
     //const auth = await this.authRepository.findOne({ where: { user: { id: userId } }, relations: ['user'] }); 
