@@ -105,6 +105,16 @@ export class AuthController {
     console.log('Received reset password request:', resetPasswordDto);
     return this.authService.resetPassword(resetPasswordDto);
   }
+
+  
+  @Post('logout')
+  @UseGuards(AccessAuthGuard)
+  async logout(@AccessToken() accessTokenPayload: AccessTokenPayload): Promise<any> {
+    console.log("AuthController: Fetching logout status...");
+    console.log(accessTokenPayload);
+    return {message:"logout successful", code: 200};
+  }
+
     
 
 }
