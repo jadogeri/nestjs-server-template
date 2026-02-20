@@ -133,8 +133,8 @@ export class AuthService {
   }
 
 
-  async logout(res: Response<any, Record<string, any>>, accessTokenPayload: AccessTokenPayload): Promise<any> {
-    return await this.credentialService.logout(res, accessTokenPayload);
+  async logout(res: Response<any, Record<string, any>>, refreshTokenPayload: RefreshTokenPayload): Promise<any> {
+    return await this.credentialService.logout(res, refreshTokenPayload);
   }
       
   

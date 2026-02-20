@@ -110,11 +110,11 @@ export class AuthController {
   
   @Post('logout')
   @ApiLogout()
-  @UseGuards(AccessAuthGuard)
-  async logout(@AccessToken() accessTokenPayload: AccessTokenPayload, @Res({ passthrough: true }) res: Response): Promise<any> {
+ @UseGuards(RefreshAuthGuard)  
+ async logout(@RefreshToken() refreshToken: RefreshTokenPayload, @Res({ passthrough: true }) res: Response): Promise<any> {
     console.log("AuthController: Fetching logout status...");
-    console.log(accessTokenPayload);
-    return await this.authService.logout(res, accessTokenPayload);
+    console.log(refreshToken);
+    return await this.authService.logout(res, refreshToken);
   }   
 
 }

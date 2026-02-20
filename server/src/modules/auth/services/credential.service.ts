@@ -74,8 +74,9 @@ export class CredentialService implements CredentialServiceInterface {
             sessionId: sessionId // Return it if needed by the client
         };  
     }
-  async logout(res: Response<any, Record<string, any>>, accessTokenPayload: AccessTokenPayload): Promise<any> {
-        const { sessionId } = accessTokenPayload;
+  async logout(res: Response<any, Record<string, any>>, refreshTokenPayload: RefreshTokenPayload): Promise<any> {
+        const { sessionId } = refreshTokenPayload;
+      
         return {success: true, message: 'Logout successful'};
     }
   async refreshToken(refreshTokenPayload: RefreshTokenPayload, res: Response<any, Record<string, any>>): Promise<any> { 
