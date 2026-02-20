@@ -11,5 +11,4 @@ export abstract class CredentialServiceInterface {
 
     abstract refreshToken(refreshTokenPayload: RefreshTokenPayload, res: Response<any, Record<string, any>>): Promise<any>;
 
-    abstract verifyUser(email: string, password: string): Promise<UserPayload | null>;
 }
