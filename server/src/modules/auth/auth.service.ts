@@ -30,7 +30,7 @@ import { UserPayload } from '../../common/interfaces/user-payload.interface';
 import { PayloadMapperService } from './payload-mapper.service';
 import { Request, Response } from 'express';
 import { FindOneOptions } from 'typeorm';
-import { RefreshTokenPayload } from 'src/common/types/refresh-token-payload.type';
+import { RefreshTokenPayload } from '../../common/types/refresh-token-payload.type';
 import { RegistrationServiceInterface } from './services/interfaces/registration-service.interface';
 import { CredentialServiceInterface } from './services/interfaces/credential-service.interface';
 import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
@@ -39,14 +39,11 @@ import { PasswordManagementServiceInterface } from './services/interfaces/passwo
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { IdentityServiceInterface } from './services/interfaces/identity-service.interface';
-import { AccessTokenPayload } from 'src/common/types/access-token-payload.type';
+import { AccessTokenPayload } from '../../common/types/access-token-payload.type';
 
 
 @Service()
 export class AuthService {
-  logout(arg0: null, accessTokenPayload: AccessTokenPayload): any {
-    throw new Error('Method not implemented.');
-  }
 
   private readonly logger = new Logger(AuthService.name);
 
@@ -134,5 +131,11 @@ export class AuthService {
   public getIdentityService(): IdentityServiceInterface {
     return this.identityService;
   }
+
+
+  async logout(res: Response<any, Record<string, any>>, accessTokenPayload: AccessTokenPayload): Promise<any> {
+    return await this.credentialService.logout(res, accessTokenPayload);
+  }
+      
   
 }

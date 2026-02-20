@@ -1,26 +1,25 @@
 import { applyDecorators, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiCookieAuth } from '@nestjs/swagger';
 
+/**
+ * Decorator for the Logout endpoint.
+ * Ensures Swagger documentation reflects that the 'refresh-token' cookie is required to clear the session.
+ */
 export function ApiLogout() {
   return applyDecorators(
     HttpCode(HttpStatus.OK),
-    ApiBearerAuth(),
+    ApiCookieAuth('refresh-token'), // Matches the cookie name used in your ApiRefresh template
     ApiOperation({ 
-      summary: 'Log out user',
-      description: 'Invalidates the current session or clears the authentication cookie.' 
+      summary: 'Logout user',
+      description: 'Invalidates the session by clearing the refresh token cookie.' 
     }),
     ApiResponse({
       status: 200,
-      description: 'Successfully logged out.',
-      schema: {
-        example: {
-          message: 'Logged out successfully'
-        }
-      }
+      description: 'Successfully logged out. Cookies cleared.'
     }),
     ApiResponse({ 
       status: 401, 
-      description: 'Unauthorized. No active session found.' 
+      description: 'Unauthorized - No active session found.' 
     })
   );
 }

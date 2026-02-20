@@ -18,6 +18,7 @@ import { UserService } from "src/modules/user/user.service";
 import { ConfigService } from "@nestjs/config";
 import { PayloadMapperService } from "../payload-mapper.service";
 import { UpdateSessionDto } from "../../../modules/session/dto/update-session.dto";
+import { AccessTokenPayload } from "../../../common/types/access-token-payload.type";
 
 
 @Service()
@@ -73,7 +74,8 @@ export class CredentialService implements CredentialServiceInterface {
             sessionId: sessionId // Return it if needed by the client
         };  
     }
-  async logout(res: Response<any, Record<string, any>>, userPayload: UserPayload): Promise<any> {
+  async logout(res: Response<any, Record<string, any>>, accessTokenPayload: AccessTokenPayload): Promise<any> {
+        const { sessionId } = accessTokenPayload;
         return {success: true, message: 'Logout successful'};
     }
   async refreshToken(refreshTokenPayload: RefreshTokenPayload, res: Response<any, Record<string, any>>): Promise<any> { 
