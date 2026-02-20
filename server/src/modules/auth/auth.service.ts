@@ -39,10 +39,14 @@ import { PasswordManagementServiceInterface } from './services/interfaces/passwo
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { IdentityServiceInterface } from './services/interfaces/identity-service.interface';
+import { AccessTokenPayload } from 'src/common/types/access-token-payload.type';
 
 
 @Service()
 export class AuthService {
+  logout(arg0: null, accessTokenPayload: AccessTokenPayload): any {
+    throw new Error('Method not implemented.');
+  }
 
   private readonly logger = new Logger(AuthService.name);
 

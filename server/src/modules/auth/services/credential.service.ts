@@ -73,8 +73,8 @@ export class CredentialService implements CredentialServiceInterface {
             sessionId: sessionId // Return it if needed by the client
         };  
     }
-    logout(token: string): Promise<void> {
-        throw new Error("Method not implemented.");
+  async logout(res: Response<any, Record<string, any>>, userPayload: UserPayload): Promise<any> {
+        return {success: true, message: 'Logout successful'};
     }
   async refreshToken(refreshTokenPayload: RefreshTokenPayload, res: Response<any, Record<string, any>>): Promise<any> { 
     const { userId, sessionId } = refreshTokenPayload;

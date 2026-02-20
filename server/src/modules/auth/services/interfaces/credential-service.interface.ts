@@ -6,7 +6,7 @@ export abstract class CredentialServiceInterface {
 
     abstract login(res: Response<any, Record<string, any>>, userPayload: UserPayload): Promise<any>;
 
-    abstract logout(token: string): Promise<void> ;
+    abstract logout(res: Response<any, Record<string, any>>, userPayload: UserPayload): Promise<any>;
 
     abstract refreshToken(refreshTokenPayload: RefreshTokenPayload, res: Response<any, Record<string, any>>): Promise<any>;
 
