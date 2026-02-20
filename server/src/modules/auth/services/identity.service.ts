@@ -14,11 +14,15 @@ import { AccessTokenPayload } from "src/common/types/access-token-payload.type";
 import { RefreshTokenPayload } from "../../../common/types/refresh-token-payload.type";
 import { UserService } from "../../../modules/user/user.service";
 import { SessionService } from "../../../modules/session/session.service";
+import { UserPayload } from "src/common/interfaces/user-payload.interface";
+import { ConfigService } from "@nestjs/config/dist/config.service";
+import { PayloadMapperService } from "../payload-mapper.service";
 
 @Service()
 export class IdentityService implements IdentityServiceInterface {
 
     private logger = new Logger(IdentityService.name);
+    private readonly MAX_FAILED_LOGIN_ATTEMPTS = 4;
 
       
       constructor(
@@ -28,12 +32,61 @@ export class IdentityService implements IdentityServiceInterface {
           private readonly eventEmitter: EventEmitter2, // For emitting events
           private readonly accessControlService: AccessControlService, // For checking user status
           private readonly userService: UserService,
-          private readonly sessionService: SessionService
-      ){ }
+          private readonly sessionService: SessionService,
+          private readonly configService: ConfigService,
+          private readonly payloadMapperService: PayloadMapperService
+      ) { 
+      }
+  async verifyUser(email: string, password: string): Promise< UserPayload | null> {
+      const auth = await this.authRepository.findByEmail(email);
+      if (!auth) throw new UnauthorizedException('Invalid credentials provided - auth record not found');  
+      console.log("auth record found for email:", auth);
 
-    async verifyUser(): Promise<any> {
-        throw new Error("Method not implemented.");
-    }
+      const isVerified = this.accessControlService.isUserVerified(auth);
+      if (!isVerified) throw new ForbiddenException('Account not verified, please verify your email before logging in');
+      if (auth.status === StatusEnum.LOCKED) throw new ForbiddenException('Account is locked, use forget account to access account');
+      
+      const isMatch = await this.hashingService.compare(password, auth.password);
+      if (!isMatch) {
+        auth.failedLoginAttempts = auth.failedLoginAttempts + 1;
+        if(auth.failedLoginAttempts >= this.MAX_FAILED_LOGIN_ATTEMPTS){
+          auth.status = StatusEnum.LOCKED;
+          auth.isEnabled = false; 
+          await this.authRepository.update(auth.id, auth);
+
+          //sendEmail("locked-account",recipient )
+           this.eventEmitter.emit('account.locked', auth);
+
+
+          this.logger.warn(`Account is locked due to too many failed login attempts. Use forget account to access account: ${email}`);
+          throw new ForbiddenException('Account is locked due to too many failed login attempts. Use forget account to access account');
+
+        }else{
+          await this.authRepository.update(auth.id, { failedLoginAttempts: auth.failedLoginAttempts });
+          throw new UnauthorizedException('Invalid credentials provided - password mismatch');
+
+        }
+
+      }
+      if (auth.failedLoginAttempts > 0) {
+        await this.authRepository.update(auth.id, { failedLoginAttempts: 0 });
+      }
+
+
+      // ALWAYS use the service so the pepper logic stays identical
+      console.log(`Verifying user with email: ${email}`);
+      console.log("password provided:", password);
+      console.log("stored password hash:", auth.password);
+      const pepper = this.configService.get<string>('HASH_PEPPER') || '';
+      console.log("Using pepper:", pepper ? 'Yes' : 'No');
+
+      const user = await this.userService.findOne({ where: { id: auth.user.id }, relations: ['roles', 'roles.permissions'] });
+      if (!user) throw new UnauthorizedException('User profile not found');
+
+      return this.payloadMapperService.toUserPayload(user, email);
+
+  }
+
   async verifyAccessToken(accessTokenPayload: AccessTokenPayload): Promise<AccessTokenPayload | null> {
   const { userId, email } = accessTokenPayload;
 

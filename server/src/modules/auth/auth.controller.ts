@@ -34,6 +34,7 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ApiForgotPassword } from './decorators/api-forgot-password.decorator';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ApiResetPassword } from './decorators/api-reset-password.decorator';
+import { ApiLogout } from './decorators/api-logout.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -105,6 +106,15 @@ export class AuthController {
     console.log('Received reset password request:', resetPasswordDto);
     return this.authService.resetPassword(resetPasswordDto);
   }
-    
+
+  
+  @Post('logout')
+  @ApiLogout()
+ @UseGuards(RefreshAuthGuard)  
+ async logout(@RefreshToken() refreshToken: RefreshTokenPayload, @Res({ passthrough: true }) res: Response): Promise<any> {
+    console.log("AuthController: Fetching logout status...");
+    console.log(refreshToken);
+    return await this.authService.logout(res, refreshToken);
+  }   
 
 }

@@ -18,6 +18,7 @@ import { UserService } from "src/modules/user/user.service";
 import { ConfigService } from "@nestjs/config";
 import { PayloadMapperService } from "../payload-mapper.service";
 import { UpdateSessionDto } from "../../../modules/session/dto/update-session.dto";
+import { AccessTokenPayload } from "../../../common/types/access-token-payload.type";
 
 
 @Service()
@@ -73,9 +74,55 @@ export class CredentialService implements CredentialServiceInterface {
             sessionId: sessionId // Return it if needed by the client
         };  
     }
-    logout(token: string): Promise<void> {
-        throw new Error("Method not implemented.");
+  async logout(res: Response<any, Record<string, any>>, refreshTokenPayload: RefreshTokenPayload): Promise<any> {
+    // A. Extract sessionId from the refreshTokenPayload
+    // B. Delete the session from the database using the sessionId if it exists if it does not exist, it means the token is already invalidated, so we can just proceed to clear the cookie and return success
+    // B.1. If session exists, delete it and proceed to clear cookie and return success
+    // B.2. If session does not exist, log a warning but still proceed to clear cookie and return success (idempotent logout)
+    // Note: We do not need to worry about blacklisting the refresh token here because we are using a hashed version in the database. Once the session is deleted, the hashed token is also removed, so even if someone tries to reuse the old refresh token, it won't find a matching hash in the database and will be rejected.
+    // If user has multiple sessions, only the session corresponding to the provided refresh token will be deleted, allowing other sessions to remain active. This is a more user-friendly approach as it does not force logout from all devices when one device logs out.
+    // C. Clear the refresh token cookie
+    // D. Optionally, emit an event for logout
+    // E. Return a response indicating successful logout
+
+    const { userId, sessionId } = refreshTokenPayload;
+    console.log("Attempting to refresh token for userId:", userId, "sessionId:", sessionId);
+    //const auth = await this.authRepository.findOne({ where: { user: { id: userId } }, relations: ['user'] }); 
+    //create user payload from auth
+    const auth = await this.authRepository.findOne({ where: { user: { id: userId } }, relations: ['user', 'user.roles', 'user.roles.permissions'] });
+    if (!auth?.user) {
+      this.logger.warn(`Auth or User not found for userId: ${userId}`);
+      throw new UnauthorizedException('User not found for token refresh');
     }
+    const userPayload = this.payloadMapperService.toUserPayload(auth.user, auth.email);
+
+    // B. Generate tokens, passing the sessionId so it can be embedded in the payload
+    const data = await this.tokenService.generateAuthTokens(userPayload, sessionId); 
+    
+    // C. Hash the refresh token
+    const hashedRefreshToken = await this.hashingService.hash(data.refreshToken);
+
+
+    // D. Create the session in DB using our pre-generated ID
+    // Ensure your Session entity/DTO accepts 'id' or 'sessionId'
+    const updateSessionDto : UpdateSessionDto = { 
+        refreshTokenHash: hashedRefreshToken,
+        expiresAt: new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)), // Example: 7 days expiry
+    };
+    console.log("Creating session with DTO:", updateSessionDto);
+    const session = await this.sessionService.update(sessionId, updateSessionDto);
+    console.log("Created session with pre-generated ID:", session);
+
+    // E. Set Cookie
+    await this.cookieService.updateRefreshToken(res, data.refreshToken);
+
+    return {
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+      userId: userPayload.userId,
+      sessionId: sessionId // Return it if needed by the client
+    };  
+  }
   async refreshToken(refreshTokenPayload: RefreshTokenPayload, res: Response<any, Record<string, any>>): Promise<any> { 
     const { userId, sessionId } = refreshTokenPayload;
     console.log("Attempting to refresh token for userId:", userId, "sessionId:", sessionId);
@@ -115,57 +162,5 @@ export class CredentialService implements CredentialServiceInterface {
       sessionId: sessionId // Return it if needed by the client
     };  
   }
-
-
-  async verifyUser(email: string, password: string): Promise<UserPayload | null> {
-      const auth = await this.authRepository.findByEmail(email);
-      if (!auth) throw new UnauthorizedException('Invalid credentials provided - auth record not found');  
-      console.log("auth record found for email:", auth);
-
-      const isVerified = this.accessControlService.isUserVerified(auth);
-      if (!isVerified) throw new ForbiddenException('Account not verified, please verify your email before logging in');
-      if (auth.status === StatusEnum.LOCKED) throw new ForbiddenException('Account is locked, use forget account to access account');
-      
-      const isMatch = await this.hashingService.compare(password, auth.password);
-      if (!isMatch) {
-        auth.failedLoginAttempts = auth.failedLoginAttempts + 1;
-        if(auth.failedLoginAttempts >= this.MAX_FAILED_LOGIN_ATTEMPTS){
-          auth.status = StatusEnum.LOCKED;
-          auth.isEnabled = false; 
-          await this.authRepository.update(auth.id, auth);
-
-          //sendEmail("locked-account",recipient )
-           this.eventEmitter.emit('account.locked', auth);
-
-
-          this.logger.warn(`Account is locked due to too many failed login attempts. Use forget account to access account: ${email}`);
-          throw new ForbiddenException('Account is locked due to too many failed login attempts. Use forget account to access account');
-
-        }else{
-          await this.authRepository.update(auth.id, { failedLoginAttempts: auth.failedLoginAttempts });
-          throw new UnauthorizedException('Invalid credentials provided - password mismatch');
-
-        }
-
-      }
-      if (auth.failedLoginAttempts > 0) {
-        await this.authRepository.update(auth.id, { failedLoginAttempts: 0 });
-      }
-
-
-      // ALWAYS use the service so the pepper logic stays identical
-      console.log(`Verifying user with email: ${email}`);
-      console.log("password provided:", password);
-      console.log("stored password hash:", auth.password);
-      const pepper = this.configService.get<string>('HASH_PEPPER') || '';
-      console.log("Using pepper:", pepper ? 'Yes' : 'No');
-
-      const user = await this.userService.findOne({ where: { id: auth.user.id }, relations: ['roles', 'roles.permissions'] });
-      if (!user) throw new UnauthorizedException('User profile not found');
-
-      return this.payloadMapperService.toUserPayload(user, email);
-
-  }
-
 
 }
