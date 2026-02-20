@@ -31,9 +31,6 @@ import { PayloadMapperService } from './payload-mapper.service';
 import { Request, Response } from 'express';
 import { FindOneOptions } from 'typeorm';
 import { RefreshTokenPayload } from 'src/common/types/refresh-token-payload.type';
-import { CreateSessionDto } from '../session/dto/create-session.dto';
-import { UpdateSessionDto } from '../session/dto/update-session.dto';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { RegistrationServiceInterface } from './services/interfaces/registration-service.interface';
 import { CredentialServiceInterface } from './services/interfaces/credential-service.interface';
 import { AccountManagementServiceInterface } from './services/interfaces/account-management-service.interface';
@@ -52,20 +49,10 @@ export class AuthService {
   constructor(
     private readonly registrationSercive: RegistrationServiceInterface, 
     private readonly credentialService: CredentialServiceInterface,
-    private readonly session: SessionService,
     private readonly passwordManagementService: PasswordManagementServiceInterface,
     private readonly account: AccountManagementServiceInterface,
     private readonly authRepository: AuthRepository,
-    private readonly hashingService: HashingService,
-    private readonly tokenService: TokenService,
-    private readonly mailService: MailService, 
-    private readonly configService: ConfigService,
-    private readonly accessControlService: AccessControlService,
-    private readonly userService: UserService,
-    private readonly payloadMapperService: PayloadMapperService,
-    private readonly sessionService: SessionService,
-    private readonly cookieService: CookieService,
-    private readonly eventEmitter: EventEmitter2,
+
     private readonly identityService: IdentityServiceInterface
   ) {}
 
@@ -88,80 +75,14 @@ export class AuthService {
   }
 
   async login(res: Response<any, Record<string, any>>, userPayload: UserPayload): Promise<any> {
-   // A. Generate a unique Session ID immediately
-    const sessionId = randomUUID();
-    console.log("Generated session ID:", sessionId);
 
-    // B. Generate tokens, passing the sessionId so it can be embedded in the payload
-    const data = await this.tokenService.generateAuthTokens(userPayload, sessionId); 
-    
-    // C. Hash the refresh token
-    const hashedRefreshToken = await this.hashingService.hash(data.refreshToken);
+    return await this.credentialService.login(res, userPayload);
 
-    const auth = await this.authRepository.findOne({ where: { user: { id: userPayload.userId } } });
-    if (!auth) throw new UnauthorizedException('User not found for token generation');
-    
+  };  
 
-    // D. Create the session in DB using our pre-generated ID
-    // Ensure your Session entity/DTO accepts 'id' or 'sessionId'
-    const createSessionDto : CreateSessionDto = { 
-        refreshTokenHash: hashedRefreshToken,
-        id: sessionId, // Use the same ID for the session record
-        expiresAt: new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)), // Example: 7 days expiry
-        auth: auth
-    };
-    console.log("Creating session with DTO:", createSessionDto);
-    const session = await this.sessionService.create(createSessionDto);
-    console.log("Created session with pre-generated ID:", session);
+  async refreshToken(refreshTokenPayload: RefreshTokenPayload, res: Response<any, Record<string, any>>): Promise<any> { 
 
-    // E. Set Cookie
-    await this.cookieService.createRefreshToken(res, data.refreshToken);
-
-    return {
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
-        userId: userPayload.userId,
-        sessionId: sessionId // Return it if needed by the client
-    };  }
-
-    async refreshToken(refreshTokenPayload: RefreshTokenPayload, res: Response<any, Record<string, any>>): Promise<any> { 
-    const { userId, sessionId } = refreshTokenPayload;
-    console.log("Attempting to refresh token for userId:", userId, "sessionId:", sessionId);
-    //const auth = await this.authRepository.findOne({ where: { user: { id: userId } }, relations: ['user'] }); 
-    //create user payload from auth
-    const auth = await this.authRepository.findOne({ where: { user: { id: userId } }, relations: ['user', 'user.roles', 'user.roles.permissions'] });
-    if (!auth?.user) {
-      this.logger.warn(`Auth or User not found for userId: ${userId}`);
-      throw new UnauthorizedException('User not found for token refresh');
-    }
-    const userPayload = this.payloadMapperService.toUserPayload(auth.user, auth.email);
-
-    // B. Generate tokens, passing the sessionId so it can be embedded in the payload
-    const data = await this.tokenService.generateAuthTokens(userPayload, sessionId); 
-    
-    // C. Hash the refresh token
-    const hashedRefreshToken = await this.hashingService.hash(data.refreshToken);
-
-
-    // D. Create the session in DB using our pre-generated ID
-    // Ensure your Session entity/DTO accepts 'id' or 'sessionId'
-    const updateSessionDto : UpdateSessionDto = { 
-        refreshTokenHash: hashedRefreshToken,
-        expiresAt: new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)), // Example: 7 days expiry
-    };
-    console.log("Creating session with DTO:", updateSessionDto);
-    const session = await this.sessionService.update(sessionId, updateSessionDto);
-    console.log("Created session with pre-generated ID:", session);
-
-    // E. Set Cookie
-    await this.cookieService.updateRefreshToken(res, data.refreshToken);
-
-    return {
-      accessToken: data.accessToken,
-      refreshToken: data.refreshToken,
-      userId: userPayload.userId,
-      sessionId: sessionId // Return it if needed by the client
-    };  
+    return await this.credentialService.refreshToken(refreshTokenPayload, res);
   }
 
 

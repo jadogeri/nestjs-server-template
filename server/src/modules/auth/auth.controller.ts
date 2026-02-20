@@ -39,19 +39,15 @@ import { ApiResetPassword } from './decorators/api-reset-password.decorator';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-
   @Post('register')
   @ApiRegisterUser()
   async register(@Body() registerDto: RegisterDto) {
-    console.log('Received registration data:', registerDto);
     return this.authService.register(registerDto);
   }
-
 
   @Get('verify-email')
   @ApiVerifyEmail()
   async verifyEmail(@Query(TokenValidationPipe)  verifyEmailDto: VerifyEmailDto) {
-    console.log('Received email verification token:', verifyEmailDto.token);
     const verificationToken = verifyEmailDto.token; 
 
     return await this.authService.verifyEmail(verificationToken);
@@ -61,10 +57,7 @@ export class AuthController {
   @Post('login')
   @ApiLogin()
   @UseGuards(LocalAuthGuard)
-  async login(
-    @User() user: UserPayload,
-    @Res({ passthrough: true }) res: Response
-  ): Promise<any> {
+  async login( @User() user: UserPayload, @Res({ passthrough: true }) res: Response  ): Promise<any> {
 
     return await this.authService.login(res, user);
   }
@@ -77,7 +70,6 @@ export class AuthController {
     console.log(accessTokenPayload);
     return accessTokenPayload;
   }
-
 
   @Post('resend-verification')
   @ApiResendVerificationEmail()
@@ -98,7 +90,6 @@ export class AuthController {
   return this.authService.refreshToken( refreshToken, res);
     
   }
-
 
   @Post('forgot-password')
   @ApiForgotPassword()

@@ -17,6 +17,7 @@ import { AccessControlService } from "src/core/security/access-control/access-co
 import { UserService } from "src/modules/user/user.service";
 import { ConfigService } from "@nestjs/config";
 import { PayloadMapperService } from "../payload-mapper.service";
+import { UpdateSessionDto } from "../../../modules/session/dto/update-session.dto";
 
 
 @Service()
@@ -75,9 +76,45 @@ export class CredentialService implements CredentialServiceInterface {
     logout(token: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
-    refreshToken(refreshTokenPayload: RefreshTokenPayload, res: Response<any, Record<string, any>>): Promise<any> {
-        throw new Error("Method not implemented.");
-    }     
+  async refreshToken(refreshTokenPayload: RefreshTokenPayload, res: Response<any, Record<string, any>>): Promise<any> { 
+    const { userId, sessionId } = refreshTokenPayload;
+    console.log("Attempting to refresh token for userId:", userId, "sessionId:", sessionId);
+    //const auth = await this.authRepository.findOne({ where: { user: { id: userId } }, relations: ['user'] }); 
+    //create user payload from auth
+    const auth = await this.authRepository.findOne({ where: { user: { id: userId } }, relations: ['user', 'user.roles', 'user.roles.permissions'] });
+    if (!auth?.user) {
+      this.logger.warn(`Auth or User not found for userId: ${userId}`);
+      throw new UnauthorizedException('User not found for token refresh');
+    }
+    const userPayload = this.payloadMapperService.toUserPayload(auth.user, auth.email);
+
+    // B. Generate tokens, passing the sessionId so it can be embedded in the payload
+    const data = await this.tokenService.generateAuthTokens(userPayload, sessionId); 
+    
+    // C. Hash the refresh token
+    const hashedRefreshToken = await this.hashingService.hash(data.refreshToken);
+
+
+    // D. Create the session in DB using our pre-generated ID
+    // Ensure your Session entity/DTO accepts 'id' or 'sessionId'
+    const updateSessionDto : UpdateSessionDto = { 
+        refreshTokenHash: hashedRefreshToken,
+        expiresAt: new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)), // Example: 7 days expiry
+    };
+    console.log("Creating session with DTO:", updateSessionDto);
+    const session = await this.sessionService.update(sessionId, updateSessionDto);
+    console.log("Created session with pre-generated ID:", session);
+
+    // E. Set Cookie
+    await this.cookieService.updateRefreshToken(res, data.refreshToken);
+
+    return {
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+      userId: userPayload.userId,
+      sessionId: sessionId // Return it if needed by the client
+    };  
+  }
 
 
   async verifyUser(email: string, password: string): Promise<UserPayload | null> {

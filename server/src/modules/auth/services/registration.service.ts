@@ -11,8 +11,6 @@ import { RegistrationServiceInterface } from "./interfaces/registration-service.
 import { AuthRepository } from "../auth.repository";
 import { TokenService } from "../../../core/security/token/token.service";
 import { HashingService } from "../../../core/security/hashing/interfaces/hashing.service";
-import { ConfigService } from "@nestjs/config/dist/config.service";
-import { MailService } from "../../../core/infrastructure/mail/mail.service";
 import { Profile } from "src/modules/profile/entities/profile.entity";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { UserNotFoundException } from "src/common/exceptions/user-not-found.exception";
@@ -34,44 +32,31 @@ export class RegistrationService implements RegistrationServiceInterface {
   async register(registerDto: RegisterDto): Promise<any> {
     
     const { email, password, firstName, lastName, dateOfBirth } = registerDto;    
-    try{
-      const existingAuth = await this.authRepository.findOne({ where: { email } });
-      if (existingAuth) {
-        throw new ConflictException(`Email address "${email}" has already been registered.`);
-      }
-      const userPayload : User = UserGeneratorUtil.generate({ firstName, lastName, dateOfBirth });
-      const hashedPassword = await this.hashingService.hash(password);    
-      const authPayload : Auth = AuthGeneratorUtil.generate({ email, password: hashedPassword });
-      authPayload.user = userPayload; // Cascading will handle the user creation
+    const existingAuth = await this.authRepository.findOne({ where: { email } });
+    if (existingAuth) throw new ConflictException(`Email address "${email}" has already been registered.`);
+    
+    const userPayload : User = UserGeneratorUtil.generate({ firstName, lastName, dateOfBirth });
+    const hashedPassword = await this.hashingService.hash(password);    
+    const authPayload : Auth = AuthGeneratorUtil.generate({ email, password: hashedPassword });
+    authPayload.user = userPayload; // Cascading will handle the user creation
 
-      const profilePayload : Profile = ProfileGeneratorUtil.generate(); // You can pass necessary data if needed      
-      userPayload.profile = profilePayload; // Assign the profile to the user
+    const profilePayload : Profile = ProfileGeneratorUtil.generate(); // You can pass necessary data if needed      
+    userPayload.profile = profilePayload; // Assign the profile to the user
 
-      const savedAuth = await this.authRepository.create(authPayload);  
-      
-      const auth =  await this.authRepository.findOne({
-        where: { id: savedAuth.id }, relations: ['user' , 'user.roles'] 
-      });
+    const savedAuth = await this.authRepository.create(authPayload);  
+    
+    const auth =  await this.authRepository.findOne({
+      where: { id: savedAuth.id }, relations: ['user' , 'user.roles'] 
+    });
 
-      if (!auth?.user) throw new NotFoundException('User account creation failed.');
+    if (!auth?.user) throw new NotFoundException('User account creation failed.');
 
-      // CALL THE HELPER
-      //await this.sendVerificationProcess(auth);
-      this.eventEmitter.emit('user.register', auth);
+    this.eventEmitter.emit('user.register', auth);
 
-      const result = { message: 'Registration successful! Please check your email to verify your account.' };
-      this.eventEmitter.emit('user.verify', auth);
-      return result;
-
-    } catch (error: unknown) {
-      if (error instanceof TokenExpiredError) {
-        this.logger.error('Error verifying email token:', error.message);
-        throw new GoneException('Verification link expired. Please request a new one.');
-
-      }
-      this.logger.error('Error verifying email token:', error instanceof Error ? error.message : error);
-      throw new BadRequestException('Invalid verification token.');
-    }
+    const result = { message: 'Registration successful! Please check your email to verify your account.' };
+    this.eventEmitter.emit('user.verify', auth);
+    return result;
+  
   }
 
   async verifyEmail(token: string): Promise<any> {
