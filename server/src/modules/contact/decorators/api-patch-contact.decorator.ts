@@ -2,8 +2,7 @@ import { applyDecorators, HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { UpdateContactDto } from '../dto/update-contact.dto';
 import { Contact } from '../entities/contact.entity';
-import { BearerAuthResponses } from 'src/common/decorators/bearer-auth-responses.decorator';
-import { use } from 'passport';
+import { BearerAuthResponses } from '../../../common/decorators/bearer-auth-responses.decorator';
 
 export function ApiPatchContact() {
   return applyDecorators(

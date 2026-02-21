@@ -1,7 +1,7 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 
-import { BearerAuthResponses } from 'src/common/decorators/bearer-auth-responses.decorator';
+import { BearerAuthResponses } from '../../../common/decorators/bearer-auth-responses.decorator';
 
 export function ApiDeleteContact() {
   return applyDecorators(
