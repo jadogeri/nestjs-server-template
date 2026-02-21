@@ -6,7 +6,7 @@ import { IsCountry } from '../decorators/validators/is-country.decorator';
 import { IsZipCode } from '../decorators/validators/is-zip-code.decorator';
 
 
-export abstract class Location extends BaseEntity{
+export abstract class Location {
     @Column({ nullable: true })
     @IsAddress()
     address: string;
