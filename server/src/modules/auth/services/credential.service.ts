@@ -74,54 +74,45 @@ export class CredentialService implements CredentialServiceInterface {
             sessionId: sessionId // Return it if needed by the client
         };  
     }
+/**
+ export const logoutUser = asyncHandler(async (req: Request, res : Response) => {
+   
+  const {token} :IUserAuthorized = req.body
+  console.log("token==================", token)
+  if(!token){ 
+    errorBroadcaster(res,400,"field token is mandatory");
+  } 
+  const authenticatedUser = await authService.getByToken(token)
+  if(!authenticatedUser){
+    res.status(401).json({ message: "Already logged out" });
+  }
+  //remove auth from Auth Collection
+  
+  let logoutAuth : IAuth = {
+    token : token
+  }
+  await authService.remove(logoutAuth)
+
+
+  
+  res.status(200).json({ message: "logout the user" });
+});
+
+ */
   async logout(res: Response<any, Record<string, any>>, refreshTokenPayload: RefreshTokenPayload): Promise<any> {
-    // A. Extract sessionId from the refreshTokenPayload
-    // B. Delete the session from the database using the sessionId if it exists if it does not exist, it means the token is already invalidated, so we can just proceed to clear the cookie and return success
-    // B.1. If session exists, delete it and proceed to clear cookie and return success
-    // B.2. If session does not exist, log a warning but still proceed to clear cookie and return success (idempotent logout)
-    // Note: We do not need to worry about blacklisting the refresh token here because we are using a hashed version in the database. Once the session is deleted, the hashed token is also removed, so even if someone tries to reuse the old refresh token, it won't find a matching hash in the database and will be rejected.
-    // If user has multiple sessions, only the session corresponding to the provided refresh token will be deleted, allowing other sessions to remain active. This is a more user-friendly approach as it does not force logout from all devices when one device logs out.
-    // C. Clear the refresh token cookie
-    // D. Optionally, emit an event for logout
-    // E. Return a response indicating successful logout
 
     const { userId, sessionId } = refreshTokenPayload;
-    console.log("Attempting to refresh token for userId:", userId, "sessionId:", sessionId);
-    //const auth = await this.authRepository.findOne({ where: { user: { id: userId } }, relations: ['user'] }); 
-    //create user payload from auth
-    const auth = await this.authRepository.findOne({ where: { user: { id: userId } }, relations: ['user', 'user.roles', 'user.roles.permissions'] });
-    if (!auth?.user) {
-      this.logger.warn(`Auth or User not found for userId: ${userId}`);
-      throw new UnauthorizedException('User not found for token refresh');
-    }
-    const userPayload = this.payloadMapperService.toUserPayload(auth.user, auth.email);
 
-    // B. Generate tokens, passing the sessionId so it can be embedded in the payload
-    const data = await this.tokenService.generateAuthTokens(userPayload, sessionId); 
+    const isCookieDeleted = await this.cookieService.deleteRefreshToken(res);
+
+    if (!isCookieDeleted) throw new Error(`Failed to delete refresh token cookie for user ID ${userId} during logout.`);
     
-    // C. Hash the refresh token
-    const hashedRefreshToken = await this.hashingService.hash(data.refreshToken);
+    const result = await this.sessionService.remove(sessionId);
 
+    if (result.affected === 0) throw new Error(`No session found with ID ${sessionId} for user ID ${userId} during logout. It may have already been invalidated.`);
 
-    // D. Create the session in DB using our pre-generated ID
-    // Ensure your Session entity/DTO accepts 'id' or 'sessionId'
-    const updateSessionDto : UpdateSessionDto = { 
-        refreshTokenHash: hashedRefreshToken,
-        expiresAt: new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)), // Example: 7 days expiry
-    };
-    console.log("Creating session with DTO:", updateSessionDto);
-    const session = await this.sessionService.update(sessionId, updateSessionDto);
-    console.log("Created session with pre-generated ID:", session);
+    return { message: 'Logout successful', userId, sessionId };
 
-    // E. Set Cookie
-    await this.cookieService.updateRefreshToken(res, data.refreshToken);
-
-    return {
-      accessToken: data.accessToken,
-      refreshToken: data.refreshToken,
-      userId: userPayload.userId,
-      sessionId: sessionId // Return it if needed by the client
-    };  
   }
   async refreshToken(refreshTokenPayload: RefreshTokenPayload, res: Response<any, Record<string, any>>): Promise<any> { 
     const { userId, sessionId } = refreshTokenPayload;

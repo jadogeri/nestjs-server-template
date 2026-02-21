@@ -114,6 +114,7 @@ export class AuthController {
  async logout(@RefreshToken() refreshToken: RefreshTokenPayload, @Res({ passthrough: true }) res: Response): Promise<any> {
     console.log("AuthController: Fetching logout status...");
     console.log(refreshToken);
+    //return { message: 'Logout successful', refreshToken }; // Placeholder response, replace with actual logout logic
     return await this.authService.logout(res, refreshToken);
   }   
 
