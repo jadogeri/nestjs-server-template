@@ -1,35 +1,51 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
+import { ApiPostContact } from './decorators/api-post-contact.decorator';
+import { ApiPatchContact } from './decorators/api-patch-contact.decorator';
+import { ApiDeleteContact } from './decorators/api-delete-contact.decorator';
+import { ApiGetContact } from './decorators/api-get-contact.decorator';
+import { ApiGetContacts } from './decorators/api-get-contacts.decorator';
+import { AccessAuthGuard } from '../../core/security/guards/access-auth.guard';
+import type { AccessTokenPayload } from '../../common/types/access-token-payload.type';
+import { AccessToken } from '../../common/decorators/access-token.decorator';
+import { Contact } from './entities/contact.entity';
 
 @Controller('contact')
+@UseGuards(AccessAuthGuard)
 export class ContactController {
 
   constructor(private readonly contactService: ContactService) {}
 
   @Post()
-  create(@Body() createContactDto: CreateContactDto) {
-    return this.contactService.create(createContactDto);
+  @ApiPostContact()
+  async create(@AccessToken() accessTokenPayload: AccessTokenPayload, @Body() createContactDto: CreateContactDto) {
+    return await this.contactService.create(accessTokenPayload, createContactDto);
   }
 
   @Get()
-  findAll() {
-    return this.contactService.findAll();
+  @ApiGetContacts()
+  async findAll(@AccessToken() accessTokenPayload: AccessTokenPayload) {
+
+    return await this.contactService.findAll(accessTokenPayload);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.contactService.findOne(+id);
+  @ApiGetContact()  
+  async findOne(@AccessToken() accessTokenPayload: AccessTokenPayload, @Param('id') id: string) {
+    return await this.contactService.findOne(accessTokenPayload, +id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateContactDto: UpdateContactDto) {
-    return this.contactService.update(+id, updateContactDto);
+  @ApiPatchContact()  
+  async update(@AccessToken() accessTokenPayload: AccessTokenPayload , @Param('id') id: string, @Body() updateContactDto: UpdateContactDto) {
+    return await this.contactService.update(accessTokenPayload, +id, updateContactDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.contactService.remove(+id);
+  @ApiDeleteContact()
+  async remove(@AccessToken() accessTokenPayload: AccessTokenPayload, @Param('id') id: string) {
+    return await this.contactService.remove(accessTokenPayload, +id);
   }
 }
