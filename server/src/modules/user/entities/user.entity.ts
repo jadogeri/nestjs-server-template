@@ -1,12 +1,13 @@
 
 import { Expose } from 'class-transformer';
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger'; // Added import
 import { Profile } from '../../profile/entities/profile.entity';
 import { Auth } from '../../auth/entities/auth.entity';
 import { Role } from '../../role/entities/role.entity';
 import { Audit } from '../../../common/entities/audit.entity';
 import { IsName } from '../../../common/decorators/validators/is-name.decorator';
+import { Contact } from '../../contact/entities/contact.entity';
 
 
 @Entity("users")
@@ -54,5 +55,8 @@ export class User extends Audit {
     }
   })
   roles: Role[];
+
+  @OneToMany(() => Contact, (contact) => contact.user)
+  contacts: Contact[];
 
 }

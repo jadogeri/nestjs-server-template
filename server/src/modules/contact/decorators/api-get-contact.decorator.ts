@@ -13,28 +13,26 @@ export function ApiGetContact() {
     ApiResponse({ 
         status: HttpStatus.OK, 
         description: 'Found.', 
-        type: Contact,
-        schema: {   
-            examples: {  
-                example1: {
-                    summary: 'Example Contact',
-                    value: {
-                        id: 1,
-                        fullName: 'Jane Smith',
-                        phone: '+15559876543',
-                        email: 'jane.smith@example.com',
-                        fax: '+1-555-333-4444',
-                        location: {       
-                            address: '456 Elm St',
-                            city: 'Othertown',
-                            state: 'NY',
-                            zipcode: '67890',
-                            country: 'US'
-                        }
-                    }
+        type: Contact,     
+        example: {
+            summary: 'Created Contact',
+            value: {
+                id: 1,
+                userId: 1,
+                fullName: 'Jane Smith',
+                phone: '(123) 456-7890',
+                email: 'jane.smith@example.com',
+                fax: '(123) 456-7890',
+                location: {       
+                    address: '456 Elm St',
+                    city: 'Othertown',
+                    state: 'NY',
+                    zipcode: '67890',
+                    country: 'US'
                 }
             }
-        }   
+        }
+ 
     }),
     ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found.' }),
     ...BearerAuthResponses

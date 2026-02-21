@@ -14,7 +14,7 @@ export class LoginDto {
 
   @ApiProperty({
     description: 'The secure password for the account',
-    example: 'P@ssw0rd123!',
+    example: 'P@55W0rd',
     required: true,
     format: 'password', 
   })

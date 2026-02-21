@@ -1,20 +1,35 @@
-import { IsString, IsOptional, IsPhoneNumber, IsNotEmpty, Matches } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, Matches } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsFaxNumber } from '../../../common/decorators/validators/is-fax-number.decorator';
 import { IsUserEmail } from 'src/common/decorators/validators/is-email.decorator';
+import { Transform } from 'class-transformer';
+import { Location } from '../../../common/entities/location.entity';
+import { IsPhoneNumber } from '../../../common/decorators/validators/is-phone-number.decorator'; 
 
 export class CreateContactDto {
+
+ @ApiProperty({ example: 1 })
+ userId: number;
+
   @ApiProperty({ example: 'Jane Smith' })
   @IsString()
   @IsNotEmpty()
  @Matches(/^[a-zA-Z ]+$/, {
     message: 'fullName must only contain letters (a-z, A-Z) and spaces',
   })
+  @Transform(({ value }) => typeof value === 'string' ? value.trim() : value) 
   fullName: string;
 
-  @ApiPropertyOptional({ example: '+15559876543' })
+  @ApiPropertyOptional({ example: '(123) 456-7890' })
   @IsOptional()
-  @IsPhoneNumber()
+  @ApiPropertyOptional({ 
+    example: '(213) 373-4253', 
+    description: 'Supports US National, Dotted, and E.164 formats' 
+  })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @IsPhoneNumber() // Allows US local + Global E.164
   phone?: string | null;
 
   @ApiPropertyOptional({ example: 'jane@company.com' })
@@ -22,12 +37,12 @@ export class CreateContactDto {
   @IsUserEmail()
   email?: string | null;
 
-  @ApiPropertyOptional({ example: ['15551112222', '+1-555-333-4444'] })
+  @ApiPropertyOptional({ example: ['(123) 456-7890', '(987) 654-3210'] })
+  @Transform(({ value }) => typeof value === 'string' ? value.trim() : value) 
   @IsOptional()
   @IsFaxNumber()
   fax?: string | null;
 
-  
   @ApiPropertyOptional({ example: {
     address    : '456 Elm St',
     city        : 'Othertown',
@@ -37,4 +52,6 @@ export class CreateContactDto {
   }})
   @IsOptional()
   location: Location | null;
+
+  
 }

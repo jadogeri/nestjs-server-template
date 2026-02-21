@@ -17,8 +17,8 @@ export function ApiRegisterUser() {
             firstName: 'John', 
             lastName: 'Doe', 
             email: 'john.doe@example.com', 
-            dateOfBirth: '01-FEB-1990', 
-            password: "P@55W0rd" 
+            password: "P@55W0rd",
+            dateOfBirth: '01-FEB-1990'
           }
         }
       }

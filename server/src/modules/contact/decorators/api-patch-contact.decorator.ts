@@ -3,6 +3,7 @@ import { ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { UpdateContactDto } from '../dto/update-contact.dto';
 import { Contact } from '../entities/contact.entity';
 import { BearerAuthResponses } from 'src/common/decorators/bearer-auth-responses.decorator';
+import { use } from 'passport';
 
 export function ApiPatchContact() {
   return applyDecorators(
@@ -36,27 +37,25 @@ export function ApiPatchContact() {
         status: HttpStatus.OK, 
         description: 'Updated.', 
         type: Contact,
-        schema: {   
-            examples: {  
-                example1: {
-                    summary: 'Updated Contact',
-                    value: {
-                        id: 1,
-                        fullName: 'Jane Smith',
-                        phone: '+15559876543',
-                        email: 'jane.smith@example.com',
-                        fax: '+1-555-333-4444',
-                        location: {       
-                            address: '456 Elm St',
-                            city: 'Othertown',
-                            state: 'NY',
-                            zipcode: '67890',
-                            country: 'US'
-                        }
-                    }
+        example: {
+            summary: 'Updated Contact',
+            value: {
+                id: 1,
+                userId: 1,
+                fullName: 'Jane Smith',
+                phone: '+15559876543',
+                email: 'jane.smith@example.com',
+                fax: '+1-555-333-4444',
+                location: {       
+                    address: '456 Elm St',
+                    city: 'Othertown',
+                    state: 'NY',
+                    zipcode: '67890',
+                    country: 'US'
                 }
             }
-        }   
+        }
+
     }),
     ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found.' }),
     ...BearerAuthResponses

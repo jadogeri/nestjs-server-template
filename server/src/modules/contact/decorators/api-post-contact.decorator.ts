@@ -1,7 +1,6 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { CreateContactDto } from '../dto/create-contact.dto';
-import { UpdateContactDto } from '../dto/update-contact.dto';
 import { Contact } from '../entities/contact.entity';
 import { BearerAuthResponses } from 'src/common/decorators/bearer-auth-responses.decorator';
 
@@ -17,10 +16,11 @@ export function ApiPostContact() {
           example1: {
             summary: 'Standard Contact Creation',  
             value: {
+              userId: 1,
               fullName: 'Jane Smith',
-              phone: '+15559876543',
+              phone: '(123) 456-7890',
               email: 'jane.smith@example.com',
-              fax: '+1-555-333-4444',
+              fax: '(123) 456-7890',
               location: {       
                 address: '456 Elm St',
                 city: 'Othertown',
@@ -36,27 +36,25 @@ export function ApiPostContact() {
         status: HttpStatus.CREATED, 
         description: 'Contact created successfully.', 
         type: Contact,
-        schema: {   
-            examples: {  
-                example1: {
-                    summary: 'Created Contact',
-                    value: {
-                        id: 1,
-                        fullName: 'Jane Smith',
-                        phone: '+15559876543',
-                        email: 'jane.smith@example.com',
-                        fax: '+1-555-333-4444',
-                        location: {       
-                            address: '456 Elm St',
-                            city: 'Othertown',
-                            state: 'NY',
-                            zipcode: '67890',
-                            country: 'US'
-                        }
-                    }
+        example: {
+            summary: 'Created Contact',
+            value: {
+                id: 1,                
+                userId: 1,
+                fullName: 'Jane Smith',
+                phone: '(123) 456-7890',
+                email: 'jane.smith@example.com',
+                fax: '(123) 456-7890',
+                location: {       
+                    address: '456 Elm St',
+                    city: 'Othertown',
+                    state: 'NY',
+                    zipcode: '67890',
+                    country: 'US'
                 }
             }
-        }   
+        }
+
     }), // Return type
     ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request.' }),
     ...BearerAuthResponses
