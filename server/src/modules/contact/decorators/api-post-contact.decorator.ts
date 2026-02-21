@@ -16,7 +16,6 @@ export function ApiPostContact() {
           example1: {
             summary: 'Standard Contact Creation',  
             value: {
-              userId: 1,
               fullName: 'Jane Smith',
               phone: '(123) 456-7890',
               email: 'jane.smith@example.com',
