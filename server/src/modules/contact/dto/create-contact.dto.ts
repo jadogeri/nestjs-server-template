@@ -1,7 +1,7 @@
 import { IsString, IsOptional, IsNotEmpty, Matches, IsNumber } from 'class-validator';
 import { ApiHideProperty, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsFaxNumber } from '../../../common/decorators/validators/is-fax-number.decorator';
-import { IsUserEmail } from 'src/common/decorators/validators/is-email.decorator';
+import { IsUserEmail } from '../../../common/decorators/validators/is-email.decorator';
 import { Transform } from 'class-transformer';
 import { Location } from '../../../common/entities/location.entity';
 import { IsPhoneNumber } from '../../../common/decorators/validators/is-phone-number.decorator'; 
@@ -50,10 +50,10 @@ export class CreateContactDto {
   @IsOptional()
   location: Location | null;
 
-  @ApiHideProperty() // Hides from Swagger documentation
+  @ApiHideProperty() 
   @IsOptional()
   @IsNumber()
-  userId?: number; // Optional for creation, will be set from authenticated user context
+  userId?: number; 
 
   
 }
