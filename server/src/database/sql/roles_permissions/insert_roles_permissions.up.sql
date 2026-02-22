@@ -1,25 +1,28 @@
 -- Mapping Permissions to Roles
 -- This script uses subqueries to fetch IDs to ensure compatibility even if serial IDs vary.
 
--- 1. ADMIN: Full access to everything (*)
+---
+--- LOG: SCRIPT START
+---
+SELECT 'Script started at: ' || datetime('now', 'localtime') AS log_start;
+
+-- 1. SUPER USER: Full access to everything (*)
 INSERT INTO "roles_permissions" ("roleId", "permissionId")
 SELECT r.id, p.id
 FROM "roles" r, "permissions" p
-WHERE r.name = 'admin' AND p.action = '*'
+WHERE r.name = 'super user' AND p.action = '*' AND p.resource = '*'
 AND NOT EXISTS (
     SELECT 1 FROM "roles_permissions" rp 
     WHERE rp.roleId = r.id AND rp.permissionId = p.id
 );
 
--- 2. EDITOR: Full access to CONTACT and PROFILE, Read-only for others
+-- 2. ADMIN: Full access EXCEPT for sensitive management resources
 INSERT INTO "roles_permissions" ("roleId", "permissionId")
 SELECT r.id, p.id
 FROM "roles" r, "permissions" p
-WHERE r.name = 'editor' 
-AND (
-    (p.resource IN ('contact', 'profile') AND p.action = '*') OR
-    (p.resource IN ('user', 'role') AND p.action = 'read')
-)
+WHERE r.name = 'admin' 
+-- Exclude the sensitive resources from the Admin role
+AND p.resource NOT IN ('admin', 'permission')
 AND NOT EXISTS (
     SELECT 1 FROM "roles_permissions" rp 
     WHERE rp.roleId = r.id AND rp.permissionId = p.id
@@ -39,7 +42,22 @@ AND NOT EXISTS (
     WHERE rp.roleId = r.id AND rp.permissionId = p.id
 );
 
--- 4. VIEWER: Read-only access across the board
+-- 4. EDITOR: Full access to CONTACT and PROFILE, Read-only for others
+INSERT INTO "roles_permissions" ("roleId", "permissionId")
+SELECT r.id, p.id
+FROM "roles" r, "permissions" p
+WHERE r.name = 'editor' 
+AND (
+    (p.resource IN ('contact', 'profile') AND p.action = '*') OR
+    (p.resource IN ('user', 'role') AND p.action = 'read')
+)
+AND NOT EXISTS (
+    SELECT 1 FROM "roles_permissions" rp 
+    WHERE rp.roleId = r.id AND rp.permissionId = p.id
+);
+
+
+-- 5. VIEWER: Read-only access across the board
 INSERT INTO "roles_permissions" ("roleId", "permissionId")
 SELECT r.id, p.id
 FROM "roles" r, "permissions" p
@@ -49,13 +67,6 @@ AND NOT EXISTS (
     WHERE rp.roleId = r.id AND rp.permissionId = p.id
 );
 
--- 5. SUPER USER: All permissions except sensitive ADMIN and PERMISSION management
-INSERT INTO "roles_permissions" ("roleId", "permissionId")
-SELECT r.id, p.id
-FROM "roles" r, "permissions" p
-WHERE r.name = 'super user' 
-AND p.resource NOT IN ('admin', 'permission')
-AND NOT EXISTS (
-    SELECT 1 FROM "roles_permissions" rp 
-    WHERE rp.roleId = r.id AND rp.permissionId = p.id
-);
+--- LOG: SCRIPT END
+    ---
+SELECT 'Script ended at: ' || datetime('now', 'localtime') AS log_end;

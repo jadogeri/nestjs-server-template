@@ -1,6 +1,12 @@
+-- SUPER USER
+INSERT INTO "roles" ("name", "description")
+SELECT 'super user', 'Administrator with full system access'
+WHERE NOT EXISTS (SELECT 1 FROM "roles" WHERE "name" = 'super user');
+
+
 -- ADMIN
 INSERT INTO "roles" ("name", "description")
-SELECT 'admin', 'Administrator with full system access'
+SELECT 'admin', 'Administrator with elevated privileges'
 WHERE NOT EXISTS (SELECT 1 FROM "roles" WHERE "name" = 'admin');
 
 -- USER
@@ -23,7 +29,3 @@ INSERT INTO "roles" ("name", "description")
 SELECT 'viewer', 'Read-only access to the system'
 WHERE NOT EXISTS (SELECT 1 FROM "roles" WHERE "name" = 'viewer');
 
--- SUPER USER
-INSERT INTO "roles" ("name", "description")
-SELECT 'super user', 'Higher level user with elevated privileges'
-WHERE NOT EXISTS (SELECT 1 FROM "roles" WHERE "name" = 'super user');

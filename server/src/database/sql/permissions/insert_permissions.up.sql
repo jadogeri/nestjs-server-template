@@ -166,6 +166,27 @@ INSERT INTO "permissions" ("resource", "action", "description")
 SELECT 'permission', '*', 'Allows full access to permission management'
 WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'permission' AND "action" = '*');
 
+-- SESSION
+INSERT INTO "permissions" ("resource", "action", "description")
+SELECT 'session', 'create', 'Allows session creation'
+WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'session' AND "action" = 'create');
+
+INSERT INTO "permissions" ("resource", "action", "description")
+SELECT 'session', 'read', 'Allows viewing sessions'
+WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'session' AND "action" = 'read');
+
+INSERT INTO "permissions" ("resource", "action", "description")
+SELECT 'session', 'update', 'Allows updating sessions'
+WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'session' AND "action" = 'update');
+
+INSERT INTO "permissions" ("resource", "action", "description")
+SELECT 'session', 'delete', 'Allows deleting sessions'
+WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'session' AND "action" = 'delete');
+
+INSERT INTO "permissions" ("resource", "action", "description")
+SELECT 'session', '*', 'Full access to sessions'
+WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'session' AND "action" = '*');
+
 -- FULL ACCESS
 INSERT INTO "permissions" ("resource", "action", "description")
 SELECT '*', '*', 'Full system access'
