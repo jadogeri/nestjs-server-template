@@ -14,7 +14,7 @@ export class Profile extends BaseEntity{
     avatarUrl: string;
 
     @Column(() => Location) 
-    location: Location;
+    location: Location | null; // Make it nullable since not all profiles may have a location
 
     @Column({ nullable: true })
     website: string;
