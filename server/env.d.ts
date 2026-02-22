@@ -34,6 +34,13 @@ declare global {
             LOGO_URL: string;
             COMPANY: string;
             SUPPORT_EMAIL: string;
+            REFRESH_TOKEN_COOKIE_NAME: string;
+            ROOT_FIRST_NAME: string;
+            ROOT_LAST_NAME: string;
+            ROOT_DATE_OF_BIRTH: string;
+            ROOT_EMAIL: string;
+            ROOT_PASSWORD: string;
+            
         }
     }
 }

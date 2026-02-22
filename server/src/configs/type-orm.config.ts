@@ -4,7 +4,15 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 
 import dotenv from 'dotenv';
-import { TypeOrmPinoLogger } from '../common/logger/typeorm.logger';
+import UserSeeder from '../database/seeds/user.seeder';
+import ContactFactory from '../database/factories/contact.factory';
+import { Auth } from '../modules/auth/entities/auth.entity';
+import { Contact } from '../modules/contact/entities/contact.entity';
+import { User } from '../modules/user/entities/user.entity';
+import { Permission } from '../modules/permission/entities/permission.entity';
+import { Role } from '../modules/role/entities/role.entity';
+import { Profile } from '../modules/profile/entities/profile.entity';
+import { Session } from '../modules/session/entities/session.entity';
 
 
 dotenv.config();
@@ -16,19 +24,15 @@ const isProduction = nodeEnv === 'production';
 const databaseFile = isProduction ? process.env.DATABASE || "prodDB.sqlite" : 'devDB.sqlite';
 console.log("Using database file:", databaseFile);
 
-
-
 export const dataSourceOptions: TypeOrmModuleOptions & SeederOptions = {
   type: 'sqlite',
   database: databaseFile,
   // {ts,js} matches both source and compiled files
     // 🔍 Check these paths carefully!
-
-  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+  entities: [User, Contact, Auth, Role, Permission, Profile, Session], // Add your entities here],
   migrations: [__dirname + '/../database/migrations/*{.ts,.js}'],
-  subscribers: [__dirname + '/../database/subscribers/*{.ts,.js}'],
-  // seeds: [UserSeeder],
-  // factories: [UserFactory],
+  factories: [ContactFactory],
+  seeds: [UserSeeder],
   synchronize: !isProduction,
   logging: isProduction === false ? ["warn","query", "error", "schema"] : ["error"],
   //logger: new TypeOrmPinoLogger(), 
