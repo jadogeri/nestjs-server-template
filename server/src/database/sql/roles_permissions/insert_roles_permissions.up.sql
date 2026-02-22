@@ -6,23 +6,25 @@
 ---
 SELECT 'Script started at: ' || datetime('now', 'localtime') AS log_start;
 
--- 1. SUPER USER: Full access to everything (*)
+-- 1. SUPER USER: Only the "God Mode" wildcard
+-- This covers all resources and actions via logic, making specific links redundant
 INSERT INTO "roles_permissions" ("roleId", "permissionId")
 SELECT r.id, p.id
 FROM "roles" r, "permissions" p
-WHERE r.name = 'super user' AND p.action = '*' AND p.resource = '*'
+WHERE r.name = 'super user' 
+AND p.resource = '*' 
+AND p.action = '*'
 AND NOT EXISTS (
     SELECT 1 FROM "roles_permissions" rp 
     WHERE rp.roleId = r.id AND rp.permissionId = p.id
 );
 
--- 2. ADMIN: Full access EXCEPT for sensitive management resources
+-- 2. ADMIN: Specific resources only, excluding management and wildcards
 INSERT INTO "roles_permissions" ("roleId", "permissionId")
 SELECT r.id, p.id
 FROM "roles" r, "permissions" p
 WHERE r.name = 'admin' 
--- Exclude the sensitive resources from the Admin role
-AND p.resource NOT IN ('admin', 'permission')
+AND p.resource NOT IN ('*', 'admin', 'permission', 'role')
 AND NOT EXISTS (
     SELECT 1 FROM "roles_permissions" rp 
     WHERE rp.roleId = r.id AND rp.permissionId = p.id
