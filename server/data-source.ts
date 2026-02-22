@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import dataSourceOptions from './src/configs/type-orm.config';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
