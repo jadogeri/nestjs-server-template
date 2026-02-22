@@ -16,7 +16,6 @@ import { User } from '../../common/decorators/user.decorator';
 import { UserRole } from '../../common/enums/user-role.enum';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Permissions } from '../../common/decorators/permissions.decorator';
-import { PermissionString } from '../../common/types/permission-string.type';
 import { RolesGuard } from '../../core/security/guards/roles.guard';
 
 @Controller('contact')
