@@ -12,12 +12,12 @@ import type { AccessTokenPayload } from '../../common/types/access-token-payload
 import { AccessToken } from '../../common/decorators/access-token.decorator';
 import { Contact } from './entities/contact.entity';
 import { PermissionsGuard } from '../../core/security/guards/permissions.guard';
-import { User } from 'src/common/decorators/user.decorator';
-import { UserRole } from 'src/common/enums/user-role.enum';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Permissions } from 'src/common/decorators/permissions.decorator';
-import { PermissionString } from 'src/common/types/permission-string.type';
-import { RolesGuard } from 'src/core/security/guards/roles.guard';
+import { User } from '../../common/decorators/user.decorator';
+import { UserRole } from '../../common/enums/user-role.enum';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { Permissions } from '../../common/decorators/permissions.decorator';
+import { PermissionString } from '../../common/types/permission-string.type';
+import { RolesGuard } from '../../core/security/guards/roles.guard';
 
 @Controller('contact')
 @UseGuards(AccessAuthGuard )
