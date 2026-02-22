@@ -10,6 +10,7 @@ import { UserRole } from '../../common/enums/user-role.enum';
 import { StatusEnum } from '../../common/enums/user-status.enum';
 import { Role } from '../../modules/role/entities/role.entity';
 import dotenv from 'dotenv';
+import { Profile } from '../../modules/profile/entities/profile.entity';
 
 dotenv.config();
 
@@ -22,8 +23,11 @@ export default class UserSeeder implements Seeder {
     const contactRepository = dataSource.getRepository(Contact);
     const authRepository = dataSource.getRepository(Auth);
     const roleRepository = dataSource.getRepository(Role);
-    const contactFactory = factoryManager.get(Contact);
+    const profileRepository = dataSource.getRepository(Profile); // Added
     
+    const contactFactory = factoryManager.get(Contact);
+    const profileFactory = factoryManager.get(Profile); // Added
+        
     const configService = new ConfigService();
     const argons2Service: HashingService = new Argon2Service(configService);
 
@@ -93,7 +97,16 @@ export default class UserSeeder implements Seeder {
 
     console.log('Admin Auth & User created successfully with ID:', savedAdminUser.id);
 
-    // 5. Generate Contacts
+    // 5. Generate 1 Profile for Admin (New)
+    const existingProfile = await profileRepository.findOne({ where: { user: { id: savedAdminUser.id } } });
+    if (existingProfile === null) {
+      const adminProfile = await profileFactory.save({ user: savedAdminUser });
+      console.log(`Generated profile for admin user (ID: ${adminProfile.id})`);
+    }else{
+      console.log('Profile already exists for this user.');
+    }
+
+    // 6. Generate Contacts
     const contactsCount = await contactRepository.count({ where: { user: { id: savedAdminUser.id } } });
     if (contactsCount === 0) {
       // Use the Factory to generate 10 contacts linked to the new user

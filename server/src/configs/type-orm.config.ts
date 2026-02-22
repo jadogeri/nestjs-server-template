@@ -6,6 +6,9 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import dotenv from 'dotenv';
 import UserSeeder from '../database/seeds/user.seeder';
 import ContactFactory from '../database/factories/contact.factory';
+import ProfileFactory from '../database/factories/profile.factory';
+
+// 2. Entities
 import { Auth } from '../modules/auth/entities/auth.entity';
 import { Contact } from '../modules/contact/entities/contact.entity';
 import { User } from '../modules/user/entities/user.entity';
@@ -31,7 +34,7 @@ export const dataSourceOptions: TypeOrmModuleOptions & SeederOptions = {
     // 🔍 Check these paths carefully!
   entities: [User, Contact, Auth, Role, Permission, Profile, Session], // Add your entities here],
   migrations: [__dirname + '/../database/migrations/*{.ts,.js}'],
-  factories: [ContactFactory],
+  factories: [ContactFactory, ProfileFactory], // Add your factories here
   seeds: [UserSeeder],
   synchronize: !isProduction,
   logging: isProduction === false ? ["warn","query", "error", "schema"] : ["error"],
