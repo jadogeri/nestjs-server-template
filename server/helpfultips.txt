@@ -1,86 +1,4 @@
-export const loginUser = asyncHandler(async (req : Request, res: Response)  => {
 
-  const { email, password } : IUser = req.body;
-  console.log(email,password)
-  if (!email || !password) {
-    res.status(400);
-    throw new Error("All fields are mandatory!");
-  }
-
-  if(!isValidEmail(email)){
-    errorBroadcaster(res,400,"not a valid standard email address")
-  }
-
-  const user  = await userService.getByEmail(email);
-
-  if(user){
-
-    if(user.isEnabled === false){      
-      errorBroadcaster(res,423,"Account is locked, use forget account to access acount")
-    }
-
-    //compare password with hashedpassword 
-    if (user &&  await bcrypt.compare(password,user.password as string)) {
-
-      let payload = {
-        user: {
-          username: user.username as string , email: user.email as string , id: user._id ,
-        },
-      }
-      //post fix operator   knowing value cant be undefined
-      let secretKey  = process.env.JSON_WEB_TOKEN_SECRET! ;
-      const accessToken  =  jwt.sign( payload,secretKey as jwt.Secret,  { expiresIn: "30m" } );
-      //add token and id to auth 
-      const authUser : IAuth = {
-        id : user._id,
-        token : accessToken
-      }
-
-      const authenticatedUser = await authService.getById(user._id);
-      if(!authenticatedUser){
-
-        await authService.create(authUser);
-      }else{
-
-        await authService.update(authUser);;     
-      }
-
-      //if failed logins > 0, 
-      //reset to zero if account is not locked
-      if(user.failedLogins as number > 0){
-
-        const resetUser : IUser ={
-          failedLogins: 0
-        }
-
-        await userService.update(user._id, resetUser)
-      }
-        res.status(200).json({ accessToken }); 
-    }else{ 
-      user.failedLogins = user.failedLogins  as number + 1      
-      if(user.failedLogins === 3){
-
-        user.isEnabled = false;
-        await userService.update(user._id, user)
-              const recipient : Recipient = {
-                username : user.username,
-                email : user.email,
-                company : process.env.COMPANY
-              }
-        sendEmail("locked-account",recipient )
-        res.status(400).json("Account is locked beacause of too many failed login attempts. Use forget account to access acount");
-
-      }else{
-        await userService.update(user._id, user)    
-      }      
-      res.status(400).json({ message: "email or password is incorrect" });
-    }
-  }else{
-    res.status(400).json({ message: "email does not exist" });
-  }
-
-});
-  
 
 src/core/
 ├── infrastructure/             # Performance & External Services
@@ -98,3 +16,48 @@ src/core/
     ├── encryption/             # Hashing (Bcrypt) & Crypto utilities
     ├── helmet/                 # Security headers (XSS, Clickjacking)
     └── cors/                   # Cross-Origin Resource Sharing config
+
+
+In a professional NestJS application, task scheduling is used to handle "housekeeping," background processing, and time-sensitive business logic without blocking the main request-response cycle. 
+Medium
+Medium
+ +1
+Below is a comprehensive list of real-world examples categorized by their purpose:
+1. Data Maintenance & Cleanup
+Session/Token Cleanup: Deleting expired JWT tokens or session records to keep the database small and fast.
+Soft-Delete Purging: Permanently removing records that were "soft-deleted" more than 30 days ago to comply with GDPR or data retention policies.
+Log Rotation: Archiving or deleting application logs older than a specific timeframe to save disk space.
+Temporary File Removal: Deleting old PDF reports or uploaded images from a tmp/ folder after they have been processed or emailed. 
+Microsoft Learn
+Microsoft Learn
+ +4
+2. User Engagement & Notifications
+Subscription Reminders: Checking for users whose subscriptions expire in 3 days and sending a "Renewal Soon" email.
+Inactivity Alerts: Identifying users who haven't logged in for 30 days and sending a "We miss you" re-engagement email.
+Birthday/Anniversary Greetings: Running a daily task at 9:00 AM to send automated greetings based on user profile data.
+Newsletter Dispatch: Triggering the batch delivery of weekly newsletters during off-peak hours. 
+Medium
+Medium
+ +4
+3. Financial & Reporting Logic
+Daily Sales Reports: Aggregating the previous day's transactions at 1:00 AM and emailing a PDF summary to stakeholders.
+Invoice Generation: Automatically generating and sending monthly invoices on the 1st day of every month.
+Currency Rate Updates: Fetching the latest exchange rates from an external API every hour to keep pricing accurate.
+Payout Processing: Triggering a batch process to send accumulated funds to vendors or affiliates every Friday. 
+Reddit
+Reddit
+ +5
+4. System Integration & Syncing
+Inventory Sync: Pulling stock levels from a 3rd-party ERP (like SAP or Odoo) every 15 minutes to update an e-commerce storefront.
+Search Indexing: Re-indexing database content into Elasticsearch or Algolia every hour to ensure search results are up to date.
+Third-Party Webhook Retries: Identifying outgoing webhooks that failed and re-attempting them with exponential backoff. 
+Medium
+Medium
+ +5
+5. Infrastructure & Security
+Database Backups: Triggering a script to dump the database and upload it to S3/Cloud Storage every night.
+SSL Certificate Check: Checking the expiration date of managed certificates once a week and alerting DevOps if any are near expiry.
+Health Monitoring: Running a "heartbeat" check every 5 minutes to verify that critical internal services are responding. 
+OneUptime
+OneUptime
+ +2
