@@ -18,6 +18,7 @@ import { UserModule } from './modules/user/user.module';
 import dataSourceOptions from './configs/type-orm.config';
 import { pinoLoggerConfig } from './configs/pino.config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule/dist/schedule.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     RoleModule, 
     ContactModule, 
     PermissionModule,
+    ScheduleModule.forRoot(), // 2. Add this here
     EventEmitterModule.forRoot(),
     TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
     LoggerModule.forRoot(pinoLoggerConfig),
