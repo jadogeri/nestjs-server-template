@@ -3,14 +3,14 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Auth } from '../../../../modules/auth/entities/auth.entity';
-import { MailerService } from '@nestjs-modules/mailer';
+import { EventEmitter2 } from 'eventemitter2';
 
 @Injectable()
 export class GreetingService {
   constructor(
     @InjectRepository(Auth)
     private readonly authRepository: Repository<Auth>,
-    private readonly mailerService: MailerService,
+    private readonly eventEmitter: EventEmitter2, // For emitting events
   ) {}
 
   // Helper to format today's month/day for SQLite comparison
@@ -35,12 +35,8 @@ export class GreetingService {
       .getMany();
 
     for (const auth of birthdays) {
-      await this.mailerService.sendMail({
-        to: auth.email,
-        subject: `Happy Birthday, ${auth.user.firstName}! 🎂`,
-        template: 'birthday',
-        context: { name: auth.user.firstName, logoUrl: '...' },
-      });
+      console.log(`Emitting birthday event for ${auth.email}`);
+      this.eventEmitter.emit('greetings.birthday', auth);
     }
   }
 
@@ -58,15 +54,8 @@ export class GreetingService {
 
     for (const auth of anniversaries) {
       const joinYear = new Date(auth.user.createdAt).getFullYear();
-      await this.mailerService.sendMail({
-        to: auth.email,
-        subject: 'Happy Work Anniversary! 🎊',
-        template: 'anniversary',
-        context: { 
-          name: auth.user.firstName, 
-          yearsCount: year - joinYear 
-        },
-      });
+      this.eventEmitter.emit('greetings.anniversary', auth, year - joinYear);
     }
   }
 }
+

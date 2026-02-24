@@ -51,7 +51,7 @@ export class RegistrationService implements RegistrationServiceInterface {
 
     if (!auth?.user) throw new NotFoundException('User account creation failed.');
 
-    this.eventEmitter.emit('user.register', auth);
+    //this.eventEmitter.emit('user.register', auth);
 
     const result = { message: 'Registration successful! Please check your email to verify your account.' };
     this.eventEmitter.emit('user.verify', auth);
