@@ -9,6 +9,7 @@ import { swaggerConfig } from './configs/swagger.config';
 import { validationPipeConfig } from './configs/global-validation-pipe.config';
 import { TypeOrmExceptionFilter } from './common/filters/typeorm-exception.filter';
 import { Response, Request } from 'express';
+import { PaginationInterceptor } from './core/infrastructure/interceptors/pagination.interceptor';
 
 
 class Server {
@@ -32,7 +33,7 @@ class Server {
   // server.get('/', (req: Request, res: Response) => {
   //   res.send('Hello World!');
   // });
-
+  app.useGlobalInterceptors(new PaginationInterceptor());
 
     await app.listen(process.env.PORT ?? 3000);
   }
