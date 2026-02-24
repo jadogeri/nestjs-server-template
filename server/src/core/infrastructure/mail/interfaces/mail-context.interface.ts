@@ -26,5 +26,19 @@ export interface PasswordForgotEmailContext extends BaseEmailContext {
 
 export interface PasswordResetEmailContext extends BaseEmailContext {}
 
+export interface BirthdayEmailContext extends BaseEmailContext {}
+
+export interface AnniversaryEmailContext extends BaseEmailContext {
+  yearsCount: number;
+}
+
+
+
 // A union type for your reusable sendEmail method
-export type MailContext = WelcomeEmailContext | VerificationEmailContext | PasswordResetEmailContext | AccountLockedEmailContext;
+export type MailContext = 
+WelcomeEmailContext | 
+VerificationEmailContext | 
+PasswordResetEmailContext | 
+AccountLockedEmailContext | 
+BirthdayEmailContext |
+AnniversaryEmailContext;
