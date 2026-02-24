@@ -23,7 +23,7 @@ export class GreetingService {
     };
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_9AM)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async handleBirthdays() {
     const { month, day } = this.getTodayStrings();
 
