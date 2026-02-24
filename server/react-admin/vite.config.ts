@@ -10,5 +10,5 @@ export default defineConfig(({ mode }) => ({
   build: {
     sourcemap: mode === "development",
   },
-  base: "./",
+  base: "/admin/", // Ensure this matches the serveRoot in your NestJS config
 }));

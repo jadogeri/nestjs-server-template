@@ -10,9 +10,11 @@ import dataSourceOptions from './configs/type-orm.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { CoreModule } from './core/core.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'node:path';
 
 
-
+console.log("__dirname:", __dirname);
 
  @Module({
   imports: [
@@ -24,12 +26,23 @@ import { CoreModule } from './core/core.module';
     RoleModule, 
     ContactModule, 
     PermissionModule,
+        ServeStaticModule.forRoot({
+  // Use join with process.cwd() for the absolute path
+  rootPath: join(process.cwd(), '..','server', 'react-admin', 'dist'), 
+  
+  // The URL where your admin lives
+  serveRoot: '/admin', // This should match the base in your Vite config
+   // Don't exclude index.html, as it's needed for the admin panel to load
+   // Exclude other files if necessary, but ensure index.html is served
+   // exclude: ['/index.html'], // REMOVE this line entirely
+
+  // REMOVE the 'exclude' line entirely. 
+  // It is the cause of your PathError crashes.
+    exclude: ['/api*'], 
+    }),
+
     TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
     ConfigModule.forRoot({ isGlobal: true }),
-    // // Use the config you exported from adminjs-config.ts
-    // AdminModule.createAdminAsync({
-    //   useFactory: () => adminJsConfig,
-    // }),
   ],
 })
 

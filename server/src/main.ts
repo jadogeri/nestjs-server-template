@@ -8,6 +8,7 @@ import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
 import { swaggerConfig } from './configs/swagger.config';
 import { validationPipeConfig } from './configs/global-validation-pipe.config';
 import { TypeOrmExceptionFilter } from './common/filters/typeorm-exception.filter';
+import { Response, Request } from 'express';
 
 
 class Server {
@@ -18,10 +19,21 @@ class Server {
     
     SwaggerModule.setup('docs', app, document ); // The documentation will be available at http://localhost:3000/docs
 
+    app.setGlobalPrefix('api');
     app.useGlobalFilters(new TypeOrmExceptionFilter());
     app.useGlobalPipes(new ValidationPipe(validationPipeConfig));
 
     app.use(cookieParser()); // Add cookie parser middleware    
+    app.enableCors(); // Essential for frontend-to-backend communication
+
+     //const server = app.getHttpAdapter().getInstance();
+
+  // // 2. Define a raw route without a controller
+  // server.get('/', (req: Request, res: Response) => {
+  //   res.send('Hello World!');
+  // });
+
+
     await app.listen(process.env.PORT ?? 3000);
   }
 }
