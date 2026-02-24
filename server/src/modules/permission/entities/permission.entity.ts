@@ -3,6 +3,7 @@ import { Resource } from '../../../common/enums/resource.enum';
 import { Action } from '../../../common/enums/action.enum';
 import { Role } from '../../../modules/role/entities/role.entity';
 
+
 @Entity('permissions')
 @Unique(['resource', 'action']) // Composite unique constraint
 export class Permission extends BaseEntity {
