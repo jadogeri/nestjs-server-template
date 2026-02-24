@@ -1,6 +1,6 @@
 
 import { Expose } from 'class-transformer';
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, ManyToMany, JoinTable, OneToMany, ValueTransformer } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger'; // Added import
 import { Profile } from '../../profile/entities/profile.entity';
 import { Auth } from '../../auth/entities/auth.entity';
@@ -8,6 +8,22 @@ import { Role } from '../../role/entities/role.entity';
 import { Audit } from '../../../common/entities/audit.entity';
 import { IsName } from '../../../common/decorators/validators/is-name.decorator';
 import { Contact } from '../../contact/entities/contact.entity';
+import  moment from 'moment';
+
+export const DateTransformer: ValueTransformer = {
+  // When saving to SQLite: Convert Date object to 'YYYY-MM-DD' string
+  to: (value: Date | string) => {
+    if (!value) return value;
+    const date = typeof value === 'string' ? new Date(value) : value;
+    return date.toISOString().split('T')[0]; // Result: "1990-02-23"
+  },
+  // When reading from SQLite: Convert 'YYYY-MM-DD' string back to UTC Date object
+  from: (value: string) => {
+    if (!value) return value;
+    // Adding 'T00:00:00Z' forces JS to treat it as UTC Midnight
+    return new Date(`${value}T00:00:00Z`);
+  },
+};
 
 
 @Entity("users")
@@ -26,7 +42,7 @@ export class User extends Audit {
   @IsName('LastName')
   lastName: string;
 
-  @Column({ type: 'date', nullable: true })
+  @Column({ type: 'date', nullable: true, transformer: DateTransformer })
   dateOfBirth: Date;
   
   // Virtual Property

@@ -33,7 +33,7 @@ import { MailService } from './mail.service';
       }),
     }),
   ],
-  exports: [MailService],
+  exports: [MailService ],
   providers: [MailService], // <--- ADD THIS
 })
 export class MailModule {}

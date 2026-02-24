@@ -11,6 +11,7 @@ import { StatusEnum } from '../../common/enums/user-status.enum';
 import { Role } from '../../modules/role/entities/role.entity';
 import dotenv from 'dotenv';
 import { Profile } from '../../modules/profile/entities/profile.entity';
+import moment from 'moment';
 
 dotenv.config();
 
@@ -75,7 +76,7 @@ export default class UserSeeder implements Seeder {
     const adminUser = userRepository.create({
       firstName: rootFirstName,
       lastName: rootLastName,
-      dateOfBirth: new Date(rootDateOfBirth),
+      dateOfBirth: new Date(`${rootDateOfBirth}T00:00:00Z`),
       roles: [superUserRole],
     });
 
