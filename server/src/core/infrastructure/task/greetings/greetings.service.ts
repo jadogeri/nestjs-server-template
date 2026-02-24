@@ -25,6 +25,7 @@ export class GreetingService {
 
   @Cron(CronExpression.EVERY_10_SECONDS)
   async handleBirthdays() {
+    console.log('Birthday greeting task is currently active..................');
     const { month, day } = this.getTodayStrings();
 
     const birthdays = await this.authRepository.createQueryBuilder('auth')
@@ -33,6 +34,9 @@ export class GreetingService {
       .andWhere("strftime('%m', user.dateOfBirth) = :month", { month })
       .andWhere("strftime('%d', user.dateOfBirth) = :day", { day })
       .getMany();
+
+      console.log(`Found ${birthdays.length} birthdays today.`);
+      console.log('Birthday records:', birthdays.map(b => ({ email: b.email, name: b.user.firstName }))); 
 
     for (const auth of birthdays) {
       console.log(`Emitting birthday event for ${auth.email}`);
