@@ -23,7 +23,7 @@ export class GreetingService {
     };
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async handleBirthdays() {
     console.log('Birthday greeting task is currently active..................');
     const { month, day } = this.getTodayStrings();
