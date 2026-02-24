@@ -1,45 +1,38 @@
-// 1. NestJS & Third-Party Libs
-import { ConfigModule } from '@nestjs/config/dist/config.module';
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { LoggerModule } from 'nestjs-pino';
-
-// 2. Feature Modules (Your Business Logic)
-import { AuthModule } from './modules/auth/auth.module';
-import { ContactModule } from './modules/contact/contact.module';
-import { CoreModule } from './core/core.module';
-import { PermissionModule } from './modules/permission/permission.module';
+import { UserModule } from './modules/user/user.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { RoleModule } from './modules/role/role.module';
+import { ContactModule } from './modules/contact/contact.module';
+import { PermissionModule } from './modules/permission/permission.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { SessionModule } from './modules/session/session.module';
-import { UserModule } from './modules/user/user.module';
-
-// 3. Configurations
 import dataSourceOptions from './configs/type-orm.config';
-import { pinoLoggerConfig } from './configs/pino.config';
-import { EventEmitterModule } from '@nestjs/event-emitter';
-import { ScheduleModule } from '@nestjs/schedule/dist/schedule.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import { CoreModule } from './core/core.module';
 
-@Module({
+
+
+
+ @Module({
   imports: [
-    CoreModule, 
+    CoreModule,
     UserModule, 
-    SessionModule, 
     AuthModule, 
+    SessionModule, 
     ProfileModule, 
     RoleModule, 
     ContactModule, 
     PermissionModule,
-    ScheduleModule.forRoot(), // 2. Add this here
-    EventEmitterModule.forRoot(),
     TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
-    LoggerModule.forRoot(pinoLoggerConfig),
-    ConfigModule.forRoot({ isGlobal: true }),   
-
-  ],
-  controllers: [],
-  providers: [
-
+    ConfigModule.forRoot({ isGlobal: true }),
+    // // Use the config you exported from adminjs-config.ts
+    // AdminModule.createAdminAsync({
+    //   useFactory: () => adminJsConfig,
+    // }),
   ],
 })
+
 export class AppModule {}
+
+

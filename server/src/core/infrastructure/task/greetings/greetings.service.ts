@@ -3,7 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Auth } from '../../../../modules/auth/entities/auth.entity';
-import { EventEmitter2 } from 'eventemitter2';
+import { EventEmitter2 } from '@nestjs/event-emitter'; 
 
 @Injectable()
 export class GreetingService {
@@ -22,6 +22,7 @@ export class GreetingService {
       year: now.getFullYear(),
     };
   }
+  
 
   @Cron(CronExpression.EVERY_30_SECONDS)
   async handleBirthdays() {

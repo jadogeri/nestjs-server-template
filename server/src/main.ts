@@ -9,6 +9,7 @@ import { swaggerConfig } from './configs/swagger.config';
 import { validationPipeConfig } from './configs/global-validation-pipe.config';
 import { TypeOrmExceptionFilter } from './common/filters/typeorm-exception.filter';
 
+
 class Server {
 
   static async bootstrap() {
