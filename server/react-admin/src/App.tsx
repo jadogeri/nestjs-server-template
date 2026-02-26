@@ -63,3 +63,5 @@ export const App = () => (
         <Resource name="auth" list={ListGuesser} />
     </Admin>
 );
+
+console.log(" display app component", App);
