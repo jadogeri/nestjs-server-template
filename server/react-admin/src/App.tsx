@@ -10,6 +10,8 @@ import { clientSideDataProvider } from './ClientSideDataProvider.js';
 import { AuthList } from './features/auth/auth.list.js';
 import { AuthEdit } from './features/auth/auth.edit.js';
 import { AuthCreate } from './features/auth/auth.create.js';
+import { SessionList } from './features/session/session.list.js';
+import { SessionEdit } from './features/session/session.edit.js';
 
 export const App = () => (
     <Admin dataProvider={clientSideDataProvider}>
@@ -18,7 +20,7 @@ export const App = () => (
         <Resource name="role" list={ListGuesser} />
         <Resource name="contact" list={ListGuesser} />
         <Resource name="permission" list={ListGuesser} />
-        <Resource name="session" list={ListGuesser} />
+        <Resource name="session" list={SessionList} edit={SessionEdit} />
         <Resource name="auth" list={AuthList}  edit={AuthEdit} create={AuthCreate}/>
     </Admin>
 
