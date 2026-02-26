@@ -8,9 +8,7 @@ import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
 import { swaggerConfig } from './configs/swagger.config';
 import { validationPipeConfig } from './configs/global-validation-pipe.config';
 import { TypeOrmExceptionFilter } from './common/filters/typeorm-exception.filter';
-import { Response, Request } from 'express';
 import { PaginationInterceptor } from './core/infrastructure/interceptors/pagination.interceptor';
-
 
 class Server {
 

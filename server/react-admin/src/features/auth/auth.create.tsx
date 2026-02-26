@@ -10,12 +10,12 @@ const statusChoices = [
 ];
 
 export const AuthCreate = () => (
-  <Create>
+  <Create resource="auth/register" redirect="list">
     <SimpleForm>
-      <TextInput source="email" fullWidth />
-      <PasswordInput source="password" fullWidth />
-      <SelectInput source="status" choices={statusChoices} defaultValue="disabled" />
-      <BooleanInput source="isEnabled" defaultValue={true} />
+      <TextInput source="email" type="email" fullWidth required />
+      <PasswordInput source="password" fullWidth required />
+      <TextInput source="user.firstName" label="First Name" />
+      <TextInput source="user.lastName" label="Last Name" />
     </SimpleForm>
   </Create>
 );
