@@ -40,6 +40,7 @@ console.log("__dirname:", __dirname);
   // It is the cause of your PathError crashes.
     exclude: ['/api*'], 
     }),
+    
 
     TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
     ConfigModule.forRoot({ isGlobal: true }),

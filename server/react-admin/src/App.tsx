@@ -1,65 +1,44 @@
-// import { Admin } from "react-admin";
-// import { Layout } from "./Layout.js";
 
-// export const App = () => <Admin layout={Layout}></Admin>;
-/*
-import * as React from 'react';
-import { Admin, Resource, ListGuesser } from 'react-admin';
-import jsonServerProvider from 'ra-data-json-server'; // Example provider
-
-const dataProvider = jsonServerProvider('/api'); // Replace with your NestJS API endpoint
-
-export const App = () => (
-    <Admin dataProvider={dataProvider}>
-        <Resource name="user" list={ListGuesser} />
-        <Resource name="profile" list={ListGuesser} />
-        <Resource name="role" list={ListGuesser} />
-        <Resource name="contact" list={ListGuesser} />
-        <Resource name="permission" list={ListGuesser} />
-        <Resource name="session" list={ListGuesser} />
-        <Resource name="auth" list={ListGuesser} />
-    </Admin>
-);
-
-*/
 
 import * as React from 'react';
-import { Admin, Resource, ListGuesser } from 'react-admin';
+import { Admin, Resource, ListGuesser, EditGuesser, addRefreshAuthToDataProvider, addRefreshAuthToAuthProvider } from 'react-admin';
 import jsonServerProvider from 'ra-data-json-server';
+import { UserList } from './features/user/user.list.js';
+import { UserEdit } from './features/user/user.edit.js';
+import { UserCreate } from './features/user/user.create.js';
+import {  dataProvider } from './dataProvider.js';
+import { AuthList } from './features/auth/auth.list.js';
+import { AuthEdit } from './features/auth/auth.edit.js';
+import { AuthCreate } from './features/auth/auth.create.js';
+import { SessionList } from './features/session/session.list.js';
+import { SessionEdit } from './features/session/session.edit.js';
+import PeopleIcon from '@mui/icons-material/People'; // Useful for User list
+// Identity & Security
+import SecurityIcon from '@mui/icons-material/Security';      // For Auth
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // For Profile
+import ContactPhoneIcon from '@mui/icons-material/ContactPhone'; // For Contact
 
-const baseProvider = jsonServerProvider('/api');
+// Access Management
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount'; // For Role
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'; // For Permission
+import TimerIcon from '@mui/icons-material/Timer'; // For Session
+import { authProvider } from './authProvider.js';
+import { refreshAuth } from './utils/refresh-auth.util.js';
 
-const clientSideDataProvider = {
-    ...baseProvider,
-    getList: async (resource: any, params: any) => {
-        // 1. Fetch ALL data from the backend (no pagination params)
-        const { data: allData } = await baseProvider.getList(resource, {
-            pagination: { page: 1, perPage: 10000 }, // Fetch a large enough 'all'
-            sort: params.sort,
-            filter: params.filter,
-        });
+const appAuthProvider = addRefreshAuthToAuthProvider(authProvider, refreshAuth);
+const appDataProvider = addRefreshAuthToDataProvider(dataProvider, refreshAuth);
 
-        // 2. Perform frontend pagination (Slicing)
-        const { page, perPage } = params.pagination;
-        const start = (page - 1) * perPage;
-        const end = page * perPage;
-        const pagedData = allData.slice(start, end);
-
-        return {
-            data: pagedData,
-            total: allData.length,
-        };
-    },
-};
-
+    
 export const App = () => (
-    <Admin dataProvider={clientSideDataProvider}>
-        <Resource name="user" list={ListGuesser} />
-        <Resource name="profile" list={ListGuesser} />
-        <Resource name="role" list={ListGuesser} />
-        <Resource name="contact" list={ListGuesser} />
-        <Resource name="permission" list={ListGuesser} />
-        <Resource name="session" list={ListGuesser} />
-        <Resource name="auth" list={ListGuesser} />
+    <Admin dataProvider={appDataProvider} authProvider={appAuthProvider}>
+        <Resource name="user" list={UserList} edit={EditGuesser} create={UserCreate} icon={PeopleIcon}/>
+        <Resource name="profile" list={ListGuesser} icon={AccountCircleIcon}/>
+        <Resource name="role" list={ListGuesser} icon={SupervisorAccountIcon}/>
+        <Resource name="contact" list={ListGuesser} icon={ContactPhoneIcon}/>
+        <Resource name="permission" list={ListGuesser} icon={VerifiedUserIcon}/>
+        <Resource name="session" list={SessionList} edit={SessionEdit} icon={TimerIcon}/>
+        <Resource name="auth" list={ListGuesser}  edit={EditGuesser} create={AuthCreate} icon={SecurityIcon}/>
     </Admin>
+
 );
+
