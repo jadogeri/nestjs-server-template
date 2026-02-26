@@ -13,6 +13,7 @@ import { CoreModule } from './core/core.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'node:path';
 
+
 console.log("__dirname:", __dirname);
 
  @Module({
