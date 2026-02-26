@@ -1,5 +1,5 @@
 // 1. NestJS & Third-Party Libs
-import { Controller, Get, Post, Body, Req, Res, HttpCode, HttpStatus, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Res, HttpCode, HttpStatus, Query, UseGuards, Param } from '@nestjs/common';
 import type { Request, Response } from 'express';
 
 // 2. Services & Helpers (Logic Layer)
@@ -116,5 +116,16 @@ export class AuthController {
     console.log(refreshToken);
     return await this.authService.logout(res, refreshToken);
   }   
+
+    @Get()
+    findAll() {
+      return this.authService.findAll();
+    }
+  
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+      console.log(`AuthController: Fetching auth with ID ${id}...`);
+      return this.authService.findById(+id);
+    }
 
 }
