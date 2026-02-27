@@ -16,6 +16,7 @@ import { Permission } from '../modules/permission/entities/permission.entity';
 import { Role } from '../modules/role/entities/role.entity';
 import { Profile } from '../modules/profile/entities/profile.entity';
 import { Session } from '../modules/session/entities/session.entity';
+//import { TypeOrmPinoLogger } from '../common/logger/typeorm.logger';
 
 
 dotenv.config();
@@ -46,8 +47,7 @@ export const dataSourceOptions: TypeOrmModuleOptions & SeederOptions = {
   
   // Use 'formatted-console' for readable SQL in dev
   logger: "advanced-console", 
-  }
-  
+  }  
 
 
 export default dataSourceOptions;

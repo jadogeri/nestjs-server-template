@@ -12,6 +12,9 @@ import { ConfigModule } from '@nestjs/config';
 import { CoreModule } from './core/core.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'node:path';
+import { TypeOrmPinoLogger } from './common/logger/typeorm.logger';
+import { LoggerModule } from 'nestjs-pino/LoggerModule';
+import { pinoLoggerConfig } from './configs/pino.config';
 
 
 console.log("__dirname:", __dirname);
@@ -26,7 +29,7 @@ console.log("__dirname:", __dirname);
     RoleModule, 
     ContactModule, 
     PermissionModule,
-        ServeStaticModule.forRoot({
+    ServeStaticModule.forRoot({
   // Use join with process.cwd() for the absolute path
   rootPath: join(process.cwd(), '..','server', 'react-admin', 'dist'), 
   
@@ -39,10 +42,10 @@ console.log("__dirname:", __dirname);
   // REMOVE the 'exclude' line entirely. 
   // It is the cause of your PathError crashes.
     exclude: ['/api*'], 
-    }),
-    
-
+    }),    
+    LoggerModule.forRoot(pinoLoggerConfig),
     TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
+
     ConfigModule.forRoot({ isGlobal: true }),
   ],
 })
