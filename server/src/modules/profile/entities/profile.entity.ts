@@ -3,7 +3,7 @@ import { User } from "../../user/entities/user.entity";
 import { Location } from "../../../common/entities/location.entity";
 
 @Entity("profiles")
-export class Profile extends BaseEntity{
+export class Profile {
     @PrimaryGeneratedColumn()
     id: number;
 

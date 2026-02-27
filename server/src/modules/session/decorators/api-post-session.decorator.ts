@@ -3,7 +3,6 @@ import { ApiOperation, ApiParam, ApiResponse, ApiBody } from "@nestjs/swagger";
 import { BearerAuthResponses } from "../../../common/decorators/bearer-auth-responses.decorator";
 import { Session } from "../entities/session.entity";
 import { CreateSessionDto } from "../dto/create-session.dto";
-import { UpdateSessionDto } from "../dto/update-session.dto"; // Assuming PartialType(CreateSessionDto)
 
 /** Create Session (Login/Token Refresh) */
 export function ApiPostSession() {

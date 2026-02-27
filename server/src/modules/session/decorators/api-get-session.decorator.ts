@@ -2,9 +2,6 @@ import { applyDecorators, HttpCode, HttpStatus } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiResponse, ApiBody } from "@nestjs/swagger";
 import { BearerAuthResponses } from "../../../common/decorators/bearer-auth-responses.decorator";
 import { Session } from "../entities/session.entity";
-import { CreateSessionDto } from "../dto/create-session.dto";
-import { UpdateSessionDto } from "../dto/update-session.dto"; // Assuming PartialType(CreateSessionDto)
-
 
 /** Get Single Session */
 export function ApiGetSession() {

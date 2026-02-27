@@ -6,7 +6,7 @@ import { Role } from '../../../modules/role/entities/role.entity';
 
 @Entity('permissions')
 @Unique(['resource', 'action']) // Composite unique constraint
-export class Permission extends BaseEntity {
+export class Permission {
   @PrimaryGeneratedColumn()
   id: number;
 

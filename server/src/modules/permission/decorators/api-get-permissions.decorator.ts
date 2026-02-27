@@ -2,8 +2,6 @@ import { applyDecorators, HttpCode, HttpStatus } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiResponse, ApiBody } from "@nestjs/swagger";
 import { BearerAuthResponses } from "../../../common/decorators/bearer-auth-responses.decorator";
 import { Permission } from "../entities/permission.entity";
-import { CreatePermissionDto } from "../dto/create-permission.dto";
-import { UpdatePermissionDto } from "../dto/update-permission.dto";
 import { Resource } from "../../../common/enums/resource.enum";
 import { Action } from "../../../common/enums/action.enum";
 

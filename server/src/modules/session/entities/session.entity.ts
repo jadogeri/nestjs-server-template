@@ -2,7 +2,7 @@ import { Auth } from "../../auth/entities/auth.entity";
 import { BaseEntity, Entity, Column, ManyToOne, CreateDateColumn, PrimaryColumn, JoinColumn } from "typeorm";
 
 @Entity('sessions')
-export class Session extends BaseEntity{
+export class Session {
   @PrimaryColumn({    
     type: 'varchar', 
     length: 36, 
