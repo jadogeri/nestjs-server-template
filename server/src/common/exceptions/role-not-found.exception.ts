@@ -1,8 +1,7 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { UserRole } from '../enums/user-role.enum'; // Import your existing enum
 
 export class RoleNotFoundException extends HttpException {
-  constructor(role: UserRole) {
+  constructor(role: string) {
     super(
       {
         status: HttpStatus.NOT_FOUND,

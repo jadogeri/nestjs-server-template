@@ -1,4 +1,3 @@
-import { UserRole } from "../../common/enums/user-role.enum";
 import { Service } from "../../common/decorators/service.decorator";
 import { UserPayload } from "../../common/interfaces/user-payload.interface";
 import { PermissionStringGeneratorUtil } from "../../common/utils/permission-string.util";
@@ -17,7 +16,7 @@ export class PayloadMapperService {
     ];
         
     // 2. Implementation (No 'as' needed!)
-    const uniqueRoles: UserRole[] = [
+    const uniqueRoles: string[] = [
     ...new Set(
         user.roles.flatMap(role => 
         role.name)

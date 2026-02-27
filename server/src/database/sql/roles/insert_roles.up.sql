@@ -1,31 +1,31 @@
 -- SUPER USER
 INSERT INTO "roles" ("name", "description")
-SELECT 'super user', 'Administrator with full system access'
-WHERE NOT EXISTS (SELECT 1 FROM "roles" WHERE "name" = 'super user');
+SELECT 'SUPER_USER', 'Administrator with full system access'
+WHERE NOT EXISTS (SELECT 1 FROM "roles" WHERE "name" = 'SUPER_USER');
 
 
 -- ADMIN
 INSERT INTO "roles" ("name", "description")
-SELECT 'admin', 'Administrator with elevated privileges'
-WHERE NOT EXISTS (SELECT 1 FROM "roles" WHERE "name" = 'admin');
+SELECT 'ADMIN', 'Administrator with elevated privileges'
+WHERE NOT EXISTS (SELECT 1 FROM "roles" WHERE "name" = 'ADMIN');
 
 -- USER
 INSERT INTO "roles" ("name", "description")
-SELECT 'user', 'Standard registered user'
-WHERE NOT EXISTS (SELECT 1 FROM "roles" WHERE "name" = 'user');
+SELECT 'USER', 'Standard registered user'
+WHERE NOT EXISTS (SELECT 1 FROM "roles" WHERE "name" = 'USER');
 
 -- GUEST
 INSERT INTO "roles" ("name", "description")
-SELECT 'guest', 'Unregistered user with limited access'
-WHERE NOT EXISTS (SELECT 1 FROM "roles" WHERE "name" = 'guest');
+SELECT 'GUEST', 'Unregistered user with limited access'
+WHERE NOT EXISTS (SELECT 1 FROM "roles" WHERE "name" = 'GUEST');
 
 -- EDITOR
 INSERT INTO "roles" ("name", "description")
-SELECT 'editor', 'Can create and edit content but cannot manage users'
-WHERE NOT EXISTS (SELECT 1 FROM "roles" WHERE "name" = 'editor');
+SELECT 'EDITOR', 'Can create and edit content but cannot manage users'
+WHERE NOT EXISTS (SELECT 1 FROM "roles" WHERE "name" = 'EDITOR');
 
 -- VIEWER
 INSERT INTO "roles" ("name", "description")
-SELECT 'viewer', 'Read-only access to the system'
-WHERE NOT EXISTS (SELECT 1 FROM "roles" WHERE "name" = 'viewer');
+SELECT 'VIEWER', 'Read-only access to the system'
+WHERE NOT EXISTS (SELECT 1 FROM "roles" WHERE "name" = 'VIEWER');
 

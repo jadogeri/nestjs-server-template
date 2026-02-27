@@ -1,7 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import { IsNotEmpty, isPostalCode, Validate, ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
-    
-
+   
 export function IsZipCode() {
   return applyDecorators(
     IsNotEmpty({ message: 'Zip/Postal code is required' }),

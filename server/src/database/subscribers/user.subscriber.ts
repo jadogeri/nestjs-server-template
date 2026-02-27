@@ -1,6 +1,5 @@
 import { Role } from "../../modules/role/entities/role.entity";
 import { User } from "../../modules/user/entities/user.entity";
-import { UserRole } from "../../common/enums/user-role.enum";
 import { EventSubscriber, EntitySubscriberInterface, InsertEvent } from "typeorm";
 import { RoleNotFoundException } from "../../common/exceptions/role-not-found.exception";
 
@@ -16,7 +15,7 @@ export class UserSubscriber implements EntitySubscriberInterface<User> {
       const roleRepo = manager.getRepository(Role);
       
       const defaultRole = await roleRepo.findOne({
-        where: { name: UserRole.USER }
+        where: { name: 'USER' }
       });
 
       if (defaultRole) {
@@ -27,10 +26,10 @@ export class UserSubscriber implements EntitySubscriberInterface<User> {
           .of(entity)
           .add(defaultRole);
         
-        console.log(`Fallback: Assigned ${UserRole.USER} to User ${entity.id}`);
+        console.log(`Fallback: Assigned USER to User ${entity.id}`);
       }else {
-        console.warn(`Fallback: Default role ${UserRole.USER} not found. No role assigned to User ${entity.id}`);
-        throw new RoleNotFoundException(UserRole.USER);
+        console.warn(`Fallback: Default role USER not found. No role assigned to User ${entity.id}`);
+        throw new RoleNotFoundException('USER');
       }
     }
   }

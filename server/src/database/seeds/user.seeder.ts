@@ -6,7 +6,6 @@ import { Auth } from '../../modules/auth/entities/auth.entity';
 import { HashingService } from '../../core/security/hashing/interfaces/hashing.service';
 import { Argon2Service } from '../../core/security/hashing/argon2.service';
 import { ConfigService } from '@nestjs/config';
-import { UserRole } from '../../common/enums/user-role.enum';
 import { StatusEnum } from '../../common/enums/user-status.enum';
 import { Role } from '../../modules/role/entities/role.entity';
 import dotenv from 'dotenv';
@@ -57,9 +56,9 @@ export default class UserSeeder implements Seeder {
     const rootDateOfBirth    = process.env.ROOT_DATE_OF_BIRTH || '';
 
     // 1. Verify Role exists
-    const superUserRole = await roleRepository.findOne({ where: { name: UserRole.SUPER_USER } });
+    const superUserRole = await roleRepository.findOne({ where: { name: 'SUPER_USER' } });
     if (!superUserRole) {
-      console.error(`Role ${UserRole.SUPER_USER} not found. Aborting.`);
+      console.error(`Role 'SUPER_USER' not found. Aborting.`);
       return;
     }
 

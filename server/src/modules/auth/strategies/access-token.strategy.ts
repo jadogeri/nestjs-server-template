@@ -1,17 +1,10 @@
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { UserPayload } from 'src/common/interfaces/user-payload.interface';
-import { Permission } from 'src/modules/permission/entities/permission.entity';
 import { AccessControlService } from 'src/core/security/access-control/access-control.service';
 import { UserService } from 'src/modules/user/user.service';
 import { AuthService } from '../auth.service';
-import { PermissionString } from 'src/common/types/permission-string.type';
-import { UserRole } from 'src/common/enums/user-role.enum';
-import { PermissionStringGeneratorUtil } from 'src/common/utils/permission-string.util';
-import { JwtPayloadInterface } from 'src/common/interfaces/jwt-payload.interface';
 import { AccessTokenPayload } from 'src/common/types/access-token-payload.type';
 
 @Injectable()
