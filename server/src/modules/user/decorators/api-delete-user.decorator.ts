@@ -1,9 +1,7 @@
 import { applyDecorators, HttpCode, HttpStatus } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiResponse, ApiBody } from "@nestjs/swagger";
 import { BearerAuthResponses } from "../../../common/decorators/bearer-auth-responses.decorator";
-import { User } from "../entities/user.entity";
-import { CreateUserDto } from "../dto/create-user.dto";
-import { UpdateUserDto } from "../dto/update-user.dto";
+
 
 /** Delete User */
 export function ApiDeleteUser() {

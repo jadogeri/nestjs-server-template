@@ -4,6 +4,8 @@ import { BearerAuthResponses } from "../../../common/decorators/bearer-auth-resp
 import { User } from "../entities/user.entity";
 import { CreateUserDto } from "../dto/create-user.dto";
 import { UpdateUserDto } from "../dto/update-user.dto";
+import { first } from "rxjs";
+import { da } from "@faker-js/faker";
 
 
 /** Update User */
@@ -17,7 +19,12 @@ export function ApiPatchUser() {
       examples: {
         example1: {
           summary: 'Partial Update (Email only)',
-          value: { email: 'new.email@example.com' }
+          value: { 
+            firstName: 'John',
+            lastName: 'Doe',
+            dateOfBirth: '1990-01-01',
+            roles: [{ id: 1, name: 'admin' }]
+          }
         },
         example2: {
           summary: 'Name Update',
@@ -25,7 +32,17 @@ export function ApiPatchUser() {
         }
       }
     }),
-    ApiResponse({ status: HttpStatus.OK, description: 'User updated successfully.', type: User }),
+    ApiResponse({ 
+      status: HttpStatus.OK, 
+      description: 'User updated successfully.', 
+      type: User,
+      examples: {
+        example1: {
+          summary: 'Updated User Example',
+          value: { id: 1, firstName: 'Johnny', lastName: 'Deep', dateOfBirth: '1990-01-01', roles: [{ id: 1, name: 'admin' }] }
+        }
+      }
+    }),
     ...BearerAuthResponses
   );
 }

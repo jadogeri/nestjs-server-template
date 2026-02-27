@@ -7,23 +7,6 @@ import { IsSecuredPassword } from '../../../common/decorators/validators/is-secu
 
 export class CreateUserDto {
 
-  @ApiProperty({ example: 'john.doe' })
-  @IsString()
-  @IsNotEmpty()
-  @Transform(({ value }) => typeof value === 'string' ? value.trim() : value)
-  @Matches(/^[a-zA-Z0-9._-]+$/, {
-    message: 'username must only contain letters, numbers, dots, underscores, or hyphens',
-  })
-  username: string;
-
-  @ApiProperty({ example: 'password123' })
-  @IsSecuredPassword()
-  password: string;
-
-  @ApiProperty({ example: 'john.doe@example.com' })
-  @IsUserEmail() // Custom email validator that checks for uniqueness
-  email: string;
-
   @ApiPropertyOptional({ example: 'John' })
   @IsName('FirstName')
   firstName: string;

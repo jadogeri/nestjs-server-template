@@ -3,7 +3,6 @@ import { ApiOperation, ApiParam, ApiResponse, ApiBody } from "@nestjs/swagger";
 import { BearerAuthResponses } from "../../../common/decorators/bearer-auth-responses.decorator";
 import { User } from "../entities/user.entity";
 import { CreateUserDto } from "../dto/create-user.dto";
-import { UpdateUserDto } from "../dto/update-user.dto";
 
 /** Create User */
 export function ApiPostUser() {
@@ -15,14 +14,20 @@ export function ApiPostUser() {
       examples: {
         example1: {
           summary: 'New User Registration',
-          value: { username: 'johndoe', password: 'Password123!', email: 'john@doe.com', firstName: 'John', lastName: 'Doe' }
+          value: { username: 'johndoe', password: 'Password123!', firstName: 'John', lastName: 'Doe', dateOfBirth: '1990-01-01', roles: [{ id: 1, name: 'admin' }] }
         }
       }
     }),
     ApiResponse({ 
       status: HttpStatus.CREATED, 
       description: 'User created successfully.', 
-      type: User 
+      type: User,
+      examples: {
+        example1: {
+          summary: 'Created User Example',
+          value: { id: 1, username: 'johndoe', firstName: 'John', lastName: 'Doe', dateOfBirth: '1990-01-01', roles: [{ id: 1, name: 'admin' }] }
+        }
+      }
     }),
     ...BearerAuthResponses
   );

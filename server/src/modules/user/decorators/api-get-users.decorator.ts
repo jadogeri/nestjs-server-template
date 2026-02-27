@@ -21,8 +21,8 @@ export function ApiGetUsers() {
         example1: {
           summary: 'User List Example',
           value: [
-            { id: 1, firstName: 'John', lastName: 'Doe', fullName: 'John Doe', email: 'john@example.com', roles: [{ id: 1, name: 'admin' }] },
-            { id: 2, firstName: 'Jane', lastName: 'Smith', fullName: 'Jane Smith', email: 'jane@example.com', roles: [{ id: 2, name: 'user' }] }
+            { id: 1, firstName: 'John', lastName: 'Doe', fullName: 'John Doe', roles: [{ id: 1, name: 'admin' }] },
+            { id: 2, firstName: 'Jane', lastName: 'Smith', fullName: 'Jane Smith', roles: [{ id: 2, name: 'user' }] }
           ]
         }
       }
