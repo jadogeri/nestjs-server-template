@@ -3,7 +3,6 @@ import { ApiOperation, ApiParam, ApiResponse, ApiBody } from "@nestjs/swagger";
 import { BearerAuthResponses } from "../../../common/decorators/bearer-auth-responses.decorator";
 import { Permission } from "../entities/permission.entity";
 import { CreatePermissionDto } from "../dto/create-permission.dto";
-import { Resource } from "../../../common/enums/resource.enum";
 import { Action } from "../../../common/enums/action.enum";
 
 /** Create Permission */
@@ -19,7 +18,7 @@ export function ApiPostPermission() {
       examples: {
         example1: {
           summary: 'New Permission Creation',
-          value: { id: 10, resource: Resource.SESSION, action: Action.DELETE, description: 'Revoke sessions' }
+          value: { id: 10, resource: 'session', action: Action.DELETE, description: 'Revoke sessions' }
         }
       }
     }),
