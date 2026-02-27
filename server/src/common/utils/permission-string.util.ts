@@ -1,6 +1,5 @@
 
 import { Action } from "../enums/action.enum";
-import { Resource } from "../enums/resource.enum";
 import { PermissionString } from "../types/permission-string.type";
 
 export class PermissionStringGeneratorUtil {

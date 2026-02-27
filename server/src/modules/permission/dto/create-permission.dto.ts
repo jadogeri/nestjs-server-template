@@ -1,7 +1,6 @@
 import { IsEnum, IsOptional, IsString, IsNotEmpty } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { Resource } from '../../../common/enums/resource.enum';
 import { Action } from '../../../common/enums/action.enum';
 
 export class CreatePermissionDto {
