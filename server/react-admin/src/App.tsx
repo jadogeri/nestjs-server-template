@@ -24,7 +24,6 @@ import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'; // For Permissi
 import TimerIcon from '@mui/icons-material/Timer'; // For Session
 import { authProvider } from './authProvider.js';
 import { refreshAuth } from './utils/refresh-auth.util.js';
-
 const appAuthProvider = addRefreshAuthToAuthProvider(authProvider, refreshAuth);
 const appDataProvider = addRefreshAuthToDataProvider(dataProvider, refreshAuth);
 
