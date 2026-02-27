@@ -7,7 +7,7 @@ import { ApiGetRole } from './decorators/api-get-role.decorator';
 import { ApiGetRoles } from './decorators/api-get-roles.decorator';
 import { ApiPatchRole } from './decorators/api-patch-role.decorator';
 import { ApiDeleteRole } from './decorators/api-delete-role.decorator';
-import { AccessAuthGuard } from 'src/core/security/guards/access-auth.guard';
+import { AccessAuthGuard } from '../../core/security/guards/access-auth.guard';
 import { RoleService } from './role.service';
 
 @Controller('role')

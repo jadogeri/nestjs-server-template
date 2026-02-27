@@ -1,6 +1,6 @@
 import { applyDecorators, HttpStatus } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
-import { BearerAuthResponses } from "src/common/decorators/bearer-auth-responses.decorator";
+import { BearerAuthResponses } from "../../../common/decorators/bearer-auth-responses.decorator";
 import { Role } from "../entities/role.entity";
 
 export function ApiPatchRole() {
