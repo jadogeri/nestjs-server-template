@@ -7,8 +7,8 @@ import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
 //configs
 import { swaggerConfig } from './configs/swagger.config';
 import { validationPipeConfig } from './configs/global-validation-pipe.config';
-import { TypeOrmExceptionFilter } from './common/filters/typeorm-exception.filter';
 import { PaginationInterceptor } from './core/infrastructure/interceptors/pagination.interceptor';
+import { DatabaseExceptionFilter } from './common/filters/database-exception.filter';
 
 class Server {
 
@@ -19,13 +19,14 @@ class Server {
     SwaggerModule.setup('docs', app, document ); 
 
     app.setGlobalPrefix('api');
-    app.useGlobalFilters(new TypeOrmExceptionFilter());
     app.useGlobalPipes(new ValidationPipe(validationPipeConfig));
 
     app.use(cookieParser()); // Add cookie parser middleware    
     app.enableCors(); // Essential for frontend-to-backend communication
 
   app.useGlobalInterceptors(new PaginationInterceptor());
+  app.useGlobalFilters(new DatabaseExceptionFilter());
+
 
     await app.listen(process.env.PORT ?? 3000);
   }
