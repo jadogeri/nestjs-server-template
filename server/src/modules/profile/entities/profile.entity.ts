@@ -25,7 +25,6 @@ export class Profile {
     @Column({ nullable: true })
     gender: string;
 
-    // Use "simple-json" to store preferences as an object (e.g., { theme: 'dark' })
     @Column("simple-json", { nullable: true })
     preferences: { [key: string]: any };
 
