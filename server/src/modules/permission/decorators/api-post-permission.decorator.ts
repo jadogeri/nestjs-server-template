@@ -6,7 +6,6 @@ import { CreatePermissionDto } from "../dto/create-permission.dto";
 import { Resource } from "../../../common/enums/resource.enum";
 import { Action } from "../../../common/enums/action.enum";
 
-
 /** Create Permission */
 export function ApiPostPermission() {
   return applyDecorators(
