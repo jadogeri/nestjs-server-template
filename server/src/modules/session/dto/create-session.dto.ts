@@ -1,9 +1,14 @@
+import { Type } from "class-transformer";
 import { IsSecuredToken } from "../../../common/decorators/validators/is-secured-token.decorator";
 import { Auth } from "../../../modules/auth/entities/auth.entity";
-import { ApiProperty } from "@nestjs/swagger/dist/decorators/api-property.decorator";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsDate, IsNotEmpty, IsUUID } from "class-validator";
 
 export class CreateSessionDto {
 
+    @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
+    @IsUUID()
+    @IsNotEmpty() 
     id: string;
     @ApiProperty({
         description: 'The unique identifier for the session',
@@ -17,8 +22,13 @@ export class CreateSessionDto {
         example: '2024-12-31T23:59:59.000Z',
         required: false,
     })
+    @IsDate()
+    @Type(() => Date)
     expiresAt?: Date;
  
+    @ApiProperty({ example: 1 })
+    @IsNotEmpty()
+    authId: number;
     auth: Auth
 }
     
