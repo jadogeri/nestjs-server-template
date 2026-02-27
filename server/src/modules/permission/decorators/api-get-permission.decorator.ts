@@ -2,7 +2,6 @@ import { applyDecorators, HttpCode, HttpStatus } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiResponse, ApiBody } from "@nestjs/swagger";
 import { BearerAuthResponses } from "../../../common/decorators/bearer-auth-responses.decorator";
 import { Permission } from "../entities/permission.entity";
-import { Resource } from "../../../common/enums/resource.enum";
 import { Action } from "../../../common/enums/action.enum";
 
 
@@ -19,7 +18,7 @@ export function ApiGetPermission() {
       examples: {
         example1: {
           summary: 'Specific Permission Detail',
-          value: { id: 1, resource: Resource.USER, action: Action.READ, description: 'View user details' }
+          value: { id: 1, resource: 'user', action: Action.READ, description: 'View user details' }
         }
       }
     }),
