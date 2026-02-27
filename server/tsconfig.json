@@ -22,13 +22,13 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "useDefineForClassFields": false,
-    "jsx": "react-jsx", // <--- Add or change this line
-    "noEmit": false
+    "noEmit": false,
 
   },
     "exclude": [
     "node_modules",
     "dist",
-    "react-admin"
+    "react-admin",
+    "**/react-admin/*" 
   ]
 }
