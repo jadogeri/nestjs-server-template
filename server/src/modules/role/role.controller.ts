@@ -9,6 +9,7 @@ import { ApiDeleteRole } from './decorators/api-delete-role.decorator';
 import { AccessAuthGuard } from '../../core/security/guards/access-auth.guard';
 import { RoleService } from './role.service';
 
+
 @Controller('role')
 @UseGuards(AccessAuthGuard )
 export class RoleController {
