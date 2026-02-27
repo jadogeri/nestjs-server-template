@@ -11,7 +11,7 @@ SELECT 'Script started at: ' || datetime('now', 'localtime') AS log_start;
 INSERT INTO "roles_permissions" ("roleId", "permissionId")
 SELECT r.id, p.id
 FROM "roles" r, "permissions" p
-WHERE r.name = 'super user' 
+WHERE r.name = 'SUPER_USER' 
 AND p.resource = '*' 
 AND p.action = '*'
 AND NOT EXISTS (
@@ -23,7 +23,7 @@ AND NOT EXISTS (
 INSERT INTO "roles_permissions" ("roleId", "permissionId")
 SELECT r.id, p.id
 FROM "roles" r, "permissions" p
-WHERE r.name = 'admin' 
+WHERE r.name = 'ADMIN' 
 AND p.resource NOT IN ('*', 'admin', 'permission', 'role')
 AND NOT EXISTS (
     SELECT 1 FROM "roles_permissions" rp 
@@ -34,7 +34,7 @@ AND NOT EXISTS (
 INSERT INTO "roles_permissions" ("roleId", "permissionId")
 SELECT r.id, p.id
 FROM "roles" r, "permissions" p
-WHERE r.name = 'user' 
+WHERE r.name = 'USER' 
 AND (
     (p.resource IN ('profile', 'contact') AND p.action IN ('read', 'update')) OR
     (p.resource = 'auth' AND p.action = 'read')
@@ -48,7 +48,7 @@ AND NOT EXISTS (
 INSERT INTO "roles_permissions" ("roleId", "permissionId")
 SELECT r.id, p.id
 FROM "roles" r, "permissions" p
-WHERE r.name = 'editor' 
+WHERE r.name = 'EDITOR' 
 AND (
     (p.resource IN ('contact', 'profile') AND p.action = '*') OR
     (p.resource IN ('user', 'role') AND p.action = 'read')
@@ -63,7 +63,7 @@ AND NOT EXISTS (
 INSERT INTO "roles_permissions" ("roleId", "permissionId")
 SELECT r.id, p.id
 FROM "roles" r, "permissions" p
-WHERE r.name = 'viewer' AND p.action = 'read'
+WHERE r.name = 'VIEWER' AND p.action = 'read'
 AND NOT EXISTS (
     SELECT 1 FROM "roles_permissions" rp 
     WHERE rp.roleId = r.id AND rp.permissionId = p.id
