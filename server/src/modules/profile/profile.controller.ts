@@ -1,35 +1,51 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ProfileService } from './profile.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ApiDeleteProfile } from './decorators/api-delete-profile.decorator';
+import { ApiGetProfile } from './decorators/api-get-profile.decorator';
+import { ApiGetProfiles } from './decorators/api-get-profiles.decorator';
+import { ApiPatchProfile } from './decorators/api-patch-profile.decorator';
+import { ApiPostProfile } from './decorators/api-post-profile.decorator';
+import { AccessAuthGuard } from '../../core/security/guards/access-auth.guard';
 
 @Controller('profile')
-export class ProfileController {
+@UseGuards(AccessAuthGuard )
 
+export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
   @Post()
+  @ApiPostProfile()
   create(@Body() createProfileDto: CreateProfileDto) {
     return this.profileService.create(createProfileDto);
   }
 
   @Get()
+  @ApiGetProfiles()
   findAll() {
     return this.profileService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.profileService.findOne(+id);
+  @ApiGetProfile()
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.profileService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProfileDto: UpdateProfileDto) {
-    return this.profileService.update(+id, updateProfileDto);
+  @ApiPatchProfile()
+  update(
+    @Param('id', ParseIntPipe) id: number, 
+    @Body() updateProfileDto: UpdateProfileDto
+  ) {
+    return this.profileService.update(id, updateProfileDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.profileService.remove(+id);
+  @ApiDeleteProfile()
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.profileService.remove(id);
   }
 }
