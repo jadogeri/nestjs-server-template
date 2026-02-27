@@ -35,22 +35,24 @@ export function ApiPostContact() {
         status: HttpStatus.CREATED, 
         description: 'Contact created successfully.', 
         type: Contact,
-        example: {
-            summary: 'Created Contact',
-            value: {
-                id: 1,                
-                userId: 1,
-                fullName: 'Jane Smith',
-                phone: '(123) 456-7890',
-                email: 'jane.smith@example.com',
-                fax: '(123) 456-7890',
-                location: {       
-                    address: '456 Elm St',
-                    city: 'Othertown',
-                    state: 'NY',
-                    zipcode: '67890',
-                    country: 'US'
-                }
+        examples: {
+            example1: {
+                summary: 'Created Contact',
+                value: {
+                    id: 1,                
+                    userId: 1,
+                    fullName: 'Jane Smith',
+                    phone: '(123) 456-7890',
+                    email: 'jane.smith@example.com',
+                    fax: '(123) 456-7890',
+                    location: {       
+                        address: '456 Elm St',
+                        city: 'Othertown',
+                        state: 'NY',
+                        zipcode: '67890',
+                        country: 'US'
+                    }
+                  }
             }
         }
 
