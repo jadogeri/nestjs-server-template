@@ -31,10 +31,10 @@ const appDataProvider = addRefreshAuthToDataProvider(dataProvider, refreshAuth);
 export const App = () => (
     <Admin dataProvider={appDataProvider} authProvider={appAuthProvider}>
         <Resource name="user" list={UserList} edit={EditGuesser} create={UserCreate} icon={PeopleIcon}/>
-        <Resource name="profile" list={ListGuesser} icon={AccountCircleIcon}/>
-        <Resource name="role" list={ListGuesser} icon={SupervisorAccountIcon}/>
-        <Resource name="contact" list={ListGuesser} icon={ContactPhoneIcon}/>
-        <Resource name="permission" list={ListGuesser} icon={VerifiedUserIcon}/>
+        <Resource name="profile" list={ListGuesser} edit={EditGuesser} icon={AccountCircleIcon}/>
+        <Resource name="role" list={ListGuesser} edit={EditGuesser} icon={SupervisorAccountIcon}/>
+        <Resource name="contact" list={ListGuesser} edit={EditGuesser} icon={ContactPhoneIcon}/>
+        <Resource name="permission" list={ListGuesser} edit={EditGuesser} icon={VerifiedUserIcon}/>
         <Resource name="session" list={SessionList} edit={SessionEdit} icon={TimerIcon}/>
         <Resource name="auth" list={ListGuesser}  edit={EditGuesser} create={AuthCreate} icon={SecurityIcon}/>
     </Admin>
