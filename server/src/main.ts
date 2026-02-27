@@ -16,7 +16,7 @@ class Server {
     const app = await NestFactory.create(AppModule);
     const document = SwaggerModule.createDocument(app, swaggerConfig);
     
-    SwaggerModule.setup('docs', app, document ); // The documentation will be available at http://localhost:3000/docs
+    SwaggerModule.setup('docs', app, document ); 
 
     app.setGlobalPrefix('api');
     app.useGlobalFilters(new TypeOrmExceptionFilter());
@@ -25,12 +25,6 @@ class Server {
     app.use(cookieParser()); // Add cookie parser middleware    
     app.enableCors(); // Essential for frontend-to-backend communication
 
-     //const server = app.getHttpAdapter().getInstance();
-
-  // // 2. Define a raw route without a controller
-  // server.get('/', (req: Request, res: Response) => {
-  //   res.send('Hello World!');
-  // });
   app.useGlobalInterceptors(new PaginationInterceptor());
 
     await app.listen(process.env.PORT ?? 3000);
