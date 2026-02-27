@@ -9,11 +9,13 @@ on:
     paths:
       - 'server/src/**'
       - 'server/test/**/*.spec.ts'
+      - '!server/react-admin/**' # Excludes this folder from triggers
   pull_request:
     branches: [ "main" ]
     paths:
       - 'server/src/**/*.ts'
       - 'server/test/**/*.spec.ts'
+      - '!server/react-admin/**' # Excludes this folder from triggers
 
 
 jobs:
