@@ -28,7 +28,9 @@ export class CreateSessionDto {
  
     @ApiProperty({ example: 1 })
     @IsNotEmpty()
-    authId: number;
+    authId?: number;
+    
+    @ApiProperty({ type: () => Auth, description: 'Associated authentication details' })
     auth: Auth
 }
     
