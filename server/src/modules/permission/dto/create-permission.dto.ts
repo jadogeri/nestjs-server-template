@@ -6,13 +6,14 @@ import { Action } from '../../../common/enums/action.enum';
 
 export class CreatePermissionDto {
   @ApiProperty({ 
-    enum: Resource, 
-    example: Resource.USER,
+    type: String, // Explicitly tell Swagger it's a string now
+    example: 'user',
     description: 'The system resource this permission applies to' 
   })
-  @IsEnum(Resource)
+  @IsString() // Change this from @IsEnum(Resource)
   @IsNotEmpty()
-  resource: Resource;
+  @Transform(({ value }) => (typeof value === 'string' ? value.toLowerCase().trim() : value))
+  resource: string;
 
   @ApiProperty({ 
     enum: Action, 

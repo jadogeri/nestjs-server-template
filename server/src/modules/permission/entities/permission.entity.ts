@@ -11,11 +11,10 @@ export class Permission {
   id: number;
 
   @Column({
-    type: 'simple-enum',
-    enum: Resource,
-    default: Resource.AUTH,
+    type: 'varchar', // Changed from simple-enum to varchar
+    default: 'auth', // Default value is now a plain string
   })
-  resource: Resource;
+  resource: string; // Type changed to string
 
   @Column({
     type: 'simple-enum',
