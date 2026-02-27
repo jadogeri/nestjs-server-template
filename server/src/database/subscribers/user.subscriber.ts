@@ -1,6 +1,6 @@
 import { Role } from "../../modules/role/entities/role.entity";
 import { User } from "../../modules/user/entities/user.entity";
-import { UserRole } from "../../common/enums/user-role.enum";
+import { UserRole } from "../../common/types/user-role.type";
 import { EventSubscriber, EntitySubscriberInterface, InsertEvent } from "typeorm";
 import { RoleNotFoundException } from "../../common/exceptions/role-not-found.exception";
 

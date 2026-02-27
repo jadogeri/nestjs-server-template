@@ -1,4 +1,3 @@
-import { UserRole } from '../../../common/enums/user-role.enum';
 import { Permission } from '../../permission/entities/permission.entity';
 import { User } from '../../user/entities/user.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable  } from 'typeorm';
@@ -9,8 +8,8 @@ export class Role {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'simple-enum', enum: UserRole, unique: true })
-  name: UserRole;
+  @Column({ type: 'varchar', unique: true })
+  name: string;
 
   @Column({ type: 'varchar', nullable: true })
   description: string;

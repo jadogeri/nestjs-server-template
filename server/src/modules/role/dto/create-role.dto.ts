@@ -1,11 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString, IsOptional, IsArray, IsInt } from 'class-validator';
-import { UserRole } from '../../../common/enums/user-role.enum';
+import { IsEnum, IsString, IsOptional, IsArray, IsInt, IsNotEmpty } from 'class-validator';
 
 export class CreateRoleDto {
-  @ApiProperty({ enum: UserRole, example: UserRole.USER })
-  @IsEnum(UserRole)
-  name: UserRole;
+  @ApiProperty({ 
+    description: 'The unique name of the role', 
+    example: 'MANAGER' 
+  })
+  @IsString()
+  @IsNotEmpty() // Ensures the role name isn't sent as an empty string
+  name: string; 
 
   @ApiProperty({ required: false, example: 'Standard user with basic access' })
   @IsString()

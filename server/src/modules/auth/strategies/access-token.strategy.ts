@@ -9,7 +9,7 @@ import { AccessControlService } from 'src/core/security/access-control/access-co
 import { UserService } from 'src/modules/user/user.service';
 import { AuthService } from '../auth.service';
 import { PermissionString } from 'src/common/types/permission-string.type';
-import { UserRole } from 'src/common/enums/user-role.enum';
+import { UserRole } from 'src/common/types/user-role.type';
 import { PermissionStringGeneratorUtil } from 'src/common/utils/permission-string.util';
 import { JwtPayloadInterface } from 'src/common/interfaces/jwt-payload.interface';
 import { AccessTokenPayload } from 'src/common/types/access-token-payload.type';

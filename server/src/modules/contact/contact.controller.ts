@@ -13,7 +13,6 @@ import { AccessToken } from '../../common/decorators/access-token.decorator';
 import { Contact } from './entities/contact.entity';
 import { PermissionsGuard } from '../../core/security/guards/permissions.guard';
 import { User } from '../../common/decorators/user.decorator';
-import { UserRole } from '../../common/enums/user-role.enum';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Permissions } from '../../common/decorators/permissions.decorator';
 import { RolesGuard } from '../../core/security/guards/roles.guard';
@@ -33,7 +32,7 @@ export class ContactController {
   @Get()
     @UseGuards(PermissionsGuard, RolesGuard) // Apply both guards to this endpoint)
     @Permissions("*:*") // Only ADMIN can access this endpoint
-    @Roles(UserRole.ADMIN, UserRole.SUPER_USER) // Only users with ADMIN role can access this endpoint
+    @Roles('USER', 'SUPER_USER') // Only users with ADMIN role can access this endpoint
   @ApiGetContacts()
   async findAll(@AccessToken() accessTokenPayload: AccessTokenPayload) {
 

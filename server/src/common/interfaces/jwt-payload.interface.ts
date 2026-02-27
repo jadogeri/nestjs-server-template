@@ -1,9 +1,8 @@
-import { UserRole } from "../enums/user-role.enum";
 
 export interface JwtPayloadInterface {
   userId: number; // From auth table
   email: string; // From auth table
-  roles: UserRole[]; // From user/roles table
+  roles: string[]; // From user/roles table
   sub?: number; // Standard JWT subject claim, can be user ID or email
   iat?: number; // Issued at timestamp
   exp?: number; // Expiration timestamp
