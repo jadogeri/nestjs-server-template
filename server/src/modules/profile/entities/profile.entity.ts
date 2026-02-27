@@ -29,8 +29,7 @@ export class Profile {
     preferences: { [key: string]: any };
 
     @UpdateDateColumn()
-    updatedAt: Date; // Automatically updated on each save()
-
+    updatedAt: Date; 
     // Foreign Key setup
     @OneToOne(() => User, (user) => user.profile)
     @JoinColumn({ name: "userId" })
