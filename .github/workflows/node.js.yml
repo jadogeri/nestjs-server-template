@@ -9,37 +9,58 @@ on:
     paths:
       - 'server/src/**'
       - 'server/test/**/*.spec.ts'
-      - '!server/react-admin/**' # Excludes this folder from triggers
+      - 'server/react-admin/**' # Added this so changes in admin also trigger build
   pull_request:
     branches: [ "main" ]
     paths:
       - 'server/src/**/*.ts'
       - 'server/test/**/*.spec.ts'
-      - '!server/react-admin/**' # Excludes this folder from triggers
-
+      - 'server/react-admin/**'
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./server
 
     strategy:
       matrix:
         node-version: [20.x, 22.x]
-        #node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: './server/package-lock.json' # Adjust path as needed
-    - run: npm install --force
-    - run: npm run build --if-present 
-    - run: npm run test
+        # We point to the server lock file for caching
+        cache-dependency-path: './server/package-lock.json'
+
+    ---
+    # 1. SETUP AND BUILD NESTJS SERVER
+    ---
+    - name: Install Server Dependencies
+      working-directory: ./server
+      run: npm install --force
+
+    - name: Build Server
+      working-directory: ./server
+      run: npm run build --if-present
+
+    ---
+    # 2. SETUP AND BUILD REACT-ADMIN
+    ---
+    - name: Install React-Admin Dependencies
+      working-directory: ./server/react-admin
+      run: npm install --force
+
+    - name: Build React-Admin
+      working-directory: ./server/react-admin
+      run: npm run build
+
+    ---
+    # 3. RUN TESTS
+    ---
+    - name: Run Server Tests
+      working-directory: ./server
+      run: npm run test
