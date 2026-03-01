@@ -11,7 +11,6 @@ import { swaggerConfig } from './configs/swagger.config';
 import { validationPipeConfig } from './configs/global-validation-pipe.config';
 import { PaginationInterceptor } from './core/infrastructure/interceptors/pagination.interceptor';
 import { DatabaseExceptionFilter } from './common/filters/database-exception.filter';
-import { Logger } from 'nestjs-pino';
 
 
 class Server {
