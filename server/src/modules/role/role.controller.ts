@@ -10,7 +10,7 @@ import { AccessAuthGuard } from '../../core/security/guards/access-auth.guard';
 import { RoleService } from './role.service';
 
 
-@Controller('role')
+@Controller('roles')
 @UseGuards(AccessAuthGuard )
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}

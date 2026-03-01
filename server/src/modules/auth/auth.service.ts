@@ -109,7 +109,7 @@ export class AuthService {
   }
 
   async findById(id: number): Promise<Auth | null> {    
-    return await this.authRepository.findOne({ where: { id }, relations: ['roles', 'roles.permissions'] });
+    return await this.authRepository.findOne({ where: { id }, relations: ['user'] });
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<any> {

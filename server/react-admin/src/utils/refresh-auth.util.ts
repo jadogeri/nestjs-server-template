@@ -52,7 +52,7 @@ export const refreshAuth = async () => {
     }
 
     try {
-        const response = await fetch(`${API_URL}/auth/refresh`, {
+        const response = await fetch(`${API_URL}/auths/refresh`, {
             method: 'POST',
             body: JSON.stringify({ refreshToken }), 
             headers: { 'Content-Type': 'application/json' },

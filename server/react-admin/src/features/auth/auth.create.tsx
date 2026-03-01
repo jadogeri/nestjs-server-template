@@ -10,7 +10,7 @@ const statusChoices = [
 ];
 
 export const AuthCreate = () => (
-  <Create resource="auth/register" redirect="list">
+  <Create resource="auths/register" redirect="list">
     <SimpleForm>
       <TextInput source="email" type="email" fullWidth required />
       <PasswordInput source="password" fullWidth required />

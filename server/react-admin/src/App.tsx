@@ -24,19 +24,22 @@ import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'; // For Permissi
 import TimerIcon from '@mui/icons-material/Timer'; // For Session
 import { authProvider } from './authProvider.js';
 import { refreshAuth } from './utils/refresh-auth.util.js';
+import { ProfileList } from './features/profile/profile.list.js';
+import { ProfileEdit } from './features/profile/profile.edit.js';
+import { ProfileCreate } from './features/profile/profile.create.js';
 const appAuthProvider = addRefreshAuthToAuthProvider(authProvider, refreshAuth);
 const appDataProvider = addRefreshAuthToDataProvider(dataProvider, refreshAuth);
 
     
 export const App = () => (
     <Admin dataProvider={appDataProvider} authProvider={appAuthProvider}>
-        <Resource name="user" list={UserList} edit={EditGuesser} create={UserCreate} icon={PeopleIcon}/>
-        <Resource name="profile" list={ListGuesser} edit={EditGuesser} icon={AccountCircleIcon}/>
-        <Resource name="role" list={ListGuesser} edit={EditGuesser} icon={SupervisorAccountIcon}/>
-        <Resource name="contact" list={ListGuesser} edit={EditGuesser} icon={ContactPhoneIcon}/>
-        <Resource name="permission" list={ListGuesser} edit={EditGuesser} icon={VerifiedUserIcon}/>
-        <Resource name="session" list={SessionList} edit={SessionEdit} icon={TimerIcon}/>
-        <Resource name="auth" list={ListGuesser}  edit={EditGuesser} create={AuthCreate} icon={SecurityIcon}/>
+        <Resource name="users" list={UserList} edit={EditGuesser} create={UserCreate} icon={PeopleIcon}/>
+        <Resource name="profiles" list={ProfileList} edit={ProfileEdit} create={ProfileCreate} icon={AccountCircleIcon}/>
+        <Resource name="roles" list={ListGuesser} edit={EditGuesser} icon={SupervisorAccountIcon}/>
+        <Resource name="contacts" list={ListGuesser} edit={EditGuesser} icon={ContactPhoneIcon}/>
+        <Resource name="permissions" list={ListGuesser} edit={EditGuesser} icon={VerifiedUserIcon}/>
+        <Resource name="sessions" list={SessionList} edit={SessionEdit} icon={TimerIcon}/>
+        <Resource name="auths" list={AuthList}  edit={AuthEdit} create={AuthCreate} icon={SecurityIcon}/>
     </Admin>
 
 );

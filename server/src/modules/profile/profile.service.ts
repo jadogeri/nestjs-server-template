@@ -18,7 +18,7 @@ export class ProfileService {
   }
 
   async findOne(id: number) {    
-    return await this.profileRepository.findOne({ where: { id }, relations: [] });
+    return await this.profileRepository.findOne({ where: { id }, relations: ["users"] });
   }
 
   async update(id: number, updateProfileDto: UpdateProfileDto) {

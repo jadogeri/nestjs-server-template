@@ -4,7 +4,7 @@ const API_URL = 'http://localhost:3000/api';
 
 export const authProvider = {
     login: async ({ username, password }: { username: string; password: string }) => {
-        const response = await fetch(`${API_URL}/auth/login`, {
+        const response = await fetch(`${API_URL}/auths/login`, {
             method: 'POST',
             body: JSON.stringify({ email: username, password }),
             headers: new Headers({ 'Content-Type': 'application/json' }),

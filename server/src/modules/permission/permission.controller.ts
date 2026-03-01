@@ -11,7 +11,7 @@ import { ApiDeletePermission } from './decorators/api-delete-permission.decorato
 import { AccessAuthGuard } from '../../core/security/guards/access-auth.guard';
 
 
-@Controller('permission')
+@Controller('permissions')
 @UseGuards(AccessAuthGuard)
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}

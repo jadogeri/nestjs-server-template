@@ -11,7 +11,7 @@ import { ApiDeleteUser } from './decorators/api-delete-user.decorator';
 import { AccessAuthGuard } from '../../core/security/guards/access-auth.guard';
 
 @UseGuards(AccessAuthGuard )
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

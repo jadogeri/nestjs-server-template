@@ -11,7 +11,7 @@ import { ApiPostSession } from './decorators/api-post-session.decorator';
 import { AccessAuthGuard } from '../../core/security/guards/access-auth.guard';
 
 
-@Controller('session')
+@Controller('sessions')
 @UseGuards(AccessAuthGuard)
 export class SessionController {
   constructor(private readonly sessionService: SessionService) {}

@@ -17,7 +17,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { Permissions } from '../../common/decorators/permissions.decorator';
 import { RolesGuard } from '../../core/security/guards/roles.guard';
 
-@Controller('contact')
+@Controller('contacts')
 @UseGuards(AccessAuthGuard )
 export class ContactController {
 

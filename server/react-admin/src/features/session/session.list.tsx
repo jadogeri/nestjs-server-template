@@ -1,6 +1,8 @@
 import { 
   List, Datagrid, TextField, DateField, 
-  ReferenceField, EmailField, FunctionField 
+  ReferenceField, EmailField, FunctionField, 
+  ReferenceInput,
+  SelectInput
 } from 'react-admin';
 
 export const SessionList = () => (
@@ -10,6 +12,12 @@ export const SessionList = () => (
       {/* Link back to the Auth/User owner */}
       <ReferenceField source="auth.id" reference="auths" label="User Email">
          <EmailField source="email" />
+      </ReferenceField>
+      <ReferenceInput source="auth.id" reference="auths">
+        <SelectInput optionText="email" disabled label="Associated Account" />
+      </ReferenceInput>
+      <ReferenceField source="auth.id" reference="auths" label="User Email">
+          <EmailField source="email" />
       </ReferenceField>
       <DateField source="createdAt" showTime />
       <DateField source="expiresAt" showTime />

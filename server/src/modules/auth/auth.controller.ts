@@ -36,7 +36,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ApiResetPassword } from './decorators/api-reset-password.decorator';
 import { ApiLogout } from './decorators/api-logout.decorator';
 
-@Controller('auth')
+@Controller('auths')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

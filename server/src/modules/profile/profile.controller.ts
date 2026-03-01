@@ -9,7 +9,7 @@ import { ApiPatchProfile } from './decorators/api-patch-profile.decorator';
 import { ApiPostProfile } from './decorators/api-post-profile.decorator';
 import { AccessAuthGuard } from '../../core/security/guards/access-auth.guard';
 
-@Controller('profile')
+@Controller('profiles')
 @UseGuards(AccessAuthGuard )
 
 export class ProfileController {
