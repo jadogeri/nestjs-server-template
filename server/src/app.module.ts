@@ -18,6 +18,7 @@ import { pinoLoggerConfig } from './configs/pino.config';
 import { TerminusModule } from '@nestjs/terminus/dist/terminus.module';
 import { SentryGlobalFilter, SentryModule } from "@sentry/nestjs/setup";
 import { APP_FILTER } from '@nestjs/core/constants';
+import { StatsModule } from './modules/stats/stats.module';
 
 
 console.log("__dirname:", __dirname);
@@ -39,6 +40,7 @@ console.log("__dirname:", __dirname);
     RoleModule, 
     ContactModule, 
     PermissionModule,
+    StatsModule,
     SentryModule.forRoot(),
      TerminusModule.forRoot({
       gracefulShutdownTimeoutMs: 1000,

@@ -30,6 +30,10 @@ import { ProfileCreate } from './features/profile/profile.create.js';
 import { RoleList } from './features/role/role.list.js';
 import { RoleEdit } from './features/role/role.edit.js';
 import { RoleCreate } from './features/role/role.create.js';
+import { Dashboard } from './components/dashBoard.component.js';
+import { ContactList } from './features/contact/contact.list.js';
+import { ContactCreate } from './features/contact/contact.create.js';
+import { ContactEdit } from './features/contact/contact.edit.js';
 const appAuthProvider = addRefreshAuthToAuthProvider(authProvider, refreshAuth);
 const appDataProvider = addRefreshAuthToDataProvider(dataProvider, refreshAuth);
 
@@ -37,11 +41,15 @@ const appDataProvider = addRefreshAuthToDataProvider(dataProvider, refreshAuth);
 
     
 export const App = () => (
-    <Admin dataProvider={appDataProvider} authProvider={appAuthProvider}>
+    <Admin 
+        dataProvider={appDataProvider} 
+        authProvider={appAuthProvider}
+        dashboard={Dashboard}         defaultTheme="dark" 
+>
         <Resource name="users" list={UserList} edit={EditGuesser} icon={PeopleIcon}/>
         <Resource name="profiles" list={ProfileList} edit={ProfileEdit} create={ProfileCreate} icon={AccountCircleIcon}/>
         <Resource name="roles" list={RoleList} edit={RoleEdit} create={RoleCreate} icon={SupervisorAccountIcon}/>
-        <Resource name="contacts" list={ListGuesser} edit={EditGuesser} icon={ContactPhoneIcon}/>
+        <Resource name="contacts" list={ContactList} edit={ContactEdit} create={ContactCreate} icon={ContactPhoneIcon}/>
         <Resource name="permissions" list={ListGuesser} edit={EditGuesser} icon={VerifiedUserIcon}/>
         <Resource name="sessions" list={ListGuesser} icon={TimerIcon}/>
         <Resource name="auths" list={AuthList}  edit={AuthEdit} create={AuthCreate} icon={SecurityIcon}/>
