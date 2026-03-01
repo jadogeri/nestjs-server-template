@@ -1,0 +1,898 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">server documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content class">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >IdentityService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/modules/auth/services/identity.service.ts</code>
+        </p>
+
+
+
+
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../classes/IdentityServiceInterface.html" target="_self" >IdentityServiceInterface</a></code>
+            </p>
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#logger" >logger</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#MAX_FAILED_LOGIN_ATTEMPTS" >MAX_FAILED_LOGIN_ATTEMPTS</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#verifyAccessToken" >verifyAccessToken</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#verifyRefreshToken" >verifyRefreshToken</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#verifyUser" >verifyUser</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(authRepository: <a href="../injectables/AuthRepository.html" target="_self">AuthRepository</a>, hashingService: <a href="../classes/HashingService.html" target="_self">HashingService</a>, tokenService: <a href="../classes/TokenService.html" target="_self">TokenService</a>, eventEmitter: EventEmitter2, accessControlService: <a href="../classes/AccessControlService.html" target="_self">AccessControlService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, sessionService: <a href="../injectables/SessionService.html" target="_self">SessionService</a>, configService: <a href="../miscellaneous/variables.html#Service" target="_self">ConfigService</a>, payloadMapperService: <a href="../classes/PayloadMapperService.html" target="_self">PayloadMapperService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/modules/auth/services/identity.service.ts:25</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>authRepository</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthRepository.html" target="_self" >AuthRepository</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>hashingService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/HashingService.html" target="_self" >HashingService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>tokenService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/TokenService.html" target="_self" >TokenService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>eventEmitter</td>
+                                                  
+                                                        <td>
+                                                                    <code>EventEmitter2</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>accessControlService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/AccessControlService.html" target="_self" >AccessControlService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>userService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UserService.html" target="_self" >UserService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>sessionService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SessionService.html" target="_self" >SessionService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>configService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/variables.html#Service" target="_self" >ConfigService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>payloadMapperService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/PayloadMapperService.html" target="_self" >PayloadMapperService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logger"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>logger</b></span>
+                        <a href="#logger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Logger(IdentityService.name)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/modules/auth/services/identity.service.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_FAILED_LOGIN_ATTEMPTS"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>MAX_FAILED_LOGIN_ATTEMPTS</b></span>
+                        <a href="#MAX_FAILED_LOGIN_ATTEMPTS"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>4</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/modules/auth/services/identity.service.ts:25</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="verifyAccessToken"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>verifyAccessToken</b></span>
+                        <a href="#verifyAccessToken"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>verifyAccessToken(accessTokenPayload: <a href="../miscellaneous/typealiases.html#AccessTokenPayload" target="_self">AccessTokenPayload</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">src/modules/auth/services/identity.service.ts:90</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>accessTokenPayload</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AccessTokenPayload" target="_self" >AccessTokenPayload</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#AccessToken" target="_self" >Promise&lt;AccessTokenPayload | null&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="verifyRefreshToken"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>verifyRefreshToken</b></span>
+                        <a href="#verifyRefreshToken"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>verifyRefreshToken(refreshTokenPayload: <a href="../miscellaneous/typealiases.html#RefreshTokenPayload" target="_self">RefreshTokenPayload</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="119"
+                                    class="link-to-prism">src/modules/auth/services/identity.service.ts:119</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>refreshTokenPayload</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#RefreshTokenPayload" target="_self" >RefreshTokenPayload</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#RefreshToken" target="_self" >Promise&lt;RefreshTokenPayload | null&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="verifyUser"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>verifyUser</b></span>
+                        <a href="#verifyUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>verifyUser(email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">src/modules/auth/services/identity.service.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>email</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>password</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/UserPayload.html" target="_self" >Promise&lt;UserPayload | null&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { UnauthorizedException, ForbiddenException, Logger } from &quot;@nestjs/common&quot;;
+import { EventEmitter2 } from &quot;@nestjs/event-emitter&quot;;
+import { StatusEnum } from &quot;src/common/enums/user-status.enum&quot;;
+import { HashingService } from &quot;src/core/security/hashing/interfaces/hashing.service&quot;;
+import { TokenService } from &quot;src/core/security/token/token.service&quot;;
+import { Service } from &quot;../../../common/decorators/service.decorator&quot;;
+import { AuthRepository } from &quot;../auth.repository&quot;;
+import { PasswordManagementServiceInterface } from &quot;./interfaces/password-management-service.interface&quot;;
+import { AccessControlService } from &quot;src/core/security/access-control/access-control.service&quot;;
+import { PasswordGeneratorUtil } from &quot;src/common/utils/password-generator.util&quot;;
+import { ResetPasswordDto } from &quot;../dto/reset-password.dto&quot;;
+import { IdentityServiceInterface } from &quot;./interfaces/identity-service.interface&quot;;
+import { AccessTokenPayload } from &quot;src/common/types/access-token-payload.type&quot;;
+import { RefreshTokenPayload } from &quot;../../../common/types/refresh-token-payload.type&quot;;
+import { UserService } from &quot;../../../modules/user/user.service&quot;;
+import { SessionService } from &quot;../../../modules/session/session.service&quot;;
+import { UserPayload } from &quot;src/common/interfaces/user-payload.interface&quot;;
+import { ConfigService } from &quot;@nestjs/config/dist/config.service&quot;;
+import { PayloadMapperService } from &quot;../payload-mapper.service&quot;;
+
+@Service()
+export class IdentityService implements IdentityServiceInterface {
+
+    private logger &#x3D; new Logger(IdentityService.name);
+    private readonly MAX_FAILED_LOGIN_ATTEMPTS &#x3D; 4;
+
+      
+      constructor(
+          private readonly authRepository: AuthRepository, // Also injected here
+          private readonly hashingService: HashingService,
+          private readonly tokenService: TokenService,   
+          private readonly eventEmitter: EventEmitter2, // For emitting events
+          private readonly accessControlService: AccessControlService, // For checking user status
+          private readonly userService: UserService,
+          private readonly sessionService: SessionService,
+          private readonly configService: ConfigService,
+          private readonly payloadMapperService: PayloadMapperService
+      ) { 
+      }
+  async verifyUser(email: string, password: string): Promise&lt; UserPayload | null&gt; {
+      const auth &#x3D; await this.authRepository.findByEmail(email);
+      if (!auth) throw new UnauthorizedException(&#x27;Invalid credentials provided - auth record not found&#x27;);  
+      console.log(&quot;auth record found for email:&quot;, auth);
+
+      const isVerified &#x3D; this.accessControlService.isUserVerified(auth);
+      if (!isVerified) throw new ForbiddenException(&#x27;Account not verified, please verify your email before logging in&#x27;);
+      if (auth.status &#x3D;&#x3D;&#x3D; StatusEnum.LOCKED) throw new ForbiddenException(&#x27;Account is locked, use forget account to access account&#x27;);
+      
+      const isMatch &#x3D; await this.hashingService.compare(password, auth.password);
+      if (!isMatch) {
+        auth.failedLoginAttempts &#x3D; auth.failedLoginAttempts + 1;
+        if(auth.failedLoginAttempts &gt;&#x3D; this.MAX_FAILED_LOGIN_ATTEMPTS){
+          auth.status &#x3D; StatusEnum.LOCKED;
+          auth.isEnabled &#x3D; false; 
+          await this.authRepository.update(auth.id, auth);
+
+          //sendEmail(&quot;locked-account&quot;,recipient )
+           this.eventEmitter.emit(&#x27;account.locked&#x27;, auth);
+
+
+          this.logger.warn(&#x60;Account is locked due to too many failed login attempts. Use forget account to access account: ${email}&#x60;);
+          throw new ForbiddenException(&#x27;Account is locked due to too many failed login attempts. Use forget account to access account&#x27;);
+
+        }else{
+          await this.authRepository.update(auth.id, { failedLoginAttempts: auth.failedLoginAttempts });
+          throw new UnauthorizedException(&#x27;Invalid credentials provided - password mismatch&#x27;);
+
+        }
+
+      }
+      if (auth.failedLoginAttempts &gt; 0) {
+        await this.authRepository.update(auth.id, { failedLoginAttempts: 0 });
+      }
+
+
+      // ALWAYS use the service so the pepper logic stays identical
+      console.log(&#x60;Verifying user with email: ${email}&#x60;);
+      console.log(&quot;password provided:&quot;, password);
+      console.log(&quot;stored password hash:&quot;, auth.password);
+      const pepper &#x3D; this.configService.get&lt;string&gt;(&#x27;HASH_PEPPER&#x27;) || &#x27;&#x27;;
+      console.log(&quot;Using pepper:&quot;, pepper ? &#x27;Yes&#x27; : &#x27;No&#x27;);
+
+      const user &#x3D; await this.userService.findOne({ where: { id: auth.user.id }, relations: [&#x27;roles&#x27;, &#x27;roles.permissions&#x27;] });
+      if (!user) throw new UnauthorizedException(&#x27;User profile not found&#x27;);
+
+      return this.payloadMapperService.toUserPayload(user, email);
+
+  }
+
+  async verifyAccessToken(accessTokenPayload: AccessTokenPayload): Promise&lt;AccessTokenPayload | null&gt; {
+  const { userId, email } &#x3D; accessTokenPayload;
+
+    const auth &#x3D; await this.authRepository.findOne({ where: { email: email }, relations: [&#x27;user&#x27;, &#x27;user.roles&#x27;, &#x27;user.roles.permissions&#x27;] });
+    console.log(&quot;AuthService: Verifying access token for email:&quot;, email);
+    if (!auth)  return null;
+   //  account status checks
+    if (!this.accessControlService.isUserActive(auth)) {
+      this.logger.warn(&#x60;Account for email ${email} is disabled.&#x60;);
+      return null;
+
+    }
+
+    this.logger.log(&#x60;Account for email ${email} is active.&#x60;);
+
+    const user &#x3D; await this.userService.findById(userId);
+    if (!user){
+      this.logger.warn(&#x60;User not found with id: ${userId}&#x60;);
+      return null;
+    }
+    console.log(&quot;auth &#x3D;&#x3D;&gt; &quot;, auth);
+    if (auth.user.id !&#x3D;&#x3D; userId) {
+      this.logger.warn(&#x60;User ID mismatch: token has ${userId} but auth record has ${auth.user.id}&#x60;);
+      return null;
+    }
+    console.log(&quot;JwtStrategy: Retrieved user from database:&quot;, accessTokenPayload.email);
+
+    return accessTokenPayload;
+}
+  async verifyRefreshToken(refreshTokenPayload: RefreshTokenPayload): Promise&lt;RefreshTokenPayload | null&gt; {
+    const { userId, sessionId} &#x3D; refreshTokenPayload;
+    const auth  &#x3D; await this.authRepository.findOne({ where: { user: { id: userId } } , relations: [&#x27;user&#x27;] });
+    const session &#x3D; await this.sessionService.findOne(sessionId);
+    console.log(&quot;seesionId from token:&quot;, sessionId);
+    console.log(&quot;session &#x3D;&#x3D;&gt; &quot;, session);
+    console.log(&quot;AuthService: Verifying refresh token for user ID:&quot;, JSON.stringify(auth, null,4));
+    if (!auth) throw new UnauthorizedException(&#x27;User not found for this token&#x27;);
+    if (auth.user.id !&#x3D;&#x3D; userId) throw new UnauthorizedException(&#x27;Token user ID does not match auth record&#x27;);
+    if (!session) throw new UnauthorizedException(&#x27;Session not found for this token&#x27;);
+    if (session.auth.id !&#x3D;&#x3D; auth.id) throw new UnauthorizedException(&#x27;Session does not belong to the user&#x27;);
+    if (session.expiresAt &lt; new Date()) throw new UnauthorizedException(&#x27;Session has expired&#x27;);
+
+    const isUserActive &#x3D; this.accessControlService.isUserActive(auth);
+    if (!isUserActive) {
+        this.logger.warn(&#x60;Account for user ID ${userId} is disabled.&#x60;);
+        return null;  
+    }
+
+        this.logger.log(&#x60;Account for email ${auth.email} is active.&#x60;);
+
+        const user &#x3D; await this.userService.findById(userId);
+        if (!user){
+        this.logger.warn(&#x60;User not found with id: ${userId}&#x60;);
+        return null;
+        }
+        console.log(&quot;auth &#x3D;&#x3D;&gt; &quot;, auth);
+        if (auth.user.id !&#x3D;&#x3D; userId) {
+        this.logger.warn(&#x60;User ID mismatch: token has ${userId} but auth record has ${auth.user.id}&#x60;);
+        return null;
+        }
+        console.log(&quot;refresh token: Retrieved user from database:&quot;, refreshTokenPayload);
+
+        return refreshTokenPayload;
+    }
+
+}</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'IdentityService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

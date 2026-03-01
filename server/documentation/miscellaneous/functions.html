@@ -1,0 +1,2106 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">server documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content miscellaneous-functions">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Miscellaneous</li>
+  <li class="breadcrumb-item">Functions</li>
+</ol>
+
+<section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <ul class="index-list">
+                        <li>
+                            <a href="#ApiDeleteContact" title="src/modules/contact/decorators/api-delete-contact.decorator.ts" ><b>ApiDeleteContact</b>&nbsp;&nbsp;&nbsp;(src/.../api-delete-contact.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiDeletePermission" title="src/modules/permission/decorators/api-delete-permission.decorator.ts" ><b>ApiDeletePermission</b>&nbsp;&nbsp;&nbsp;(src/.../api-delete-permission.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiDeleteProfile" title="src/modules/profile/decorators/api-delete-profile.decorator.ts" ><b>ApiDeleteProfile</b>&nbsp;&nbsp;&nbsp;(src/.../api-delete-profile.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiDeleteRole" title="src/modules/role/decorators/api-delete-role.decorator.ts" ><b>ApiDeleteRole</b>&nbsp;&nbsp;&nbsp;(src/.../api-delete-role.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiDeleteSession" title="src/modules/session/decorators/api-delete-session.decorator.ts" ><b>ApiDeleteSession</b>&nbsp;&nbsp;&nbsp;(src/.../api-delete-session.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiDeleteUser" title="src/modules/user/decorators/api-delete-user.decorator.ts" ><b>ApiDeleteUser</b>&nbsp;&nbsp;&nbsp;(src/.../api-delete-user.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiForgotPassword" title="src/modules/auth/decorators/api-forgot-password.decorator.ts" ><b>ApiForgotPassword</b>&nbsp;&nbsp;&nbsp;(src/.../api-forgot-password.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiGetContact" title="src/modules/contact/decorators/api-get-contact.decorator.ts" ><b>ApiGetContact</b>&nbsp;&nbsp;&nbsp;(src/.../api-get-contact.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiGetContacts" title="src/modules/contact/decorators/api-get-contacts.decorator.ts" ><b>ApiGetContacts</b>&nbsp;&nbsp;&nbsp;(src/.../api-get-contacts.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiGetMe" title="src/modules/auth/decorators/api-get-me.decorator.ts" ><b>ApiGetMe</b>&nbsp;&nbsp;&nbsp;(src/.../api-get-me.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiGetPermission" title="src/modules/permission/decorators/api-get-permission.decorator.ts" ><b>ApiGetPermission</b>&nbsp;&nbsp;&nbsp;(src/.../api-get-permission.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiGetPermissions" title="src/modules/permission/decorators/api-get-permissions.decorator.ts" ><b>ApiGetPermissions</b>&nbsp;&nbsp;&nbsp;(src/.../api-get-permissions.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiGetProfile" title="src/modules/profile/decorators/api-get-profile.decorator.ts" ><b>ApiGetProfile</b>&nbsp;&nbsp;&nbsp;(src/.../api-get-profile.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiGetProfiles" title="src/modules/profile/decorators/api-get-profiles.decorator.ts" ><b>ApiGetProfiles</b>&nbsp;&nbsp;&nbsp;(src/.../api-get-profiles.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiGetRole" title="src/modules/role/decorators/api-get-role.decorator.ts" ><b>ApiGetRole</b>&nbsp;&nbsp;&nbsp;(src/.../api-get-role.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiGetRoles" title="src/modules/role/decorators/api-get-roles.decorator.ts" ><b>ApiGetRoles</b>&nbsp;&nbsp;&nbsp;(src/.../api-get-roles.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiGetSession" title="src/modules/session/decorators/api-get-session.decorator.ts" ><b>ApiGetSession</b>&nbsp;&nbsp;&nbsp;(src/.../api-get-session.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiGetSessions" title="src/modules/session/decorators/api-get-sessions.decorator.ts" ><b>ApiGetSessions</b>&nbsp;&nbsp;&nbsp;(src/.../api-get-sessions.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiGetUser" title="src/modules/user/decorators/api-get-user.decorator.ts" ><b>ApiGetUser</b>&nbsp;&nbsp;&nbsp;(src/.../api-get-user.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiGetUsers" title="src/modules/user/decorators/api-get-users.decorator.ts" ><b>ApiGetUsers</b>&nbsp;&nbsp;&nbsp;(src/.../api-get-users.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiLogin" title="src/modules/auth/decorators/api-login.decorator.ts" ><b>ApiLogin</b>&nbsp;&nbsp;&nbsp;(src/.../api-login.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiLogout" title="src/modules/auth/decorators/api-logout.decorator.ts" ><b>ApiLogout</b>&nbsp;&nbsp;&nbsp;(src/.../api-logout.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiPatchContact" title="src/modules/contact/decorators/api-patch-contact.decorator.ts" ><b>ApiPatchContact</b>&nbsp;&nbsp;&nbsp;(src/.../api-patch-contact.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiPatchPermission" title="src/modules/permission/decorators/api-patch-permission.decorator.ts" ><b>ApiPatchPermission</b>&nbsp;&nbsp;&nbsp;(src/.../api-patch-permission.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiPatchProfile" title="src/modules/profile/decorators/api-patch-profile.decorator.ts" ><b>ApiPatchProfile</b>&nbsp;&nbsp;&nbsp;(src/.../api-patch-profile.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiPatchRole" title="src/modules/role/decorators/api-patch-role.decorator.ts" ><b>ApiPatchRole</b>&nbsp;&nbsp;&nbsp;(src/.../api-patch-role.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiPatchSession" title="src/modules/session/decorators/api-patch-session.decorator.ts" ><b>ApiPatchSession</b>&nbsp;&nbsp;&nbsp;(src/.../api-patch-session.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiPatchUser" title="src/modules/user/decorators/api-patch-user.decorator.ts" ><b>ApiPatchUser</b>&nbsp;&nbsp;&nbsp;(src/.../api-patch-user.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiPostContact" title="src/modules/contact/decorators/api-post-contact.decorator.ts" ><b>ApiPostContact</b>&nbsp;&nbsp;&nbsp;(src/.../api-post-contact.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiPostPermission" title="src/modules/permission/decorators/api-post-permission.decorator.ts" ><b>ApiPostPermission</b>&nbsp;&nbsp;&nbsp;(src/.../api-post-permission.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiPostProfile" title="src/modules/profile/decorators/api-post-profile.decorator.ts" ><b>ApiPostProfile</b>&nbsp;&nbsp;&nbsp;(src/.../api-post-profile.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiPostRole" title="src/modules/role/decorators/api-post-role.decorator.ts" ><b>ApiPostRole</b>&nbsp;&nbsp;&nbsp;(src/.../api-post-role.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiPostSession" title="src/modules/session/decorators/api-post-session.decorator.ts" ><b>ApiPostSession</b>&nbsp;&nbsp;&nbsp;(src/.../api-post-session.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiPostUser" title="src/modules/user/decorators/api-post-user.decorator.ts" ><b>ApiPostUser</b>&nbsp;&nbsp;&nbsp;(src/.../api-post-user.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiRefresh" title="src/modules/auth/decorators/api-refresh-token.decorator.ts" ><b>ApiRefresh</b>&nbsp;&nbsp;&nbsp;(src/.../api-refresh-token.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiRegisterUser" title="src/modules/auth/decorators/api-register-user.decorator.ts" ><b>ApiRegisterUser</b>&nbsp;&nbsp;&nbsp;(src/.../api-register-user.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiResendVerificationEmail" title="src/modules/auth/decorators/api-resend-verification-email.decorator.ts" ><b>ApiResendVerificationEmail</b>&nbsp;&nbsp;&nbsp;(src/.../api-resend-verification-email.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiResetPassword" title="src/modules/auth/decorators/api-reset-password.decorator.ts" ><b>ApiResetPassword</b>&nbsp;&nbsp;&nbsp;(src/.../api-reset-password.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiVerifyEmail" title="src/modules/auth/decorators/api-verify-email.decorator.ts" ><b>ApiVerifyEmail</b>&nbsp;&nbsp;&nbsp;(src/.../api-verify-email.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IsAddress" title="src/common/decorators/validators/is-address.decorator.ts" ><b>IsAddress</b>&nbsp;&nbsp;&nbsp;(src/.../is-address.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IsCity" title="src/common/decorators/validators/is-city.decorator.ts" ><b>IsCity</b>&nbsp;&nbsp;&nbsp;(src/.../is-city.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IsCountry" title="src/common/decorators/validators/is-country.decorator.ts" ><b>IsCountry</b>&nbsp;&nbsp;&nbsp;(src/.../is-country.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IsFaxNumber" title="src/common/decorators/validators/is-fax-number.decorator.ts" ><b>IsFaxNumber</b>&nbsp;&nbsp;&nbsp;(src/.../is-fax-number.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IsFormattedDate" title="src/common/decorators/validators/is-formatted-date.decorator.ts" ><b>IsFormattedDate</b>&nbsp;&nbsp;&nbsp;(src/.../is-formatted-date.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#isLeapYear" title="src/common/utils/is-leap-year.util.ts" ><b>isLeapYear</b>&nbsp;&nbsp;&nbsp;(src/.../is-leap-year.util.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IsMatch" title="src/common/decorators/validators/is-match.decorator.ts" ><b>IsMatch</b>&nbsp;&nbsp;&nbsp;(src/.../is-match.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IsName" title="src/common/decorators/validators/is-name.decorator.ts" ><b>IsName</b>&nbsp;&nbsp;&nbsp;(src/.../is-name.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IsPhoneNumber" title="src/common/decorators/validators/is-phone-number.decorator.ts" ><b>IsPhoneNumber</b>&nbsp;&nbsp;&nbsp;(src/.../is-phone-number.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IsSecuredPassword" title="src/common/decorators/validators/is-secured-password.decorator.ts" ><b>IsSecuredPassword</b>&nbsp;&nbsp;&nbsp;(src/.../is-secured-password.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IsSecuredToken" title="src/common/decorators/validators/is-secured-token.decorator.ts" ><b>IsSecuredToken</b>&nbsp;&nbsp;&nbsp;(src/.../is-secured-token.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IsState" title="src/common/decorators/validators/is-state.decorator.ts" ><b>IsState</b>&nbsp;&nbsp;&nbsp;(src/.../is-state.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IsUserEmail" title="src/common/decorators/validators/is-email.decorator.ts" ><b>IsUserEmail</b>&nbsp;&nbsp;&nbsp;(src/.../is-email.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IsZipCode" title="src/common/decorators/validators/is-zip-code.decorator.ts" ><b>IsZipCode</b>&nbsp;&nbsp;&nbsp;(src/.../is-zip-code.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#sqlRunner" title="src/common/utils/sql-runner.util.ts" ><b>sqlRunner</b>&nbsp;&nbsp;&nbsp;(src/.../sql-runner.util.ts)</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    <h3>src/modules/contact/decorators/api-delete-contact.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiDeleteContact"></a>
+                    <span class="name">
+                        <span ><b>ApiDeleteContact</b></span>
+                        <a href="#ApiDeleteContact"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiDeleteContact()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/permission/decorators/api-delete-permission.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiDeletePermission"></a>
+                    <span class="name">
+                        <span ><b>ApiDeletePermission</b></span>
+                        <a href="#ApiDeletePermission"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiDeletePermission()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Delete Permission</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/profile/decorators/api-delete-profile.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiDeleteProfile"></a>
+                    <span class="name">
+                        <span ><b>ApiDeleteProfile</b></span>
+                        <a href="#ApiDeleteProfile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiDeleteProfile()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Delete Profile</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/role/decorators/api-delete-role.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiDeleteRole"></a>
+                    <span class="name">
+                        <span ><b>ApiDeleteRole</b></span>
+                        <a href="#ApiDeleteRole"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiDeleteRole()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/session/decorators/api-delete-session.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiDeleteSession"></a>
+                    <span class="name">
+                        <span ><b>ApiDeleteSession</b></span>
+                        <a href="#ApiDeleteSession"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiDeleteSession()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Delete Session (Logout/Revoke)</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/user/decorators/api-delete-user.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiDeleteUser"></a>
+                    <span class="name">
+                        <span ><b>ApiDeleteUser</b></span>
+                        <a href="#ApiDeleteUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiDeleteUser()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Delete User</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/auth/decorators/api-forgot-password.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiForgotPassword"></a>
+                    <span class="name">
+                        <span ><b>ApiForgotPassword</b></span>
+                        <a href="#ApiForgotPassword"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiForgotPassword()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/contact/decorators/api-get-contact.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiGetContact"></a>
+                    <span class="name">
+                        <span ><b>ApiGetContact</b></span>
+                        <a href="#ApiGetContact"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiGetContact()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/contact/decorators/api-get-contacts.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiGetContacts"></a>
+                    <span class="name">
+                        <span ><b>ApiGetContacts</b></span>
+                        <a href="#ApiGetContacts"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiGetContacts()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/auth/decorators/api-get-me.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiGetMe"></a>
+                    <span class="name">
+                        <span ><b>ApiGetMe</b></span>
+                        <a href="#ApiGetMe"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiGetMe()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/permission/decorators/api-get-permission.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiGetPermission"></a>
+                    <span class="name">
+                        <span ><b>ApiGetPermission</b></span>
+                        <a href="#ApiGetPermission"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiGetPermission()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Get Single Permission</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/permission/decorators/api-get-permissions.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiGetPermissions"></a>
+                    <span class="name">
+                        <span ><b>ApiGetPermissions</b></span>
+                        <a href="#ApiGetPermissions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiGetPermissions()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Get All Permissions</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/profile/decorators/api-get-profile.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiGetProfile"></a>
+                    <span class="name">
+                        <span ><b>ApiGetProfile</b></span>
+                        <a href="#ApiGetProfile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiGetProfile()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Get Single Profile</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/profile/decorators/api-get-profiles.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiGetProfiles"></a>
+                    <span class="name">
+                        <span ><b>ApiGetProfiles</b></span>
+                        <a href="#ApiGetProfiles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiGetProfiles()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Get All Profiles</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/role/decorators/api-get-role.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiGetRole"></a>
+                    <span class="name">
+                        <span ><b>ApiGetRole</b></span>
+                        <a href="#ApiGetRole"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiGetRole()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/role/decorators/api-get-roles.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiGetRoles"></a>
+                    <span class="name">
+                        <span ><b>ApiGetRoles</b></span>
+                        <a href="#ApiGetRoles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiGetRoles()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/session/decorators/api-get-session.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiGetSession"></a>
+                    <span class="name">
+                        <span ><b>ApiGetSession</b></span>
+                        <a href="#ApiGetSession"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiGetSession()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Get Single Session</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/session/decorators/api-get-sessions.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiGetSessions"></a>
+                    <span class="name">
+                        <span ><b>ApiGetSessions</b></span>
+                        <a href="#ApiGetSessions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiGetSessions()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Get All Sessions</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/user/decorators/api-get-user.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiGetUser"></a>
+                    <span class="name">
+                        <span ><b>ApiGetUser</b></span>
+                        <a href="#ApiGetUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiGetUser()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Get Single User</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/user/decorators/api-get-users.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiGetUsers"></a>
+                    <span class="name">
+                        <span ><b>ApiGetUsers</b></span>
+                        <a href="#ApiGetUsers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiGetUsers()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Get All Users</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/auth/decorators/api-login.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiLogin"></a>
+                    <span class="name">
+                        <span ><b>ApiLogin</b></span>
+                        <a href="#ApiLogin"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiLogin()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/auth/decorators/api-logout.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiLogout"></a>
+                    <span class="name">
+                        <span ><b>ApiLogout</b></span>
+                        <a href="#ApiLogout"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiLogout()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Decorator for the Logout endpoint.
+Ensures Swagger documentation reflects that the &#39;refresh-token&#39; cookie is required to clear the session.</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/contact/decorators/api-patch-contact.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiPatchContact"></a>
+                    <span class="name">
+                        <span ><b>ApiPatchContact</b></span>
+                        <a href="#ApiPatchContact"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiPatchContact()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/permission/decorators/api-patch-permission.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiPatchPermission"></a>
+                    <span class="name">
+                        <span ><b>ApiPatchPermission</b></span>
+                        <a href="#ApiPatchPermission"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiPatchPermission()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Update Permission</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/profile/decorators/api-patch-profile.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiPatchProfile"></a>
+                    <span class="name">
+                        <span ><b>ApiPatchProfile</b></span>
+                        <a href="#ApiPatchProfile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiPatchProfile()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Update Profile (Partial)</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/role/decorators/api-patch-role.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiPatchRole"></a>
+                    <span class="name">
+                        <span ><b>ApiPatchRole</b></span>
+                        <a href="#ApiPatchRole"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiPatchRole()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/session/decorators/api-patch-session.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiPatchSession"></a>
+                    <span class="name">
+                        <span ><b>ApiPatchSession</b></span>
+                        <a href="#ApiPatchSession"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiPatchSession()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Update Session</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/user/decorators/api-patch-user.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiPatchUser"></a>
+                    <span class="name">
+                        <span ><b>ApiPatchUser</b></span>
+                        <a href="#ApiPatchUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiPatchUser()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Update User</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/contact/decorators/api-post-contact.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiPostContact"></a>
+                    <span class="name">
+                        <span ><b>ApiPostContact</b></span>
+                        <a href="#ApiPostContact"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiPostContact()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/permission/decorators/api-post-permission.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiPostPermission"></a>
+                    <span class="name">
+                        <span ><b>ApiPostPermission</b></span>
+                        <a href="#ApiPostPermission"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiPostPermission()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Create Permission</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/profile/decorators/api-post-profile.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiPostProfile"></a>
+                    <span class="name">
+                        <span ><b>ApiPostProfile</b></span>
+                        <a href="#ApiPostProfile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiPostProfile()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Create Profile</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/role/decorators/api-post-role.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiPostRole"></a>
+                    <span class="name">
+                        <span ><b>ApiPostRole</b></span>
+                        <a href="#ApiPostRole"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiPostRole()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/session/decorators/api-post-session.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiPostSession"></a>
+                    <span class="name">
+                        <span ><b>ApiPostSession</b></span>
+                        <a href="#ApiPostSession"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiPostSession()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Create Session (Login/Token Refresh)</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/user/decorators/api-post-user.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiPostUser"></a>
+                    <span class="name">
+                        <span ><b>ApiPostUser</b></span>
+                        <a href="#ApiPostUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiPostUser()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Create User</p>
+</div>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/modules/auth/decorators/api-refresh-token.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiRefresh"></a>
+                    <span class="name">
+                        <span ><b>ApiRefresh</b></span>
+                        <a href="#ApiRefresh"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiRefresh()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/auth/decorators/api-register-user.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiRegisterUser"></a>
+                    <span class="name">
+                        <span ><b>ApiRegisterUser</b></span>
+                        <a href="#ApiRegisterUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiRegisterUser()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/auth/decorators/api-resend-verification-email.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiResendVerificationEmail"></a>
+                    <span class="name">
+                        <span ><b>ApiResendVerificationEmail</b></span>
+                        <a href="#ApiResendVerificationEmail"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiResendVerificationEmail()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/auth/decorators/api-reset-password.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiResetPassword"></a>
+                    <span class="name">
+                        <span ><b>ApiResetPassword</b></span>
+                        <a href="#ApiResetPassword"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiResetPassword()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/modules/auth/decorators/api-verify-email.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiVerifyEmail"></a>
+                    <span class="name">
+                        <span ><b>ApiVerifyEmail</b></span>
+                        <a href="#ApiVerifyEmail"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ApiVerifyEmail()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/common/decorators/validators/is-address.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IsAddress"></a>
+                    <span class="name">
+                        <span ><b>IsAddress</b></span>
+                        <a href="#IsAddress"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>IsAddress()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/common/decorators/validators/is-city.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IsCity"></a>
+                    <span class="name">
+                        <span ><b>IsCity</b></span>
+                        <a href="#IsCity"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>IsCity()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/common/decorators/validators/is-country.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IsCountry"></a>
+                    <span class="name">
+                        <span ><b>IsCountry</b></span>
+                        <a href="#IsCountry"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>IsCountry()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/common/decorators/validators/is-fax-number.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IsFaxNumber"></a>
+                    <span class="name">
+                        <span ><b>IsFaxNumber</b></span>
+                        <a href="#IsFaxNumber"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>IsFaxNumber(validationOptions?: ValidationOptions)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>validationOptions</td>
+                                            <td>
+                                                        <code>ValidationOptions</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/common/decorators/validators/is-formatted-date.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IsFormattedDate"></a>
+                    <span class="name">
+                        <span ><b>IsFormattedDate</b></span>
+                        <a href="#IsFormattedDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>IsFormattedDate(format: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>format</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>&#x27;dd-MMM-yyyy&#x27;</code>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/common/utils/is-leap-year.util.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isLeapYear"></a>
+                    <span class="name">
+                        <span ><b>isLeapYear</b></span>
+                        <a href="#isLeapYear"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>isLeapYear(year: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Returns true if the given year (or current year) is a leap year.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>year</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>new Date().getFullYear()</code>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/common/decorators/validators/is-match.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IsMatch"></a>
+                    <span class="name">
+                        <span ><b>IsMatch</b></span>
+                        <a href="#IsMatch"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>IsMatch(property: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, validationOptions?: ValidationOptions)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>property</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>validationOptions</td>
+                                            <td>
+                                                        <code>ValidationOptions</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/common/decorators/validators/is-name.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IsName"></a>
+                    <span class="name">
+                        <span ><b>IsName</b></span>
+                        <a href="#IsName"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>IsName(label: <a href="../miscellaneous/typealiases.html#NameType" target="_self">NameType</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>label</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#NameType" target="_self" >NameType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>&#x27;FirstName&#x27;</code>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/common/decorators/validators/is-phone-number.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IsPhoneNumber"></a>
+                    <span class="name">
+                        <span ><b>IsPhoneNumber</b></span>
+                        <a href="#IsPhoneNumber"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>IsPhoneNumber(validationOptions?: ValidationOptions)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>validationOptions</td>
+                                            <td>
+                                                        <code>ValidationOptions</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/common/decorators/validators/is-secured-password.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IsSecuredPassword"></a>
+                    <span class="name">
+                        <span ><b>IsSecuredPassword</b></span>
+                        <a href="#IsSecuredPassword"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>IsSecuredPassword()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/common/decorators/validators/is-secured-token.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IsSecuredToken"></a>
+                    <span class="name">
+                        <span ><b>IsSecuredToken</b></span>
+                        <a href="#IsSecuredToken"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>IsSecuredToken()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/common/decorators/validators/is-state.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IsState"></a>
+                    <span class="name">
+                        <span ><b>IsState</b></span>
+                        <a href="#IsState"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>IsState()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/common/decorators/validators/is-email.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IsUserEmail"></a>
+                    <span class="name">
+                        <span ><b>IsUserEmail</b></span>
+                        <a href="#IsUserEmail"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>IsUserEmail()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/common/decorators/validators/is-zip-code.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IsZipCode"></a>
+                    <span class="name">
+                        <span ><b>IsZipCode</b></span>
+                        <a href="#IsZipCode"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>IsZipCode()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>src/common/utils/sql-runner.util.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sqlRunner"></a>
+                    <span class="name">
+                        <span ><b>sqlRunner</b></span>
+                        <a href="#sqlRunner"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>sqlRunner(queryRunner: QueryRunner, relativePath: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, table: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>queryRunner</td>
+                                            <td>
+                                                        <code>QueryRunner</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>relativePath</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>table</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'miscellaneous-functions';
+            var COMPODOC_CURRENT_PAGE_URL = 'functions.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
