@@ -16,12 +16,20 @@ import { TypeOrmPinoLogger } from './common/logger/typeorm.logger';
 import { LoggerModule } from 'nestjs-pino/LoggerModule';
 import { pinoLoggerConfig } from './configs/pino.config';
 import { TerminusModule } from '@nestjs/terminus/dist/terminus.module';
-import { SentryModule } from "@sentry/nestjs/setup";
+import { SentryGlobalFilter, SentryModule } from "@sentry/nestjs/setup";
+import { APP_FILTER } from '@nestjs/core/constants';
 
 
 console.log("__dirname:", __dirname);
 
- @Module({
+ @Module({ 
+   providers: [
+    {
+      provide: APP_FILTER,
+      useClass: SentryGlobalFilter,
+    },
+    // ..other providers
+  ],
   imports: [
     CoreModule,
     UserModule, 

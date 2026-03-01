@@ -1,6 +1,6 @@
+
 import { SentryConfig } from './configs/sentry.config';
 SentryConfig();
-
 import cookieParser from 'cookie-parser';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
