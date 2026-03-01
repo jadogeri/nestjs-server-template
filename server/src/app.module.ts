@@ -16,6 +16,7 @@ import { TypeOrmPinoLogger } from './common/logger/typeorm.logger';
 import { LoggerModule } from 'nestjs-pino/LoggerModule';
 import { pinoLoggerConfig } from './configs/pino.config';
 import { TerminusModule } from '@nestjs/terminus/dist/terminus.module';
+import { SentryModule } from "@sentry/nestjs/setup";
 
 
 console.log("__dirname:", __dirname);
@@ -30,6 +31,7 @@ console.log("__dirname:", __dirname);
     RoleModule, 
     ContactModule, 
     PermissionModule,
+    SentryModule.forRoot(),
      TerminusModule.forRoot({
       gracefulShutdownTimeoutMs: 1000,
     }),
