@@ -29,7 +29,8 @@
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "seeds": "npx ts-node -P tsconfig.json node_modules/typeorm-extension/bin/cli.cjs seed:run -d src/database/data-source.ts",
     "knip": "knip",
-    "compodoc": "npx @compodoc/compodoc -p tsconfig.json -s -r 3001"
+    "compodoc": "npx @compodoc/compodoc -p tsconfig.json -s -r 3001",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org joseph-adogeri --project server-app ./dist && sentry-cli sourcemaps upload --org joseph-adogeri --project server-app ./dist"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^2.0.2",
@@ -47,6 +48,9 @@
     "@nestjs/swagger": "^11.2.6",
     "@nestjs/terminus": "^11.1.1",
     "@nestjs/typeorm": "^11.0.0",
+    "@sentry/cli": "^2.58.5",
+    "@sentry/nestjs": "^10.40.0",
+    "@sentry/profiling-node": "^10.40.0",
     "argon2": "^0.44.0",
     "axios": "^1.13.6",
     "class-transformer": "^0.5.1",

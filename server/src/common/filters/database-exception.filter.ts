@@ -1,12 +1,13 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpStatus } from '@nestjs/common';
 import { Request, Response } from 'express';
+import * as Sentry from '@sentry/nestjs';
 import { QueryFailedError } from 'typeorm';
 import * as winston from 'winston';
 
 @Catch(QueryFailedError)
 export class DatabaseExceptionFilter implements ExceptionFilter {
   // Configure Winston to save logs to a file
-  private logger = winston.createLogger({
+  private readonly logger = winston.createLogger({
     format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
     transports: [
       new winston.transports.File({ filename: 'logs/database-errors.log', level: 'error' }),
@@ -17,6 +18,14 @@ export class DatabaseExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
+
+         // 1. Manually capture the exception with Sentry
+    Sentry.captureException(exception, {
+      extra: {
+        sql: exception.query,
+        parameters: exception.parameters,
+      },
+    });
 
     const logEntry = {
       timestamp: new Date().toISOString(),
@@ -38,3 +47,32 @@ export class DatabaseExceptionFilter implements ExceptionFilter {
     });
   }
 }
+
+
+/**
+ * 
+     // 1. Manually capture the exception with Sentry
+    Sentry.captureException(exception, {
+      extra: {
+        sql: exception.query,
+        parameters: exception.parameters,
+      },
+    });
+
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      url: request.url,
+      method: request.method,
+      sql: exception.query,
+      params: exception.parameters,
+      message: exception.message,
+    };
+
+    this.logger.error(logEntry);
+
+    response.status(HttpStatus.BAD_REQUEST).json({
+      statusCode: HttpStatus.BAD_REQUEST,
+      message: 'Database Query Failed',
+      detail: exception.message.includes('UNIQUE') ? 'Duplicate entry found' : 'Constraint violation',
+    });
+ */
