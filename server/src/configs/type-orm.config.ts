@@ -16,6 +16,7 @@ import { Permission } from '../modules/permission/entities/permission.entity';
 import { Role } from '../modules/role/entities/role.entity';
 import { Profile } from '../modules/profile/entities/profile.entity';
 import { Session } from '../modules/session/entities/session.entity';
+import { UserSubscriber } from '../database/subscribers/user.subscriber';
 //import { TypeOrmPinoLogger } from '../common/logger/typeorm.logger';
 
 
@@ -37,6 +38,8 @@ export const dataSourceOptions: TypeOrmModuleOptions & SeederOptions = {
   migrations: [__dirname + '/../database/migrations/*{.ts,.js}'],
   factories: [ContactFactory, ProfileFactory], // Add your factories here
   seeds: [UserSeeder],
+  subscribers: [UserSubscriber],
+  
   synchronize: !isProduction,
   logging: isProduction === false ? ["warn","query", "error", "schema"] : ["error"],
   //logger: new TypeOrmPinoLogger(), 

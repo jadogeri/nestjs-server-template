@@ -5,9 +5,10 @@ import { StatsController } from './stats.controller';
 import { StatsService } from './stats.service';
 import { Role } from '../role/entities/role.entity';
 import { User } from '../user/entities/user.entity';
+import { Contact } from '../contact/entities/contact.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Role, User])],
+  imports: [TypeOrmModule.forFeature([Role, User, Contact])],
   controllers: [StatsController],
   providers: [StatsService],
 })

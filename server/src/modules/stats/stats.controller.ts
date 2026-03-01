@@ -3,7 +3,7 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { StatsService } from './stats.service';
 
-@ApiExcludeController()
+//@ApiExcludeController()
 @Controller('stats')
 export class StatsController {
   constructor(private readonly statsService: StatsService) {}
@@ -17,4 +17,9 @@ export class StatsController {
   getSummary() {
     return this.statsService.getGeneralStats();
   }
+
+    @Get('contacts')
+    getContactsDashboard() {
+        return this.statsService.getContactStats();
+    }
 }
