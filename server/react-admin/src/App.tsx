@@ -41,7 +41,8 @@ export const App = () => (
     <Admin 
         dataProvider={appDataProvider} 
         authProvider={appAuthProvider}
-        dashboard={Dashboard} >
+        dashboard={Dashboard}         defaultTheme="dark" 
+>
         <Resource name="users" list={UserList} edit={EditGuesser} icon={PeopleIcon}/>
         <Resource name="profiles" list={ProfileList} edit={ProfileEdit} create={ProfileCreate} icon={AccountCircleIcon}/>
         <Resource name="roles" list={RoleList} edit={RoleEdit} create={RoleCreate} icon={SupervisorAccountIcon}/>
