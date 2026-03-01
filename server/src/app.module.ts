@@ -15,6 +15,7 @@ import { join } from 'node:path';
 import { TypeOrmPinoLogger } from './common/logger/typeorm.logger';
 import { LoggerModule } from 'nestjs-pino/LoggerModule';
 import { pinoLoggerConfig } from './configs/pino.config';
+import { TerminusModule } from '@nestjs/terminus/dist/terminus.module';
 
 
 console.log("__dirname:", __dirname);
@@ -29,6 +30,9 @@ console.log("__dirname:", __dirname);
     RoleModule, 
     ContactModule, 
     PermissionModule,
+     TerminusModule.forRoot({
+      gracefulShutdownTimeoutMs: 1000,
+    }),
     ServeStaticModule.forRoot({
   // Use join with process.cwd() for the absolute path
   rootPath: join(process.cwd(), '..','server', 'react-admin', 'dist'), 
