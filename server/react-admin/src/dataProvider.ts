@@ -2,6 +2,7 @@
 import jsonServerProvider from 'ra-data-json-server';
 import { fetchUtils } from 'react-admin';
 
+const apiUrl = 'http://localhost:3000/api';
 
 const httpClient = (url: string, options: any = {}) => {
     if (!options.headers) {
@@ -55,13 +56,20 @@ export const dataProvider = {
             total: allData.length,
         };
     },
-        getOne: (resource: any, params: any) => {
+    getOne: (resource: any, params: any) => {
         return baseProvider.getOne(resource, params).then(response => {
             // Log to Windows Console (F12) to verify what NestJS is sending
             console.log(`getOne ${resource} response:`, response);
             return response;
         });
     },
+    getStats: async (resource: string) => {
+        const url = `${apiUrl}/stats/${resource}`;
+        const response = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
+        });
+        return response.json();
+    }
 
 };
 

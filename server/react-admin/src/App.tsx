@@ -30,6 +30,7 @@ import { ProfileCreate } from './features/profile/profile.create.js';
 import { RoleList } from './features/role/role.list.js';
 import { RoleEdit } from './features/role/role.edit.js';
 import { RoleCreate } from './features/role/role.create.js';
+import { Dashboard } from './components/dashBoard.component.js';
 const appAuthProvider = addRefreshAuthToAuthProvider(authProvider, refreshAuth);
 const appDataProvider = addRefreshAuthToDataProvider(dataProvider, refreshAuth);
 
@@ -37,7 +38,10 @@ const appDataProvider = addRefreshAuthToDataProvider(dataProvider, refreshAuth);
 
     
 export const App = () => (
-    <Admin dataProvider={appDataProvider} authProvider={appAuthProvider}>
+    <Admin 
+        dataProvider={appDataProvider} 
+        authProvider={appAuthProvider}
+        dashboard={Dashboard} >
         <Resource name="users" list={UserList} edit={EditGuesser} icon={PeopleIcon}/>
         <Resource name="profiles" list={ProfileList} edit={ProfileEdit} create={ProfileCreate} icon={AccountCircleIcon}/>
         <Resource name="roles" list={RoleList} edit={RoleEdit} create={RoleCreate} icon={SupervisorAccountIcon}/>
