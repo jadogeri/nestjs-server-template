@@ -14,7 +14,6 @@ export const AuthEdit = () => (
     <SimpleForm>
       <TextInput source="id" disabled />
       <TextInput source="email" fullWidth />
-      <PasswordInput source="password" helperText="Leave empty to keep unchanged" fullWidth />
       <SelectInput source="status" choices={statusChoices} />
       <BooleanInput source="isEnabled" />
       <BooleanInput source="isVerified" />

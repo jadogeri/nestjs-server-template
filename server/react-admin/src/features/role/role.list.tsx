@@ -7,7 +7,7 @@ export const RoleList = () => (
             <TextField source="name" />
             <TextField source="description" />
             {/* Displays permissions as clickable chips */}
-            <ReferenceArrayField source="permissions" reference="permission">
+            <ReferenceArrayField source="permissions" reference="permissions" label="Permissions">
                 <SingleFieldList>
                     <ChipField source="name" />
                 </SingleFieldList>

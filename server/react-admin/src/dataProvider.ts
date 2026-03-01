@@ -19,6 +19,23 @@ const baseProvider = jsonServerProvider('/api', httpClient);
 
 export const dataProvider = {
     ...baseProvider,
+    
+    // Add this create method logic
+    create: async (resource: string, params: any) => {
+        const response = await baseProvider.create(resource, params);
+        
+        // Check if we are registering and if the ID is missing
+        if (resource === 'auths/register' && !response.data.id) {
+            return {
+                ...response,
+                data: { 
+                    ...response.data, 
+                    id: 'temp-id-' + Date.now() // Inject fake ID to satisfy React Admin
+                },
+            };
+        }
+        return response;
+    },
     getList: async (resource: any, params: any) => {
         // 1. Fetch ALL data from the backend (no pagination params)
         const { data: allData } = await baseProvider.getList(resource, {

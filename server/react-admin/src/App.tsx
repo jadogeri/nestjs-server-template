@@ -27,18 +27,23 @@ import { refreshAuth } from './utils/refresh-auth.util.js';
 import { ProfileList } from './features/profile/profile.list.js';
 import { ProfileEdit } from './features/profile/profile.edit.js';
 import { ProfileCreate } from './features/profile/profile.create.js';
+import { RoleList } from './features/role/role.list.js';
+import { RoleEdit } from './features/role/role.edit.js';
+import { RoleCreate } from './features/role/role.create.js';
 const appAuthProvider = addRefreshAuthToAuthProvider(authProvider, refreshAuth);
 const appDataProvider = addRefreshAuthToDataProvider(dataProvider, refreshAuth);
+
+
 
     
 export const App = () => (
     <Admin dataProvider={appDataProvider} authProvider={appAuthProvider}>
-        <Resource name="users" list={UserList} edit={EditGuesser} create={UserCreate} icon={PeopleIcon}/>
+        <Resource name="users" list={UserList} edit={EditGuesser} icon={PeopleIcon}/>
         <Resource name="profiles" list={ProfileList} edit={ProfileEdit} create={ProfileCreate} icon={AccountCircleIcon}/>
-        <Resource name="roles" list={ListGuesser} edit={EditGuesser} icon={SupervisorAccountIcon}/>
+        <Resource name="roles" list={RoleList} edit={RoleEdit} create={RoleCreate} icon={SupervisorAccountIcon}/>
         <Resource name="contacts" list={ListGuesser} edit={EditGuesser} icon={ContactPhoneIcon}/>
         <Resource name="permissions" list={ListGuesser} edit={EditGuesser} icon={VerifiedUserIcon}/>
-        <Resource name="sessions" list={SessionList} edit={SessionEdit} icon={TimerIcon}/>
+        <Resource name="sessions" list={ListGuesser} icon={TimerIcon}/>
         <Resource name="auths" list={AuthList}  edit={AuthEdit} create={AuthCreate} icon={SecurityIcon}/>
     </Admin>
 
