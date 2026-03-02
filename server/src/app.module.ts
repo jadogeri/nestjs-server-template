@@ -20,7 +20,6 @@ import { SentryGlobalFilter, SentryModule } from "@sentry/nestjs/setup";
 import { APP_FILTER } from '@nestjs/core/constants';
 import { StatsModule } from './modules/stats/stats.module';
 
-
 console.log("__dirname:", __dirname);
 
  @Module({ 
