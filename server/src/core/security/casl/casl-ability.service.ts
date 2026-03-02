@@ -2,10 +2,11 @@ import { AbilityBuilder, createMongoAbility, ExtractSubjectType, InferSubjects, 
 import { Service } from '../../../common/decorators/service.decorator';
 import { User } from '../../../modules/user/entities/user.entity';
 import { Action } from '../../../common/enums/action.enum';
+import { Resource } from '../../../common/types/resource.type';
 
 
-// Define which subjects (entities) CASL should manage
-export type Subjects = InferSubjects<typeof User | 'all'>;
+// Define your resources as a union type for better IDE support
+export type Subjects = InferSubjects<typeof User> | Resource;
 export type AppAbility = MongoAbility<[Action, Subjects]>;
 
 @Service()
@@ -13,17 +14,15 @@ export class CaslAbilityFactory {
   createForUser(user: User) {
     const { can, build } = new AbilityBuilder<AppAbility>(createMongoAbility);
 
-    // Iterate through all roles and their associated permissions
-    user.roles.forEach((role) => {
-      // Logic for SUPER_USER: grant all permissions
+    // Ensure user.roles and role.permissions are loaded (via TypeORM relations)
+    user.roles?.forEach((role) => {
       if (role.name === 'SUPER_USER') {
         can(Action.ALL, 'all');
       }
 
-      // Map database permissions to CASL rules
-      role.permissions?.forEach((permission) => {
-        // Convert permission.resource (string) and permission.action (enum) to CASL rules
-        can(permission.action, permission.resource as any);
+      role.permissions?.forEach((perm) => {
+        // perm.resource would be 'auth', 'profile', etc.
+        can(perm.action, perm.resource as Resource);
       });
     });
 

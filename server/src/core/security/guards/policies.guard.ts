@@ -2,12 +2,13 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Service } from '../../../common/decorators/service.decorator';
 import { Action } from '../../../common/enums/action.enum';
+import { Resource } from '../../../common/types/resource.type';
 import { CaslAbilityFactory } from '../casl/casl-ability.service';
 
 
 interface RequiredPermission {
   action: Action;
-  resource: string;
+  resource: Resource;
 }
 
 @Service()
@@ -26,6 +27,6 @@ export class PoliciesGuard implements CanActivate {
     const ability = this.caslAbilityFactory.createForUser(user);
     
     // Check if user has permission for every rule defined on the route
-    return rules.every((rule) => ability.can(rule.action, rule.resource as any));
+    return rules.every((rule) => ability.can(rule.action, rule.resource as Resource));
   }
 }
