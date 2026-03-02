@@ -3,6 +3,7 @@ import { UserPayload } from "../../common/interfaces/user-payload.interface";
 import { PermissionStringGeneratorUtil } from "../../common/utils/permission-string.util";
 import { User } from "../user/entities/user.entity";
 import { PermissionString } from "../../common/types/permission-string.type";
+import { Resource } from "../../common/types/resource.type";
 
 @Service()
 export class PayloadMapperService {
@@ -10,7 +11,7 @@ export class PayloadMapperService {
     const uniquePermissions: PermissionString[] = [
         ...new Set(
             user.roles.flatMap(role => 
-            role.permissions.map(p => PermissionStringGeneratorUtil.generate(p.resource, p.action))
+            role.permissions.map(p => PermissionStringGeneratorUtil.generate(p.resource as Resource, p.action))
             )
         )
     ];
