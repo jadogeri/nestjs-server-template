@@ -6,10 +6,11 @@ import { AccessControlModule } from './access-control/access-control.module';
 import { CookieModule } from './cookie/cookie.module';
 import { HashingModule } from './hashing/hashing.module';
 import { TokenModule } from './token/token.module';
+import { CaslModule } from './casl/casl-ability.module';
 
 @Module({
-  imports: [HashingModule, TokenModule, AccessControlModule,  CookieModule], 
-  exports: [HashingModule, TokenModule, AccessControlModule, CookieModule],  
+  imports: [HashingModule, TokenModule, AccessControlModule,  CookieModule, CaslModule], 
+  exports: [HashingModule, TokenModule, AccessControlModule, CookieModule, CaslModule],  
   providers: [],
 })
 export class SecurityModule {}

@@ -35,6 +35,7 @@ import { ApiForgotPassword } from './decorators/api-forgot-password.decorator';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ApiResetPassword } from './decorators/api-reset-password.decorator';
 import { ApiLogout } from './decorators/api-logout.decorator';
+import { ApiExcludeEndpoint } from '@nestjs/swagger';
 
 @Controller('auths')
 export class AuthController {
@@ -118,11 +119,13 @@ export class AuthController {
   }   
 
     @Get()
+    @ApiExcludeEndpoint()
     findAll() {
       return this.authService.findAll();
     }
   
     @Get(':id')
+    @ApiExcludeEndpoint()
     findOne(@Param('id') id: string) {
       console.log(`AuthController: Fetching auth with ID ${id}...`);
       return this.authService.findById(+id);
