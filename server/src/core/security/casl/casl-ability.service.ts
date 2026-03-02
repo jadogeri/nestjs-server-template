@@ -5,7 +5,7 @@ import { Action } from '../../../common/enums/action.enum';
 import { Resource } from '../../../common/types/resource.type';
 import { AccessTokenPayload } from '../../../common/types/access-token-payload.type';
 import { PermissionString } from '../../../common/types/permission-string.type';
-import { PermissionStringGeneratorUtil } from 'src/common/utils/permission-string.util';
+import { PermissionStringGeneratorUtil } from '../../../common/utils/permission-string.util';
 
 
 // Define your resources as a union type for better IDE support

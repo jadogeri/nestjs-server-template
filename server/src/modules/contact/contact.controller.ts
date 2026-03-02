@@ -14,7 +14,7 @@ import { PermissionsGuard } from '../../core/security/guards/permissions.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Permissions } from '../../common/decorators/permissions.decorator';
 import { RolesGuard } from '../../core/security/guards/roles.guard';
-import { PoliciesGuard } from 'src/core/security/guards/policies.guard';
+import { PoliciesGuard } from '../../core/security/guards/policies.guard';
 
 @Controller('contacts')
 @UseGuards(AccessAuthGuard, PoliciesGuard )

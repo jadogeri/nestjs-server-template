@@ -5,9 +5,9 @@ import { Action } from '../../../common/enums/action.enum';
 import { Resource } from '../../../common/types/resource.type';
 import { CaslAbilityFactory } from '../casl/casl-ability.service';
 import { AccessTokenPayload } from '../../../common/types/access-token-payload.type';
-import { PERMISSIONS_KEY } from 'src/common/decorators/permissions.decorator';
-import { PermissionString } from 'src/common/types/permission-string.type';
-import { PermissionStringGeneratorUtil } from 'src/common/utils/permission-string.util';
+import { PERMISSIONS_KEY } from '../../../common/decorators/permissions.decorator';
+import { PermissionString } from '../../../common/types/permission-string.type';
+import { PermissionStringGeneratorUtil } from '../../../common/utils/permission-string.util';
 
 
 @Service()
