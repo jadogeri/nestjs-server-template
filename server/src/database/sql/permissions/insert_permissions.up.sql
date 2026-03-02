@@ -24,9 +24,9 @@ WHERE NOT EXISTS (
 );
 
 INSERT INTO "permissions" ("resource", "action", "description")
-SELECT 'user', '*', 'Allows full access to user management'
+SELECT 'user', 'manage', 'Allows full access to user management'
 WHERE NOT EXISTS (
-    SELECT 1 FROM "permissions" WHERE "resource" = 'user' AND "action" = '*'
+    SELECT 1 FROM "permissions" WHERE "resource" = 'user' AND "action" = 'manage'
 );
 
 -- ROLE
@@ -56,9 +56,9 @@ WHERE NOT EXISTS (
 );
 
 INSERT INTO "permissions" ("resource", "action", "description")
-SELECT 'role', '*', 'Allows editing roles'
+SELECT 'role', 'manage', 'Allows managing roles'
 WHERE NOT EXISTS (
-    SELECT 1 FROM "permissions" WHERE "resource" = 'role' AND "action" = '*'
+    SELECT 1 FROM "permissions" WHERE "resource" = 'role' AND "action" = 'manage'
 );
 
 -- CONTACT
@@ -79,8 +79,8 @@ SELECT 'contact', 'delete', 'Allows deleting contacts'
 WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'contact' AND "action" = 'delete');
 
 INSERT INTO "permissions" ("resource", "action", "description")
-SELECT 'contact', '*', 'Allows deleting contacts'
-WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'contact' AND "action" = '*');
+SELECT 'contact', 'manage', 'Allows managing contacts'
+WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'contact' AND "action" = 'manage');
 
 -- ADMIN
 INSERT INTO "permissions" ("resource", "action", "description")
@@ -100,8 +100,8 @@ SELECT 'admin', 'delete', 'Allows deleting admin resources'
 WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'admin' AND "action" = 'delete');
 
 INSERT INTO "permissions" ("resource", "action", "description")
-SELECT 'admin', '*', 'Allows deleting admin resources'
-WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'admin' AND "action" = '*');
+SELECT 'admin', 'manage', 'Allows managing admin resources'
+WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'admin' AND "action" = 'manage');
 
 -- AUTH
 INSERT INTO "permissions" ("resource", "action", "description")
@@ -121,8 +121,8 @@ SELECT 'auth', 'delete', 'Allows revoking access/logging out'
 WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'auth' AND "action" = 'delete');
 
 INSERT INTO "permissions" ("resource", "action", "description")
-SELECT 'auth', '*', 'Allows full access to authentication management'
-WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'auth' AND "action" = '*');
+SELECT 'auth', 'manage', 'Allows full access to authentication management'
+WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'auth' AND "action" = 'manage');
 
 -- PROFILE
 INSERT INTO "permissions" ("resource", "action", "description")
@@ -142,8 +142,8 @@ SELECT 'profile', 'delete', 'Allows deleting profiles'
 WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'profile' AND "action" = 'delete');
 
 INSERT INTO "permissions" ("resource", "action", "description")
-SELECT 'profile', '*', 'Allows deleting profiles'
-WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'profile' AND "action" = '*');
+SELECT 'profile', 'manage', 'Allows managing profiles'
+WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'profile' AND "action" = 'manage');
 
 -- PERMISSIONS
 INSERT INTO "permissions" ("resource", "action", "description")
@@ -163,8 +163,8 @@ SELECT 'permission', 'delete', 'Allows deleting permission entries'
 WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'permission' AND "action" = 'delete');
 
 INSERT INTO "permissions" ("resource", "action", "description")
-SELECT 'permission', '*', 'Allows full access to permission management'
-WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'permission' AND "action" = '*');
+SELECT 'permission', 'manage', 'Allows managing permissions'
+WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'permission' AND "action" = 'manage');
 
 -- SESSION
 INSERT INTO "permissions" ("resource", "action", "description")
@@ -184,12 +184,12 @@ SELECT 'session', 'delete', 'Allows deleting sessions'
 WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'session' AND "action" = 'delete');
 
 INSERT INTO "permissions" ("resource", "action", "description")
-SELECT 'session', '*', 'Full access to sessions'
-WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'session' AND "action" = '*');
+SELECT 'session', 'manage', 'Allows managing sessions'
+WHERE NOT EXISTS (SELECT 1 FROM "permissions" WHERE "resource" = 'session' AND "action" = 'manage');
 
 -- FULL ACCESS
 INSERT INTO "permissions" ("resource", "action", "description")
-SELECT '*', '*', 'Full system access'
+SELECT 'all', 'manage', 'Full system access'
 WHERE NOT EXISTS (
-    SELECT 1 FROM "permissions" WHERE "resource" = '*' AND "action" = '*'
+    SELECT 1 FROM "permissions" WHERE "resource" = 'all' AND "action" = 'manage'
 );

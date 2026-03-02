@@ -9,4 +9,4 @@ export type Resource =
 'user' | 
 'stats' |
 'health' |
-'*';
+'all';

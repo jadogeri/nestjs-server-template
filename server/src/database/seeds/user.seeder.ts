@@ -10,7 +10,6 @@ import { StatusEnum } from '../../common/enums/user-status.enum';
 import { Role } from '../../modules/role/entities/role.entity';
 import dotenv from 'dotenv';
 import { Profile } from '../../modules/profile/entities/profile.entity';
-import moment from 'moment';
 
 dotenv.config();
 

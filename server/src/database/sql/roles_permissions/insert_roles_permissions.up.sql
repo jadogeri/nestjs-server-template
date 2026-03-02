@@ -12,8 +12,8 @@ INSERT INTO "roles_permissions" ("roleId", "permissionId")
 SELECT r.id, p.id
 FROM "roles" r, "permissions" p
 WHERE r.name = 'SUPER_USER' 
-AND p.resource = '*' 
-AND p.action = '*'
+AND p.resource = 'all' 
+AND p.action = 'manage'
 AND NOT EXISTS (
     SELECT 1 FROM "roles_permissions" rp 
     WHERE rp.roleId = r.id AND rp.permissionId = p.id
@@ -24,7 +24,7 @@ INSERT INTO "roles_permissions" ("roleId", "permissionId")
 SELECT r.id, p.id
 FROM "roles" r, "permissions" p
 WHERE r.name = 'ADMIN' 
-AND p.resource NOT IN ('*', 'admin', 'permission', 'role')
+AND p.resource NOT IN ('all', 'admin', 'permission', 'role')
 AND NOT EXISTS (
     SELECT 1 FROM "roles_permissions" rp 
     WHERE rp.roleId = r.id AND rp.permissionId = p.id
@@ -50,7 +50,7 @@ SELECT r.id, p.id
 FROM "roles" r, "permissions" p
 WHERE r.name = 'EDITOR' 
 AND (
-    (p.resource IN ('contact', 'profile') AND p.action = '*') OR
+    (p.resource IN ('contact', 'profile') AND p.action = 'manage') OR
     (p.resource IN ('user', 'role') AND p.action = 'read')
 )
 AND NOT EXISTS (
