@@ -51,6 +51,7 @@ console.log("__dirname:", __dirname);
             // Use 'redis' because that is the service name in your docker-compose
             host: configService.get('REDIS_HOST') || 'redis',
             port: configService.getOrThrow<number>('REDIS_PORT'),
+            
           },
           ttl: 30000, // 30 seconds default
         }),

@@ -31,10 +31,11 @@
     "knip": "knip",
     "compodoc": "npx @compodoc/compodoc -p tsconfig.json -s -r 3001",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org joseph-adogeri --project server-app ./dist && sentry-cli sourcemaps upload --org joseph-adogeri --project server-app ./dist",
+    "docker:prune": "docker builder prune -f && docker system prune -f",
     "docker:dev": "docker-compose up",
     "docker:dev:db": "docker-compose up -d redis",
     "docker:stop": "docker-compose down",
-    "prod": "docker-compose -f docker-compose.prod.yml up --build -d",
+    "docker:prod": "docker-compose -f docker-compose.prod.yml up --build -d",
     "erdia:build": "cross-env TS_NODE_PROJECT='./tsconfig.json' ts-node -r tsconfig-paths/register ./node_modules/erdia/dist/cjs/cli.cjs build -d ./data-source.ts -o ./erdia/docs",
     "erdia:start": "start ./erdia/docs/index.html"
   },
