@@ -6,6 +6,7 @@ import { CacheService } from './cache.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 
+
 @Global() // Makes CacheService and CACHE_MANAGER available everywhere
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         store: await redisStore({
           socket: {
             // Use 'redis' because that is the service name in your docker-compose
-            host: configService.get('REDIS_HOST') || 'redis',
+            host: configService.get('REDIS_HOST') || (configService.get('NODE_ENV') === 'production' ? 'redis' : 'localhost'),
             port: configService.getOrThrow<number>('REDIS_PORT'),
             
           },
@@ -29,4 +30,5 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   providers: [CacheService],
   exports: [CacheService], // Export so other services can use your wrapper
 })
+
 export class CacheConfigModule {}

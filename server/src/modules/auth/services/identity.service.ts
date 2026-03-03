@@ -19,6 +19,7 @@ import { ConfigService } from "@nestjs/config/dist/config.service";
 import { PayloadMapperService } from "../payload-mapper.service";
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
+import { CacheService } from "../../../core/infrastructure/cache/cache.service";
 
 @Service()
 export class IdentityService implements IdentityServiceInterface {
@@ -29,6 +30,7 @@ export class IdentityService implements IdentityServiceInterface {
       
       constructor(
           @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,  
+          private readonly cacheService: CacheService, // For direct cache operations
           private readonly authRepository: AuthRepository, // Also injected here
           private readonly hashingService: HashingService,
           private readonly eventEmitter: EventEmitter2, // For emitting events
