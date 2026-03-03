@@ -11,6 +11,7 @@ import { swaggerConfig } from './configs/swagger.config';
 import { validationPipeConfig } from './configs/global-validation-pipe.config';
 import { PaginationInterceptor } from './core/infrastructure/interceptors/pagination.interceptor';
 import { DatabaseExceptionFilter } from './common/filters/database-exception.filter';
+import helmet from 'helmet';
 
 
 class Server {
@@ -26,6 +27,7 @@ class Server {
     app.useGlobalPipes(new ValidationPipe(validationPipeConfig));
 
     app.use(cookieParser()); // Add cookie parser middleware    
+    app.use(helmet()); // Add helmet middleware for security
     app.enableCors(); // Essential for frontend-to-backend communication
 
   app.useGlobalInterceptors(new PaginationInterceptor());
