@@ -1,8 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Service } from '../../../common/decorators/service.decorator';
-import { Action } from '../../../common/enums/action.enum';
-import { Resource } from '../../../common/types/resource.type';
 import { CaslAbilityFactory } from '../casl/casl-ability.service';
 import { AccessTokenPayload } from '../../../common/types/access-token-payload.type';
 import { PERMISSIONS_KEY } from '../../../common/decorators/permissions.decorator';
