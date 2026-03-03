@@ -1,4 +1,4 @@
-import { UnauthorizedException, ForbiddenException, Logger } from "@nestjs/common";
+import { UnauthorizedException, ForbiddenException, Logger, Inject } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { StatusEnum } from "src/common/enums/user-status.enum";
 import { HashingService } from "src/core/security/hashing/interfaces/hashing.service";
@@ -17,6 +17,8 @@ import { SessionService } from "../../../modules/session/session.service";
 import { UserPayload } from "src/common/interfaces/user-payload.interface";
 import { ConfigService } from "@nestjs/config/dist/config.service";
 import { PayloadMapperService } from "../payload-mapper.service";
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 
 @Service()
 export class IdentityService implements IdentityServiceInterface {
@@ -26,9 +28,9 @@ export class IdentityService implements IdentityServiceInterface {
 
       
       constructor(
+          @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,  
           private readonly authRepository: AuthRepository, // Also injected here
           private readonly hashingService: HashingService,
-          private readonly tokenService: TokenService,   
           private readonly eventEmitter: EventEmitter2, // For emitting events
           private readonly accessControlService: AccessControlService, // For checking user status
           private readonly userService: UserService,
@@ -52,6 +54,9 @@ export class IdentityService implements IdentityServiceInterface {
         if(auth.failedLoginAttempts >= this.MAX_FAILED_LOGIN_ATTEMPTS){
           auth.status = StatusEnum.LOCKED;
           auth.isEnabled = false; 
+          
+          // CRITICAL: Remove from cache so they can't use existing tokens
+          await this.cacheManager.del(`auth:access_token:${email}`);
           await this.authRepository.update(auth.id, auth);
 
           //sendEmail("locked-account",recipient )
@@ -89,6 +94,12 @@ export class IdentityService implements IdentityServiceInterface {
 
   async verifyAccessToken(accessTokenPayload: AccessTokenPayload): Promise<AccessTokenPayload | null> {
   const { userId, email } = accessTokenPayload;
+   const cacheKey = `auth:access_token:${email}`;
+
+    // 1. Check Redis
+    const cached = await this.cacheManager.get<AccessTokenPayload>(cacheKey);
+    console.log("Checking Redis cache for key:", cacheKey);
+    if (cached) return cached;
 
     const auth = await this.authRepository.findOne({ where: { email: email }, relations: ['user', 'user.roles', 'user.roles.permissions'] });
     console.log("AuthService: Verifying access token for email:", email);
@@ -113,13 +124,24 @@ export class IdentityService implements IdentityServiceInterface {
       return null;
     }
     console.log("JwtStrategy: Retrieved user from database:", accessTokenPayload.email);
-
+    // 3. Save to Redis if valid
+    await this.cacheManager.set(cacheKey, accessTokenPayload, 60000); // 1 minute
     return accessTokenPayload;
 }
   async verifyRefreshToken(refreshTokenPayload: RefreshTokenPayload): Promise<RefreshTokenPayload | null> {
     const { userId, sessionId} = refreshTokenPayload;
     const auth  = await this.authRepository.findOne({ where: { user: { id: userId } } , relations: ['user'] });
     const session = await this.sessionService.findOne(sessionId);
+
+    // 1. Unique Cache Key for this specific session
+    const refreshCacheKey = `auth:refresh_token:${userId}:${sessionId}`;
+
+    // 2. Try Redis first
+    const cached = await this.cacheManager.get<RefreshTokenPayload>(refreshCacheKey);
+    if (cached) {
+        this.logger.debug(`Refresh token cache hit for User: ${userId}`);
+        return cached;
+    }
     console.log("seesionId from token:", sessionId);
     console.log("session ==> ", session);
     console.log("AuthService: Verifying refresh token for user ID:", JSON.stringify(auth, null,4));
@@ -148,7 +170,11 @@ export class IdentityService implements IdentityServiceInterface {
         return null;
         }
         console.log("refresh token: Retrieved user from database:", refreshTokenPayload);
+      // 3. Save to Redis (5 minutes / 300,000 ms)
+      // This reduces DB hits if the user refreshes frequently
+        await this.cacheManager.set(refreshCacheKey, refreshTokenPayload, 300000);
 
+      this.logger.log(`Refresh token validated and cached for email: ${auth.email}`);
         return refreshTokenPayload;
     }
 
