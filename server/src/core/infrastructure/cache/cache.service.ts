@@ -19,6 +19,14 @@ export class CacheService {
     return result ?? null;
   }
 
+  async getAllKeys(): Promise<string[]> {
+    const store = (this.cacheManager as any).store;
+    if (store && typeof store.keys === 'function') {
+        return await store.keys();
+    }
+    return [];
+}
+
   async delete(key: string): Promise<void> {
     await this.cacheManager.del(key);
   }
