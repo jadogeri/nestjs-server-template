@@ -17,29 +17,32 @@ export class CaslAbilityFactory {
   createForUser(accessTokenPayload: AccessTokenPayload) {
     const { can, build } = new AbilityBuilder<AppAbility>(createMongoAbility);
     console.log(`Creating abilities from access token payload  ....................`);
-    console.log(accessTokenPayload.userId, accessTokenPayload.email, accessTokenPayload.roles, accessTokenPayload.permissions   );
+    const { email, roles, permissions } = accessTokenPayload;
+    console.log(`Access Token Payload: email=${email}, roles=${JSON.stringify(roles)}, permissions=${JSON.stringify(permissions)}`);
 
-    // Ensure user.roles and role.permissions are loaded (via TypeORM relations)
-    accessTokenPayload.roles?.forEach((role) => {
-      if (role === 'SUPER_USER') {
+        // 1. Handle Super User Role (Independent of other roles)
+    if (roles.includes('SUPER_USER')) {
+      can(Action.MANAGE, 'all');
+    }
+
+    // 2. Add granular permissions (Always run this, outside any role loop)
+    permissions.forEach((perm: PermissionString) => {
+      const { resource, action } = PermissionStringGeneratorUtil.extract(perm);
+      
+
+
+      if (resource === 'all' && action === Action.MANAGE) {
         can(Action.MANAGE, 'all');
-      }
-
-      accessTokenPayload.permissions?.forEach((perm: PermissionString) => {
-        // perm.resource would be 'auth', 'profile', etc.
-        const { resource, action } = PermissionStringGeneratorUtil.extract(perm);
-        console.log(`Adding permission for user ${accessTokenPayload.email}: ${action} on ${resource}`);
-
-        if (resource === 'all' && action === 'manage') {
-          can(Action.MANAGE, 'all');
-        } else {    
-          can(action, resource);
-        } 
-      });
+      } else {    
+        can(action, resource);
+      } 
     });
 
     return build({
-      detectSubjectType: (item) => item.constructor as ExtractSubjectType<Subjects>,
+      detectSubjectType: (item) => 
+        typeof item === 'string' 
+          ? (item as ExtractSubjectType<Subjects>) 
+          : (item.constructor as ExtractSubjectType<Subjects>),
     });
   }
 }

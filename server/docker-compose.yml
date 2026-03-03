@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: nestjs-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes # Enables file persistence
+    restart: always
+
+  app:
+    build:
+      context: .
+      target: development # Optional: use if you have a multi-stage Dockerfile
+    container_name: nestjs-app
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      REDIS_HOST: redis # Important: use service name when running in Docker
+      REDIS_PORT: 6379
+    depends_on:
+      - redis
+    command: npm run start:dev
+
+volumes:
+  redis_data:

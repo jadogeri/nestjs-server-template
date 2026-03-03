@@ -21,7 +21,7 @@ import { PayloadMapperService } from "../payload-mapper.service";
 @Service()
 export class IdentityService implements IdentityServiceInterface {
 
-    private logger = new Logger(IdentityService.name);
+    private readonly logger = new Logger(IdentityService.name);
     private readonly MAX_FAILED_LOGIN_ATTEMPTS = 4;
 
       

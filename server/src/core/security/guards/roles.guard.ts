@@ -5,7 +5,7 @@ import { Service } from "../../../common/decorators/service.decorator";
 
 @Service()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(private readonly reflector: Reflector) {}
     
   canActivate(context: ExecutionContext): boolean {
     // Retrieves the array of roles defined on the handler
