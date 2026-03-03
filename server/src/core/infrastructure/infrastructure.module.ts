@@ -4,11 +4,12 @@ import { MailModule } from './mail/mail.module';
 import { SessionCleanupModule } from './task/session-cleanup/session-cleanup.module';
 import { GreetingModule } from './task/greetings/greetings.module';
 import { HealthModule } from './health/health.module';
+import { CacheConfigModule } from './cache/cache.module';
 
 
 @Module({
-  imports: [MailModule, SessionCleanupModule, GreetingModule, HealthModule], // Import sub-modules
-  exports: [MailModule, SessionCleanupModule, GreetingModule, HealthModule], // Export services for use in other modules
+  imports: [MailModule, SessionCleanupModule, GreetingModule, HealthModule, CacheConfigModule], // Import sub-modules
+  exports: [MailModule, SessionCleanupModule, GreetingModule, HealthModule, CacheConfigModule], // Export services for use in other modules
   providers: [],
 })
 export class InfrastructureModule {}
