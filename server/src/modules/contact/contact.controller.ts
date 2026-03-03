@@ -30,7 +30,7 @@ export class ContactController {
 
   @Get()
   @UseGuards(PermissionsGuard, RolesGuard) // Apply both guards to this endpoint)
-  @Permissions("*:*") // Only ADMIN can access this endpoint
+  @Permissions("all:manage") // Only ADMIN can access this endpoint
   @Roles('USER', 'SUPER_USER') // Only users with ADMIN role can access this endpoint
   @ApiGetContacts()
   async findAll(@AccessToken() accessTokenPayload: AccessTokenPayload) {

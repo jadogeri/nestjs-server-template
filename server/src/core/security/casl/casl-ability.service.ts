@@ -9,8 +9,8 @@ import { PermissionStringGeneratorUtil } from '../../../common/utils/permission-
 
 
 // Define your resources as a union type for better IDE support
-export type Subjects = InferSubjects<typeof User> | Resource | 'all';
-export type AppAbility = MongoAbility<[Action | 'manage', Subjects]>;
+export type Subjects = InferSubjects<typeof User> | Resource ;
+export type AppAbility = MongoAbility<[Action , Subjects]>;
 
 @Service()
 export class CaslAbilityFactory {
@@ -22,7 +22,7 @@ export class CaslAbilityFactory {
     // Ensure user.roles and role.permissions are loaded (via TypeORM relations)
     accessTokenPayload.roles?.forEach((role) => {
       if (role === 'SUPER_USER') {
-        can("manage", 'all');
+        can(Action.MANAGE, 'all');
       }
 
       accessTokenPayload.permissions?.forEach((perm: PermissionString) => {
@@ -30,19 +30,11 @@ export class CaslAbilityFactory {
         const { resource, action } = PermissionStringGeneratorUtil.extract(perm);
         console.log(`Adding permission for user ${accessTokenPayload.email}: ${action} on ${resource}`);
 
-        if (resource === '*' && action === '*') {
-          can("manage", 'all');
-        } else {
-            if (resource === '*' && action !== '*') {
-                can(action, 'all');
-            } else if (resource !== '*' && action === '*') {
-                can("manage", resource);
-            } else {    
+        if (resource === 'all' && action === 'manage') {
+          can(Action.MANAGE, 'all');
+        } else {    
           can(action, resource);
-            }
-        }
-        
-        can(action, resource);
+        } 
       });
     });
 
