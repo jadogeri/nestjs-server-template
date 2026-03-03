@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContactService } from './contact.service';
 import { ContactRepository } from './contact.repository';
+import { CaslAbilityFactory } from '../../core/security/casl/casl-ability.service';
+import { Reflector } from '@nestjs/core';
 
 describe('ContactService', () => {
   let service: ContactService;
@@ -12,7 +14,17 @@ describe('ContactService', () => {
         {
           provide: ContactRepository,
           useValue: { findOne: jest.fn(), create: jest.fn(), update: jest.fn() },
-        }
+        },
+        {
+          provide: CaslAbilityFactory,
+          useValue: {
+            createForUser: jest.fn(), // Mock the CASL factory
+          },
+        },
+        {
+          provide: Reflector,
+          useValue: {}, // Required by most Guards
+        },
       ],
     }).compile();
 
