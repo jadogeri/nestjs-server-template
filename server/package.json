@@ -34,7 +34,9 @@
     "docker:dev": "docker-compose up",
     "docker:dev:db": "docker-compose up -d redis",
     "docker:stop": "docker-compose down",
-    "prod": "docker-compose -f docker-compose.prod.yml up --build -d"
+    "prod": "docker-compose -f docker-compose.prod.yml up --build -d",
+    "erdia:build": "cross-env TS_NODE_PROJECT='./tsconfig.json' ts-node -r tsconfig-paths/register ./node_modules/erdia/dist/cjs/cli.cjs build -d ./data-source.ts -o ./erdia/docs",
+    "erdia:start": "start ./erdia/docs/index.html"
   },
   "dependencies": {
     "@casl/ability": "^6.8.0",
@@ -102,6 +104,7 @@
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "@types/supertest": "^6.0.2",
+    "erdia": "^3.7.1",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",

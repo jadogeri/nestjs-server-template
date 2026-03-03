@@ -1,0 +1,3708 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <title>prodDB.sqlite entity specification</title>
+    <meta charset="utf-8" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      .bd-aside a {
+        padding: 0.1875rem 0.5rem;
+        margin-top: 0.125rem;
+        margin-left: 0.3125rem;
+        color: var(--bs-body-color);
+      }
+
+      .bd-aside a:hover,
+      .bd-aside a:focus {
+        color: var(--bs-body-color);
+        background-color: rgba(121, 82, 179, 0.1);
+      }
+
+      .bd-aside .active {
+        font-weight: 600;
+        color: var(--bs-body-color);
+      }
+
+      .bd-aside .btn {
+        padding: 0.25rem 0.5rem;
+        font-weight: 600;
+        color: var(--bs-body-color);
+      }
+
+      .bd-aside .btn:hover,
+      .bd-aside .btn:focus {
+        color: var(--bs-body-color);
+        background-color: rgba(121, 82, 179, 0.1);
+      }
+
+      .bd-aside .btn:focus {
+        box-shadow: 0 0 0 1px rgba(121, 82, 179, 0.7);
+      }
+
+      .bd-aside .btn::before {
+        width: 1.25em;
+        line-height: 0;
+        content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ccc' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+        transition: transform 0.35s ease;
+
+        /* rtl:raw:
+    transform: rotate(180deg) translateX(-2px);
+    */
+        transform-origin: 0.5em 50%;
+      }
+
+      .bd-aside .btn[aria-expanded="true"]::before {
+        transform: rotate(90deg) /* rtl:ignore */;
+      }
+
+      /* Layout */
+      @media (min-width: 1200px) {
+        html {
+          scroll-padding-top: 4rem;
+        }
+
+        body {
+          display: grid;
+          grid-template-rows: auto;
+          grid-template-columns: 4fr 1fr;
+          gap: 1rem;
+        }
+
+        .bd-header {
+          position: fixed;
+          top: 0;
+          /* rtl:begin:ignore */
+          right: 0;
+          left: 0;
+          /* rtl:end:ignore */
+          z-index: 1030;
+          grid-column: 1 / span 3;
+        }
+
+        .bd-aside,
+        .bd-cheatsheet {
+          padding-top: 4rem;
+        }
+
+        /**
+      * 1. Too bad only Firefox supports subgrids ATM
+      */
+        .bd-cheatsheet,
+        .bd-cheatsheet section,
+        .bd-cheatsheet article {
+          display: inherit; /* 1 */
+          grid-template-rows: auto;
+          grid-template-columns: 4fr;
+          grid-column: 1 / span 2;
+          gap: inherit; /* 1 */
+        }
+
+        .bd-aside {
+          grid-area: 1 / 3;
+          scroll-margin-top: 4rem;
+        }
+
+        .bd-cheatsheet section,
+        .bd-cheatsheet section > h2 {
+          top: 2rem;
+          scroll-margin-top: 2rem;
+        }
+
+        .bd-cheatsheet section > h2::before {
+          position: absolute;
+          /* rtl:begin:ignore */
+          top: 0;
+          right: 0;
+          bottom: -2rem;
+          left: 0;
+          /* rtl:end:ignore */
+          z-index: -1;
+          content: "";
+        }
+
+        .bd-cheatsheet article,
+        .bd-cheatsheet .bd-heading {
+          top: 8rem;
+          scroll-margin-top: 8rem;
+        }
+
+        .bd-cheatsheet .bd-heading {
+          z-index: 1;
+        }
+      }
+
+      .hide {
+        display: none !important;
+      }
+
+      .mermaid-box {
+        height: 60vh;
+        min-height: 600px;
+        width: 85vw;
+      }
+
+      .mermaid {
+        height: 60vh;
+        min-height: 600px;
+        width: 85vw;
+        overflow: hidden;
+
+        svg {
+          height: 100% !important;
+          width: 100% !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="bg-body-tertiary">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">prodDB.sqlite</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarCollapse"
+          aria-controls="navbarCollapse"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/">Entity</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="mermaid.html">ER Diagram</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <aside
+      class="bd-aside sticky-xl-top text-body-secondary align-self-start mb-3 mb-xl-5 px-2"
+    >
+      <section class="entity-version-toc-section toc-prodDB.sqlite-0-0-1">
+        <h2 class="h6 pt-4 pb-3 mb-4 border-bottom">0.0.1</h2>
+        <nav id="toc-0-0-1" class="small">
+          <ul class="list-unstyled">
+            <li class="my-2">
+              <a
+                class="anchor-link"
+                href="#0-0-1-profiles-Profile"
+                aria-label="Link to this section: profiles(Profile)"
+              >
+                profiles
+              </a>
+            </li>
+            <li class="my-2">
+              <a
+                class="anchor-link"
+                href="#0-0-1-sessions-Session"
+                aria-label="Link to this section: sessions(Session)"
+              >
+                sessions
+              </a>
+            </li>
+            <li class="my-2">
+              <a
+                class="anchor-link"
+                href="#0-0-1-auths-Auth"
+                aria-label="Link to this section: auths(Auth)"
+              >
+                auths
+              </a>
+            </li>
+            <li class="my-2">
+              <a
+                class="anchor-link"
+                href="#0-0-1-permissions-Permission"
+                aria-label="Link to this section: permissions(Permission)"
+              >
+                permissions
+              </a>
+            </li>
+            <li class="my-2">
+              <a
+                class="anchor-link"
+                href="#0-0-1-roles-Role"
+                aria-label="Link to this section: roles(Role)"
+              >
+                roles
+              </a>
+            </li>
+            <li class="my-2">
+              <a
+                class="anchor-link"
+                href="#0-0-1-contacts-Contact"
+                aria-label="Link to this section: contacts(Contact)"
+              >
+                contacts
+              </a>
+            </li>
+            <li class="my-2">
+              <a
+                class="anchor-link"
+                href="#0-0-1-users-User"
+                aria-label="Link to this section: users(User)"
+              >
+                users
+              </a>
+            </li>
+            <li class="my-2">
+              <a
+                class="anchor-link"
+                href="#0-0-1-roles_permissions-roles_permissions"
+                aria-label="Link to this section: roles_permissions(roles_permissions)"
+              >
+                roles_permissions
+              </a>
+            </li>
+            <li class="my-2">
+              <a
+                class="anchor-link"
+                href="#0-0-1-users_roles-users_roles"
+                aria-label="Link to this section: users_roles(users_roles)"
+              >
+                users_roles
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </section>
+    </aside>
+
+    <div class="bd-cheatsheet container-fluid bg-body">
+      <section>
+        <select
+          id="entity-version-select"
+          class="form-select form-select-lg mb-3"
+          aria-label="Large select example"
+        >
+          <option value="prodDB.sqlite-0-0-1" selected>
+            prodDB.sqlite 0.0.1
+          </option>
+        </select>
+      </section>
+
+      <section
+        class="entity-version-content-section content-prodDB.sqlite-0-0-1"
+      >
+        <h2>prodDB.sqlite 0.0.1</h2>
+        <div class="container-fluid">
+          <div class="container-fluid">
+            <h2 id="0-0-1-profiles-Profile" class="title is-3">
+              profiles <small class="text-body-secondary">(Profile)</small>
+              <a
+                class="anchor-link"
+                href="#0-0-1-profiles-Profile"
+                aria-label="Link to this section: profiles(Profile)"
+                >#</a
+              >
+            </h2>
+
+            <div class="container-fluid">
+              <table class="table table-striped table-hover caption-top">
+                <caption>
+                  <i class="bi bi-grid-3x2-gap"></i>
+                  profiles<small class="text-body-secondary">(Profile)</small>
+                  columns
+                </caption>
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <!-- changing status -->
+                    <th>Database Name</th>
+                    <th>Property Name</th>
+                    <th>Attribute</th>
+                    <th>Type</th>
+                    <th>Nullable</th>
+                    <th>Charset</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-profiles-Profile-id">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-id"
+                        aria-label="Link to this section: id in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>id</span>
+                    </td>
+
+                    <td id="0-0-1-profiles-Profile-id">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-id"
+                        aria-label="Link to this section: id in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>id</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-success">PK</span>
+                    </td>
+
+                    <td>
+                      <span>*number</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-profiles-Profile-bio">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-bio"
+                        aria-label="Link to this section: bio in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>bio</span>
+                    </td>
+
+                    <td id="0-0-1-profiles-Profile-bio">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-bio"
+                        aria-label="Link to this section: bio in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>bio</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>string</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-profiles-Profile-avatarUrl">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-avatarUrl"
+                        aria-label="Link to this section: avatarUrl in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>avatarUrl</span>
+                    </td>
+
+                    <td id="0-0-1-profiles-Profile-avatarUrl">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-avatarUrl"
+                        aria-label="Link to this section: avatarUrl in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>avatarUrl</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>string</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-profiles-Profile-website">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-website"
+                        aria-label="Link to this section: website in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>website</span>
+                    </td>
+
+                    <td id="0-0-1-profiles-Profile-website">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-website"
+                        aria-label="Link to this section: website in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>website</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>string</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-profiles-Profile-socialMedia">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-socialMedia"
+                        aria-label="Link to this section: socialMedia in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>socialMedia</span>
+                    </td>
+
+                    <td id="0-0-1-profiles-Profile-socialMedia">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-socialMedia"
+                        aria-label="Link to this section: socialMedia in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>socialMedia</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>string</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-profiles-Profile-gender">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-gender"
+                        aria-label="Link to this section: gender in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>gender</span>
+                    </td>
+
+                    <td id="0-0-1-profiles-Profile-gender">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-gender"
+                        aria-label="Link to this section: gender in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>gender</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>string</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-profiles-Profile-preferences">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-preferences"
+                        aria-label="Link to this section: preferences in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>preferences</span>
+                    </td>
+
+                    <td id="0-0-1-profiles-Profile-preferences">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-preferences"
+                        aria-label="Link to this section: preferences in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>preferences</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>simple-json</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-profiles-Profile-updatedAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-updatedAt"
+                        aria-label="Link to this section: updatedAt in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>updatedAt</span>
+                    </td>
+
+                    <td id="0-0-1-profiles-Profile-updatedAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-updatedAt"
+                        aria-label="Link to this section: updatedAt in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>updatedAt</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*datetime</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-profiles-Profile-userId">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-userId"
+                        aria-label="Link to this section: userId in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>userId</span>
+                    </td>
+
+                    <td id="0-0-1-profiles-Profile-user">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-user"
+                        aria-label="Link to this section: user in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>user</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-info">FK</span>
+                      <span class="badge text-bg-warning">UK</span>
+                    </td>
+
+                    <td>
+                      <span>number</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-profiles-Profile-locationAddress">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-locationAddress"
+                        aria-label="Link to this section: locationAddress in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>locationAddress</span>
+                    </td>
+
+                    <td id="0-0-1-profiles-Profile-address">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-address"
+                        aria-label="Link to this section: address in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>address</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>string</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-profiles-Profile-locationCity">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-locationCity"
+                        aria-label="Link to this section: locationCity in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>locationCity</span>
+                    </td>
+
+                    <td id="0-0-1-profiles-Profile-city">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-city"
+                        aria-label="Link to this section: city in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>city</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>string</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-profiles-Profile-locationState">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-locationState"
+                        aria-label="Link to this section: locationState in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>locationState</span>
+                    </td>
+
+                    <td id="0-0-1-profiles-Profile-state">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-state"
+                        aria-label="Link to this section: state in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>state</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>string</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-profiles-Profile-locationZipcode">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-locationZipcode"
+                        aria-label="Link to this section: locationZipcode in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>locationZipcode</span>
+                    </td>
+
+                    <td id="0-0-1-profiles-Profile-zipcode">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-zipcode"
+                        aria-label="Link to this section: zipcode in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>zipcode</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>string</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-profiles-Profile-locationCountry">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-locationCountry"
+                        aria-label="Link to this section: locationCountry in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>locationCountry</span>
+                    </td>
+
+                    <td id="0-0-1-profiles-Profile-country">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-country"
+                        aria-label="Link to this section: country in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>country</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>string</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mx-auto p-2" style="width: 100%"></div>
+
+            <div class="container-fluid">
+              <table class="table table-striped table-hover caption-top">
+                <caption>
+                  <i class="bi bi-key"></i>
+                  profiles<small class="text-body-secondary">(Profile)</small>
+                  indices
+                </caption>
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <!-- changing status -->
+                    <th>Database Name</th>
+                    <th>Property Name</th>
+                    <th>Unique</th>
+                    <th>Columns</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <td></td>
+
+                    <td
+                      id="0-0-1-profiles-Profile-REL_315ecd98bd1a42dcf2ec4e2e98"
+                    >
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-REL_315ecd98bd1a42dcf2ec4e2e98"
+                        aria-label="Link to this section: REL_315ecd98bd1a42dcf2ec4e2e98 in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>REL_315ecd98bd1a42dcf2ec4e2e98</span>
+                    </td>
+
+                    <td
+                      id="0-0-1-profiles-Profile-REL_315ecd98bd1a42dcf2ec4e2e98"
+                    >
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-profiles-Profile-REL_315ecd98bd1a42dcf2ec4e2e98"
+                        aria-label="Link to this section: REL_315ecd98bd1a42dcf2ec4e2e98 in profiles(Profile)"
+                        >#</a
+                      >
+                      <span>REL_315ecd98bd1a42dcf2ec4e2e98</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-warning">Unique</span>
+                    </td>
+
+                    <td>
+                      <ul style="margin: 0">
+                        <li>userId</li>
+                      </ul>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mx-auto p-4" style="width: 100%"></div>
+          </div>
+          <div class="container-fluid">
+            <h2 id="0-0-1-sessions-Session" class="title is-3">
+              sessions <small class="text-body-secondary">(Session)</small>
+              <a
+                class="anchor-link"
+                href="#0-0-1-sessions-Session"
+                aria-label="Link to this section: sessions(Session)"
+                >#</a
+              >
+            </h2>
+
+            <div class="container-fluid">
+              <table class="table table-striped table-hover caption-top">
+                <caption>
+                  <i class="bi bi-grid-3x2-gap"></i>
+                  sessions<small class="text-body-secondary">(Session)</small>
+                  columns
+                </caption>
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <!-- changing status -->
+                    <th>Database Name</th>
+                    <th>Property Name</th>
+                    <th>Attribute</th>
+                    <th>Type</th>
+                    <th>Nullable</th>
+                    <th>Charset</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-sessions-Session-id">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-sessions-Session-id"
+                        aria-label="Link to this section: id in sessions(Session)"
+                        >#</a
+                      >
+                      <span>id</span>
+                    </td>
+
+                    <td id="0-0-1-sessions-Session-id">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-sessions-Session-id"
+                        aria-label="Link to this section: id in sessions(Session)"
+                        >#</a
+                      >
+                      <span>id</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-success">PK</span>
+                    </td>
+
+                    <td>
+                      <span>*varchar(36)</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-sessions-Session-refreshTokenHash">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-sessions-Session-refreshTokenHash"
+                        aria-label="Link to this section: refreshTokenHash in sessions(Session)"
+                        >#</a
+                      >
+                      <span>refreshTokenHash</span>
+                    </td>
+
+                    <td id="0-0-1-sessions-Session-refreshTokenHash">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-sessions-Session-refreshTokenHash"
+                        aria-label="Link to this section: refreshTokenHash in sessions(Session)"
+                        >#</a
+                      >
+                      <span>refreshTokenHash</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*string</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-sessions-Session-expiresAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-sessions-Session-expiresAt"
+                        aria-label="Link to this section: expiresAt in sessions(Session)"
+                        >#</a
+                      >
+                      <span>expiresAt</span>
+                    </td>
+
+                    <td id="0-0-1-sessions-Session-expiresAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-sessions-Session-expiresAt"
+                        aria-label="Link to this section: expiresAt in sessions(Session)"
+                        >#</a
+                      >
+                      <span>expiresAt</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*date</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-sessions-Session-createdAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-sessions-Session-createdAt"
+                        aria-label="Link to this section: createdAt in sessions(Session)"
+                        >#</a
+                      >
+                      <span>createdAt</span>
+                    </td>
+
+                    <td id="0-0-1-sessions-Session-createdAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-sessions-Session-createdAt"
+                        aria-label="Link to this section: createdAt in sessions(Session)"
+                        >#</a
+                      >
+                      <span>createdAt</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*datetime</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-sessions-Session-authId">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-sessions-Session-authId"
+                        aria-label="Link to this section: authId in sessions(Session)"
+                        >#</a
+                      >
+                      <span>authId</span>
+                    </td>
+
+                    <td id="0-0-1-sessions-Session-auth">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-sessions-Session-auth"
+                        aria-label="Link to this section: auth in sessions(Session)"
+                        >#</a
+                      >
+                      <span>auth</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-info">FK</span>
+                    </td>
+
+                    <td>
+                      <span>number</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mx-auto p-2" style="width: 100%"></div>
+
+            <div class="container-fluid"></div>
+            <div class="mx-auto p-4" style="width: 100%"></div>
+          </div>
+          <div class="container-fluid">
+            <h2 id="0-0-1-auths-Auth" class="title is-3">
+              auths <small class="text-body-secondary">(Auth)</small>
+              <a
+                class="anchor-link"
+                href="#0-0-1-auths-Auth"
+                aria-label="Link to this section: auths(Auth)"
+                >#</a
+              >
+            </h2>
+
+            <div class="container-fluid">
+              <table class="table table-striped table-hover caption-top">
+                <caption>
+                  <i class="bi bi-grid-3x2-gap"></i>
+                  auths<small class="text-body-secondary">(Auth)</small>
+                  columns
+                </caption>
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <!-- changing status -->
+                    <th>Database Name</th>
+                    <th>Property Name</th>
+                    <th>Attribute</th>
+                    <th>Type</th>
+                    <th>Nullable</th>
+                    <th>Charset</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-auths-Auth-createdAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-createdAt"
+                        aria-label="Link to this section: createdAt in auths(Auth)"
+                        >#</a
+                      >
+                      <span>createdAt</span>
+                    </td>
+
+                    <td id="0-0-1-auths-Auth-createdAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-createdAt"
+                        aria-label="Link to this section: createdAt in auths(Auth)"
+                        >#</a
+                      >
+                      <span>createdAt</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*datetime</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-auths-Auth-updatedAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-updatedAt"
+                        aria-label="Link to this section: updatedAt in auths(Auth)"
+                        >#</a
+                      >
+                      <span>updatedAt</span>
+                    </td>
+
+                    <td id="0-0-1-auths-Auth-updatedAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-updatedAt"
+                        aria-label="Link to this section: updatedAt in auths(Auth)"
+                        >#</a
+                      >
+                      <span>updatedAt</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*datetime</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-auths-Auth-id">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-id"
+                        aria-label="Link to this section: id in auths(Auth)"
+                        >#</a
+                      >
+                      <span>id</span>
+                    </td>
+
+                    <td id="0-0-1-auths-Auth-id">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-id"
+                        aria-label="Link to this section: id in auths(Auth)"
+                        >#</a
+                      >
+                      <span>id</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-success">PK</span>
+                    </td>
+
+                    <td>
+                      <span>*number</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-auths-Auth-email">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-email"
+                        aria-label="Link to this section: email in auths(Auth)"
+                        >#</a
+                      >
+                      <span>email</span>
+                    </td>
+
+                    <td id="0-0-1-auths-Auth-email">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-email"
+                        aria-label="Link to this section: email in auths(Auth)"
+                        >#</a
+                      >
+                      <span>email</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-warning">UK</span>
+                    </td>
+
+                    <td>
+                      <span>*varchar(150)</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-auths-Auth-password">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-password"
+                        aria-label="Link to this section: password in auths(Auth)"
+                        >#</a
+                      >
+                      <span>password</span>
+                    </td>
+
+                    <td id="0-0-1-auths-Auth-password">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-password"
+                        aria-label="Link to this section: password in auths(Auth)"
+                        >#</a
+                      >
+                      <span>password</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*string</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-auths-Auth-isEnabled">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-isEnabled"
+                        aria-label="Link to this section: isEnabled in auths(Auth)"
+                        >#</a
+                      >
+                      <span>isEnabled</span>
+                    </td>
+
+                    <td id="0-0-1-auths-Auth-isEnabled">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-isEnabled"
+                        aria-label="Link to this section: isEnabled in auths(Auth)"
+                        >#</a
+                      >
+                      <span>isEnabled</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*boolean</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-auths-Auth-verificationToken">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-verificationToken"
+                        aria-label="Link to this section: verificationToken in auths(Auth)"
+                        >#</a
+                      >
+                      <span>verificationToken</span>
+                    </td>
+
+                    <td id="0-0-1-auths-Auth-verificationToken">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-verificationToken"
+                        aria-label="Link to this section: verificationToken in auths(Auth)"
+                        >#</a
+                      >
+                      <span>verificationToken</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>varchar</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-auths-Auth-isVerified">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-isVerified"
+                        aria-label="Link to this section: isVerified in auths(Auth)"
+                        >#</a
+                      >
+                      <span>isVerified</span>
+                    </td>
+
+                    <td id="0-0-1-auths-Auth-isVerified">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-isVerified"
+                        aria-label="Link to this section: isVerified in auths(Auth)"
+                        >#</a
+                      >
+                      <span>isVerified</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*boolean</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-auths-Auth-verifiedAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-verifiedAt"
+                        aria-label="Link to this section: verifiedAt in auths(Auth)"
+                        >#</a
+                      >
+                      <span>verifiedAt</span>
+                    </td>
+
+                    <td id="0-0-1-auths-Auth-verifiedAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-verifiedAt"
+                        aria-label="Link to this section: verifiedAt in auths(Auth)"
+                        >#</a
+                      >
+                      <span>verifiedAt</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>datetime</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-auths-Auth-lastLoginAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-lastLoginAt"
+                        aria-label="Link to this section: lastLoginAt in auths(Auth)"
+                        >#</a
+                      >
+                      <span>lastLoginAt</span>
+                    </td>
+
+                    <td id="0-0-1-auths-Auth-lastLoginAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-lastLoginAt"
+                        aria-label="Link to this section: lastLoginAt in auths(Auth)"
+                        >#</a
+                      >
+                      <span>lastLoginAt</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>datetime</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-auths-Auth-failedLoginAttempts">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-failedLoginAttempts"
+                        aria-label="Link to this section: failedLoginAttempts in auths(Auth)"
+                        >#</a
+                      >
+                      <span>failedLoginAttempts</span>
+                    </td>
+
+                    <td id="0-0-1-auths-Auth-failedLoginAttempts">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-failedLoginAttempts"
+                        aria-label="Link to this section: failedLoginAttempts in auths(Auth)"
+                        >#</a
+                      >
+                      <span>failedLoginAttempts</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*number</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-auths-Auth-status">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-status"
+                        aria-label="Link to this section: status in auths(Auth)"
+                        >#</a
+                      >
+                      <span>status</span>
+                    </td>
+
+                    <td id="0-0-1-auths-Auth-status">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-status"
+                        aria-label="Link to this section: status in auths(Auth)"
+                        >#</a
+                      >
+                      <span>status</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*simple-enum</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-auths-Auth-userId">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-userId"
+                        aria-label="Link to this section: userId in auths(Auth)"
+                        >#</a
+                      >
+                      <span>userId</span>
+                    </td>
+
+                    <td id="0-0-1-auths-Auth-user">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-user"
+                        aria-label="Link to this section: user in auths(Auth)"
+                        >#</a
+                      >
+                      <span>user</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-info">FK</span>
+                      <span class="badge text-bg-warning">UK</span>
+                    </td>
+
+                    <td>
+                      <span>number</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mx-auto p-2" style="width: 100%"></div>
+
+            <div class="container-fluid">
+              <table class="table table-striped table-hover caption-top">
+                <caption>
+                  <i class="bi bi-key"></i>
+                  auths<small class="text-body-secondary">(Auth)</small>
+                  indices
+                </caption>
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <!-- changing status -->
+                    <th>Database Name</th>
+                    <th>Property Name</th>
+                    <th>Unique</th>
+                    <th>Columns</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-auths-Auth-UQ_a28e912dc6bde5945582f2be0a2">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-UQ_a28e912dc6bde5945582f2be0a2"
+                        aria-label="Link to this section: UQ_a28e912dc6bde5945582f2be0a2 in auths(Auth)"
+                        >#</a
+                      >
+                      <span>UQ_a28e912dc6bde5945582f2be0a2</span>
+                    </td>
+
+                    <td id="0-0-1-auths-Auth-UQ_a28e912dc6bde5945582f2be0a2">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-UQ_a28e912dc6bde5945582f2be0a2"
+                        aria-label="Link to this section: UQ_a28e912dc6bde5945582f2be0a2 in auths(Auth)"
+                        >#</a
+                      >
+                      <span>UQ_a28e912dc6bde5945582f2be0a2</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-warning">Unique</span>
+                    </td>
+
+                    <td>
+                      <ul style="margin: 0">
+                        <li>email</li>
+                      </ul>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-auths-Auth-REL_3e65bf4e56bde80b7b5e5b9e13">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-REL_3e65bf4e56bde80b7b5e5b9e13"
+                        aria-label="Link to this section: REL_3e65bf4e56bde80b7b5e5b9e13 in auths(Auth)"
+                        >#</a
+                      >
+                      <span>REL_3e65bf4e56bde80b7b5e5b9e13</span>
+                    </td>
+
+                    <td id="0-0-1-auths-Auth-REL_3e65bf4e56bde80b7b5e5b9e13">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-auths-Auth-REL_3e65bf4e56bde80b7b5e5b9e13"
+                        aria-label="Link to this section: REL_3e65bf4e56bde80b7b5e5b9e13 in auths(Auth)"
+                        >#</a
+                      >
+                      <span>REL_3e65bf4e56bde80b7b5e5b9e13</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-warning">Unique</span>
+                    </td>
+
+                    <td>
+                      <ul style="margin: 0">
+                        <li>userId</li>
+                      </ul>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mx-auto p-4" style="width: 100%"></div>
+          </div>
+          <div class="container-fluid">
+            <h2 id="0-0-1-permissions-Permission" class="title is-3">
+              permissions
+              <small class="text-body-secondary">(Permission)</small>
+              <a
+                class="anchor-link"
+                href="#0-0-1-permissions-Permission"
+                aria-label="Link to this section: permissions(Permission)"
+                >#</a
+              >
+            </h2>
+
+            <div class="container-fluid">
+              <table class="table table-striped table-hover caption-top">
+                <caption>
+                  <i class="bi bi-grid-3x2-gap"></i>
+                  permissions<small class="text-body-secondary"
+                    >(Permission)</small
+                  >
+                  columns
+                </caption>
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <!-- changing status -->
+                    <th>Database Name</th>
+                    <th>Property Name</th>
+                    <th>Attribute</th>
+                    <th>Type</th>
+                    <th>Nullable</th>
+                    <th>Charset</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-permissions-Permission-id">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-permissions-Permission-id"
+                        aria-label="Link to this section: id in permissions(Permission)"
+                        >#</a
+                      >
+                      <span>id</span>
+                    </td>
+
+                    <td id="0-0-1-permissions-Permission-id">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-permissions-Permission-id"
+                        aria-label="Link to this section: id in permissions(Permission)"
+                        >#</a
+                      >
+                      <span>id</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-success">PK</span>
+                    </td>
+
+                    <td>
+                      <span>*number</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-permissions-Permission-resource">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-permissions-Permission-resource"
+                        aria-label="Link to this section: resource in permissions(Permission)"
+                        >#</a
+                      >
+                      <span>resource</span>
+                    </td>
+
+                    <td id="0-0-1-permissions-Permission-resource">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-permissions-Permission-resource"
+                        aria-label="Link to this section: resource in permissions(Permission)"
+                        >#</a
+                      >
+                      <span>resource</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-warning">UK</span>
+                    </td>
+
+                    <td>
+                      <span>*varchar</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-permissions-Permission-action">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-permissions-Permission-action"
+                        aria-label="Link to this section: action in permissions(Permission)"
+                        >#</a
+                      >
+                      <span>action</span>
+                    </td>
+
+                    <td id="0-0-1-permissions-Permission-action">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-permissions-Permission-action"
+                        aria-label="Link to this section: action in permissions(Permission)"
+                        >#</a
+                      >
+                      <span>action</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-warning">UK</span>
+                    </td>
+
+                    <td>
+                      <span>*simple-enum</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-permissions-Permission-description">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-permissions-Permission-description"
+                        aria-label="Link to this section: description in permissions(Permission)"
+                        >#</a
+                      >
+                      <span>description</span>
+                    </td>
+
+                    <td id="0-0-1-permissions-Permission-description">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-permissions-Permission-description"
+                        aria-label="Link to this section: description in permissions(Permission)"
+                        >#</a
+                      >
+                      <span>description</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>varchar</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mx-auto p-2" style="width: 100%"></div>
+
+            <div class="container-fluid">
+              <table class="table table-striped table-hover caption-top">
+                <caption>
+                  <i class="bi bi-key"></i>
+                  permissions<small class="text-body-secondary"
+                    >(Permission)</small
+                  >
+                  indices
+                </caption>
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <!-- changing status -->
+                    <th>Database Name</th>
+                    <th>Property Name</th>
+                    <th>Unique</th>
+                    <th>Columns</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <td></td>
+
+                    <td
+                      id="0-0-1-permissions-Permission-UQ_7331684c0c5b063803a425001a0"
+                    >
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-permissions-Permission-UQ_7331684c0c5b063803a425001a0"
+                        aria-label="Link to this section: UQ_7331684c0c5b063803a425001a0 in permissions(Permission)"
+                        >#</a
+                      >
+                      <span>UQ_7331684c0c5b063803a425001a0</span>
+                    </td>
+
+                    <td
+                      id="0-0-1-permissions-Permission-UQ_7331684c0c5b063803a425001a0"
+                    >
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-permissions-Permission-UQ_7331684c0c5b063803a425001a0"
+                        aria-label="Link to this section: UQ_7331684c0c5b063803a425001a0 in permissions(Permission)"
+                        >#</a
+                      >
+                      <span>UQ_7331684c0c5b063803a425001a0</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-warning">Unique</span>
+                    </td>
+
+                    <td>
+                      <ul style="margin: 0">
+                        <li>resource</li>
+                        <li>action</li>
+                      </ul>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mx-auto p-4" style="width: 100%"></div>
+          </div>
+          <div class="container-fluid">
+            <h2 id="0-0-1-roles-Role" class="title is-3">
+              roles <small class="text-body-secondary">(Role)</small>
+              <a
+                class="anchor-link"
+                href="#0-0-1-roles-Role"
+                aria-label="Link to this section: roles(Role)"
+                >#</a
+              >
+            </h2>
+
+            <div class="container-fluid">
+              <table class="table table-striped table-hover caption-top">
+                <caption>
+                  <i class="bi bi-grid-3x2-gap"></i>
+                  roles<small class="text-body-secondary">(Role)</small>
+                  columns
+                </caption>
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <!-- changing status -->
+                    <th>Database Name</th>
+                    <th>Property Name</th>
+                    <th>Attribute</th>
+                    <th>Type</th>
+                    <th>Nullable</th>
+                    <th>Charset</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-roles-Role-id">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-roles-Role-id"
+                        aria-label="Link to this section: id in roles(Role)"
+                        >#</a
+                      >
+                      <span>id</span>
+                    </td>
+
+                    <td id="0-0-1-roles-Role-id">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-roles-Role-id"
+                        aria-label="Link to this section: id in roles(Role)"
+                        >#</a
+                      >
+                      <span>id</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-success">PK</span>
+                    </td>
+
+                    <td>
+                      <span>*number</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-roles-Role-name">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-roles-Role-name"
+                        aria-label="Link to this section: name in roles(Role)"
+                        >#</a
+                      >
+                      <span>name</span>
+                    </td>
+
+                    <td id="0-0-1-roles-Role-name">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-roles-Role-name"
+                        aria-label="Link to this section: name in roles(Role)"
+                        >#</a
+                      >
+                      <span>name</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-warning">UK</span>
+                    </td>
+
+                    <td>
+                      <span>*varchar</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-roles-Role-description">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-roles-Role-description"
+                        aria-label="Link to this section: description in roles(Role)"
+                        >#</a
+                      >
+                      <span>description</span>
+                    </td>
+
+                    <td id="0-0-1-roles-Role-description">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-roles-Role-description"
+                        aria-label="Link to this section: description in roles(Role)"
+                        >#</a
+                      >
+                      <span>description</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>varchar</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mx-auto p-2" style="width: 100%"></div>
+
+            <div class="container-fluid">
+              <table class="table table-striped table-hover caption-top">
+                <caption>
+                  <i class="bi bi-key"></i>
+                  roles<small class="text-body-secondary">(Role)</small>
+                  indices
+                </caption>
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <!-- changing status -->
+                    <th>Database Name</th>
+                    <th>Property Name</th>
+                    <th>Unique</th>
+                    <th>Columns</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-roles-Role-UQ_648e3f5447f725579d7d4ffdfb7">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-roles-Role-UQ_648e3f5447f725579d7d4ffdfb7"
+                        aria-label="Link to this section: UQ_648e3f5447f725579d7d4ffdfb7 in roles(Role)"
+                        >#</a
+                      >
+                      <span>UQ_648e3f5447f725579d7d4ffdfb7</span>
+                    </td>
+
+                    <td id="0-0-1-roles-Role-UQ_648e3f5447f725579d7d4ffdfb7">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-roles-Role-UQ_648e3f5447f725579d7d4ffdfb7"
+                        aria-label="Link to this section: UQ_648e3f5447f725579d7d4ffdfb7 in roles(Role)"
+                        >#</a
+                      >
+                      <span>UQ_648e3f5447f725579d7d4ffdfb7</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-warning">Unique</span>
+                    </td>
+
+                    <td>
+                      <ul style="margin: 0">
+                        <li>name</li>
+                      </ul>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mx-auto p-4" style="width: 100%"></div>
+          </div>
+          <div class="container-fluid">
+            <h2 id="0-0-1-contacts-Contact" class="title is-3">
+              contacts <small class="text-body-secondary">(Contact)</small>
+              <a
+                class="anchor-link"
+                href="#0-0-1-contacts-Contact"
+                aria-label="Link to this section: contacts(Contact)"
+                >#</a
+              >
+            </h2>
+
+            <div class="container-fluid">
+              <table class="table table-striped table-hover caption-top">
+                <caption>
+                  <i class="bi bi-grid-3x2-gap"></i>
+                  contacts<small class="text-body-secondary">(Contact)</small>
+                  columns
+                </caption>
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <!-- changing status -->
+                    <th>Database Name</th>
+                    <th>Property Name</th>
+                    <th>Attribute</th>
+                    <th>Type</th>
+                    <th>Nullable</th>
+                    <th>Charset</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-contacts-Contact-createdAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-createdAt"
+                        aria-label="Link to this section: createdAt in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>createdAt</span>
+                    </td>
+
+                    <td id="0-0-1-contacts-Contact-createdAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-createdAt"
+                        aria-label="Link to this section: createdAt in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>createdAt</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*datetime</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-contacts-Contact-updatedAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-updatedAt"
+                        aria-label="Link to this section: updatedAt in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>updatedAt</span>
+                    </td>
+
+                    <td id="0-0-1-contacts-Contact-updatedAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-updatedAt"
+                        aria-label="Link to this section: updatedAt in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>updatedAt</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*datetime</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-contacts-Contact-id">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-id"
+                        aria-label="Link to this section: id in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>id</span>
+                    </td>
+
+                    <td id="0-0-1-contacts-Contact-id">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-id"
+                        aria-label="Link to this section: id in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>id</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-success">PK</span>
+                    </td>
+
+                    <td>
+                      <span>*number</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-contacts-Contact-fullName">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-fullName"
+                        aria-label="Link to this section: fullName in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>fullName</span>
+                    </td>
+
+                    <td id="0-0-1-contacts-Contact-fullName">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-fullName"
+                        aria-label="Link to this section: fullName in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>fullName</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*varchar(100)</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-contacts-Contact-phone">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-phone"
+                        aria-label="Link to this section: phone in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>phone</span>
+                    </td>
+
+                    <td id="0-0-1-contacts-Contact-phone">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-phone"
+                        aria-label="Link to this section: phone in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>phone</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>varchar(20)</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-contacts-Contact-email">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-email"
+                        aria-label="Link to this section: email in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>email</span>
+                    </td>
+
+                    <td id="0-0-1-contacts-Contact-email">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-email"
+                        aria-label="Link to this section: email in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>email</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>varchar(50)</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-contacts-Contact-fax">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-fax"
+                        aria-label="Link to this section: fax in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>fax</span>
+                    </td>
+
+                    <td id="0-0-1-contacts-Contact-fax">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-fax"
+                        aria-label="Link to this section: fax in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>fax</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>varchar(20)</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-contacts-Contact-userId">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-userId"
+                        aria-label="Link to this section: userId in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>userId</span>
+                    </td>
+
+                    <td id="0-0-1-contacts-Contact-userId">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-userId"
+                        aria-label="Link to this section: userId in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>userId</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-info">FK</span>
+                    </td>
+
+                    <td>
+                      <span>*number</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-contacts-Contact-locationAddress">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-locationAddress"
+                        aria-label="Link to this section: locationAddress in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>locationAddress</span>
+                    </td>
+
+                    <td id="0-0-1-contacts-Contact-address">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-address"
+                        aria-label="Link to this section: address in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>address</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>string</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-contacts-Contact-locationCity">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-locationCity"
+                        aria-label="Link to this section: locationCity in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>locationCity</span>
+                    </td>
+
+                    <td id="0-0-1-contacts-Contact-city">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-city"
+                        aria-label="Link to this section: city in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>city</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>string</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-contacts-Contact-locationState">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-locationState"
+                        aria-label="Link to this section: locationState in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>locationState</span>
+                    </td>
+
+                    <td id="0-0-1-contacts-Contact-state">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-state"
+                        aria-label="Link to this section: state in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>state</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>string</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-contacts-Contact-locationZipcode">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-locationZipcode"
+                        aria-label="Link to this section: locationZipcode in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>locationZipcode</span>
+                    </td>
+
+                    <td id="0-0-1-contacts-Contact-zipcode">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-zipcode"
+                        aria-label="Link to this section: zipcode in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>zipcode</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>string</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-contacts-Contact-locationCountry">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-locationCountry"
+                        aria-label="Link to this section: locationCountry in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>locationCountry</span>
+                    </td>
+
+                    <td id="0-0-1-contacts-Contact-country">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-contacts-Contact-country"
+                        aria-label="Link to this section: country in contacts(Contact)"
+                        >#</a
+                      >
+                      <span>country</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>string</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mx-auto p-2" style="width: 100%"></div>
+
+            <div class="container-fluid"></div>
+            <div class="mx-auto p-4" style="width: 100%"></div>
+          </div>
+          <div class="container-fluid">
+            <h2 id="0-0-1-users-User" class="title is-3">
+              users <small class="text-body-secondary">(User)</small>
+              <a
+                class="anchor-link"
+                href="#0-0-1-users-User"
+                aria-label="Link to this section: users(User)"
+                >#</a
+              >
+            </h2>
+
+            <div class="container-fluid">
+              <table class="table table-striped table-hover caption-top">
+                <caption>
+                  <i class="bi bi-grid-3x2-gap"></i>
+                  users<small class="text-body-secondary">(User)</small>
+                  columns
+                </caption>
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <!-- changing status -->
+                    <th>Database Name</th>
+                    <th>Property Name</th>
+                    <th>Attribute</th>
+                    <th>Type</th>
+                    <th>Nullable</th>
+                    <th>Charset</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-users-User-createdAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users-User-createdAt"
+                        aria-label="Link to this section: createdAt in users(User)"
+                        >#</a
+                      >
+                      <span>createdAt</span>
+                    </td>
+
+                    <td id="0-0-1-users-User-createdAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users-User-createdAt"
+                        aria-label="Link to this section: createdAt in users(User)"
+                        >#</a
+                      >
+                      <span>createdAt</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*datetime</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-users-User-updatedAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users-User-updatedAt"
+                        aria-label="Link to this section: updatedAt in users(User)"
+                        >#</a
+                      >
+                      <span>updatedAt</span>
+                    </td>
+
+                    <td id="0-0-1-users-User-updatedAt">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users-User-updatedAt"
+                        aria-label="Link to this section: updatedAt in users(User)"
+                        >#</a
+                      >
+                      <span>updatedAt</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*datetime</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-users-User-id">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users-User-id"
+                        aria-label="Link to this section: id in users(User)"
+                        >#</a
+                      >
+                      <span>id</span>
+                    </td>
+
+                    <td id="0-0-1-users-User-id">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users-User-id"
+                        aria-label="Link to this section: id in users(User)"
+                        >#</a
+                      >
+                      <span>id</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-success">PK</span>
+                    </td>
+
+                    <td>
+                      <span>*number</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-users-User-firstName">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users-User-firstName"
+                        aria-label="Link to this section: firstName in users(User)"
+                        >#</a
+                      >
+                      <span>firstName</span>
+                    </td>
+
+                    <td id="0-0-1-users-User-firstName">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users-User-firstName"
+                        aria-label="Link to this section: firstName in users(User)"
+                        >#</a
+                      >
+                      <span>firstName</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*varchar(100)</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-users-User-lastName">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users-User-lastName"
+                        aria-label="Link to this section: lastName in users(User)"
+                        >#</a
+                      >
+                      <span>lastName</span>
+                    </td>
+
+                    <td id="0-0-1-users-User-lastName">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users-User-lastName"
+                        aria-label="Link to this section: lastName in users(User)"
+                        >#</a
+                      >
+                      <span>lastName</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>*varchar(100)</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-users-User-dateOfBirth">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users-User-dateOfBirth"
+                        aria-label="Link to this section: dateOfBirth in users(User)"
+                        >#</a
+                      >
+                      <span>dateOfBirth</span>
+                    </td>
+
+                    <td id="0-0-1-users-User-dateOfBirth">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users-User-dateOfBirth"
+                        aria-label="Link to this section: dateOfBirth in users(User)"
+                        >#</a
+                      >
+                      <span>dateOfBirth</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span>date</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-danger">NULLABLE</span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mx-auto p-2" style="width: 100%"></div>
+
+            <div class="container-fluid"></div>
+            <div class="mx-auto p-4" style="width: 100%"></div>
+          </div>
+          <div class="container-fluid">
+            <h2
+              id="0-0-1-roles_permissions-roles_permissions"
+              class="title is-3"
+            >
+              roles_permissions
+              <small class="text-body-secondary">(roles_permissions)</small>
+              <a
+                class="anchor-link"
+                href="#0-0-1-roles_permissions-roles_permissions"
+                aria-label="Link to this section: roles_permissions(roles_permissions)"
+                >#</a
+              >
+            </h2>
+
+            <div class="container-fluid">
+              <table class="table table-striped table-hover caption-top">
+                <caption>
+                  <i class="bi bi-grid-3x2-gap"></i>
+                  roles_permissions<small class="text-body-secondary"
+                    >(roles_permissions)</small
+                  >
+                  columns
+                </caption>
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <!-- changing status -->
+                    <th>Database Name</th>
+                    <th>Property Name</th>
+                    <th>Attribute</th>
+                    <th>Type</th>
+                    <th>Nullable</th>
+                    <th>Charset</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-roles_permissions-roles_permissions-roleId">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-roles_permissions-roles_permissions-roleId"
+                        aria-label="Link to this section: roleId in roles_permissions(roles_permissions)"
+                        >#</a
+                      >
+                      <span>roleId</span>
+                    </td>
+
+                    <td id="0-0-1-roles_permissions-roles_permissions-roleId">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-roles_permissions-roles_permissions-roleId"
+                        aria-label="Link to this section: roleId in roles_permissions(roles_permissions)"
+                        >#</a
+                      >
+                      <span>roleId</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-success">PK</span>
+                      <span class="badge text-bg-info">FK</span>
+                    </td>
+
+                    <td>
+                      <span>*number</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td
+                      id="0-0-1-roles_permissions-roles_permissions-permissionId"
+                    >
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-roles_permissions-roles_permissions-permissionId"
+                        aria-label="Link to this section: permissionId in roles_permissions(roles_permissions)"
+                        >#</a
+                      >
+                      <span>permissionId</span>
+                    </td>
+
+                    <td
+                      id="0-0-1-roles_permissions-roles_permissions-permissionId"
+                    >
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-roles_permissions-roles_permissions-permissionId"
+                        aria-label="Link to this section: permissionId in roles_permissions(roles_permissions)"
+                        >#</a
+                      >
+                      <span>permissionId</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-success">PK</span>
+                      <span class="badge text-bg-info">FK</span>
+                    </td>
+
+                    <td>
+                      <span>*number</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mx-auto p-2" style="width: 100%"></div>
+
+            <div class="container-fluid">
+              <table class="table table-striped table-hover caption-top">
+                <caption>
+                  <i class="bi bi-key"></i>
+                  roles_permissions<small class="text-body-secondary"
+                    >(roles_permissions)</small
+                  >
+                  indices
+                </caption>
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <!-- changing status -->
+                    <th>Database Name</th>
+                    <th>Property Name</th>
+                    <th>Unique</th>
+                    <th>Columns</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <td></td>
+
+                    <td
+                      id="0-0-1-roles_permissions-roles_permissions-IDX_28bf280551eb9aa82daf1e156d"
+                    >
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-roles_permissions-roles_permissions-IDX_28bf280551eb9aa82daf1e156d"
+                        aria-label="Link to this section: IDX_28bf280551eb9aa82daf1e156d in roles_permissions(roles_permissions)"
+                        >#</a
+                      >
+                      <span>IDX_28bf280551eb9aa82daf1e156d</span>
+                    </td>
+
+                    <td
+                      id="0-0-1-roles_permissions-roles_permissions-IDX_28bf280551eb9aa82daf1e156d"
+                    >
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-roles_permissions-roles_permissions-IDX_28bf280551eb9aa82daf1e156d"
+                        aria-label="Link to this section: IDX_28bf280551eb9aa82daf1e156d in roles_permissions(roles_permissions)"
+                        >#</a
+                      >
+                      <span>IDX_28bf280551eb9aa82daf1e156d</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <ul style="margin: 0">
+                        <li>roleId</li>
+                      </ul>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td
+                      id="0-0-1-roles_permissions-roles_permissions-IDX_31cf5c31d0096f706e3ba3b1e8"
+                    >
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-roles_permissions-roles_permissions-IDX_31cf5c31d0096f706e3ba3b1e8"
+                        aria-label="Link to this section: IDX_31cf5c31d0096f706e3ba3b1e8 in roles_permissions(roles_permissions)"
+                        >#</a
+                      >
+                      <span>IDX_31cf5c31d0096f706e3ba3b1e8</span>
+                    </td>
+
+                    <td
+                      id="0-0-1-roles_permissions-roles_permissions-IDX_31cf5c31d0096f706e3ba3b1e8"
+                    >
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-roles_permissions-roles_permissions-IDX_31cf5c31d0096f706e3ba3b1e8"
+                        aria-label="Link to this section: IDX_31cf5c31d0096f706e3ba3b1e8 in roles_permissions(roles_permissions)"
+                        >#</a
+                      >
+                      <span>IDX_31cf5c31d0096f706e3ba3b1e8</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <ul style="margin: 0">
+                        <li>permissionId</li>
+                      </ul>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mx-auto p-4" style="width: 100%"></div>
+          </div>
+          <div class="container-fluid">
+            <h2 id="0-0-1-users_roles-users_roles" class="title is-3">
+              users_roles
+              <small class="text-body-secondary">(users_roles)</small>
+              <a
+                class="anchor-link"
+                href="#0-0-1-users_roles-users_roles"
+                aria-label="Link to this section: users_roles(users_roles)"
+                >#</a
+              >
+            </h2>
+
+            <div class="container-fluid">
+              <table class="table table-striped table-hover caption-top">
+                <caption>
+                  <i class="bi bi-grid-3x2-gap"></i>
+                  users_roles<small class="text-body-secondary"
+                    >(users_roles)</small
+                  >
+                  columns
+                </caption>
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <!-- changing status -->
+                    <th>Database Name</th>
+                    <th>Property Name</th>
+                    <th>Attribute</th>
+                    <th>Type</th>
+                    <th>Nullable</th>
+                    <th>Charset</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-users_roles-users_roles-userId">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users_roles-users_roles-userId"
+                        aria-label="Link to this section: userId in users_roles(users_roles)"
+                        >#</a
+                      >
+                      <span>userId</span>
+                    </td>
+
+                    <td id="0-0-1-users_roles-users_roles-userId">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users_roles-users_roles-userId"
+                        aria-label="Link to this section: userId in users_roles(users_roles)"
+                        >#</a
+                      >
+                      <span>userId</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-success">PK</span>
+                      <span class="badge text-bg-info">FK</span>
+                    </td>
+
+                    <td>
+                      <span>*number</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td id="0-0-1-users_roles-users_roles-roleId">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users_roles-users_roles-roleId"
+                        aria-label="Link to this section: roleId in users_roles(users_roles)"
+                        >#</a
+                      >
+                      <span>roleId</span>
+                    </td>
+
+                    <td id="0-0-1-users_roles-users_roles-roleId">
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users_roles-users_roles-roleId"
+                        aria-label="Link to this section: roleId in users_roles(users_roles)"
+                        >#</a
+                      >
+                      <span>roleId</span>
+                    </td>
+
+                    <td>
+                      <span class="badge text-bg-success">PK</span>
+                      <span class="badge text-bg-info">FK</span>
+                    </td>
+
+                    <td>
+                      <span>*number</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <span></span>
+                    </td>
+
+                    <td>
+                      <span></span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mx-auto p-2" style="width: 100%"></div>
+
+            <div class="container-fluid">
+              <table class="table table-striped table-hover caption-top">
+                <caption>
+                  <i class="bi bi-key"></i>
+                  users_roles<small class="text-body-secondary"
+                    >(users_roles)</small
+                  >
+                  indices
+                </caption>
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <!-- changing status -->
+                    <th>Database Name</th>
+                    <th>Property Name</th>
+                    <th>Unique</th>
+                    <th>Columns</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <td></td>
+
+                    <td
+                      id="0-0-1-users_roles-users_roles-IDX_776b7cf9330802e5ef5a8fb18d"
+                    >
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users_roles-users_roles-IDX_776b7cf9330802e5ef5a8fb18d"
+                        aria-label="Link to this section: IDX_776b7cf9330802e5ef5a8fb18d in users_roles(users_roles)"
+                        >#</a
+                      >
+                      <span>IDX_776b7cf9330802e5ef5a8fb18d</span>
+                    </td>
+
+                    <td
+                      id="0-0-1-users_roles-users_roles-IDX_776b7cf9330802e5ef5a8fb18d"
+                    >
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users_roles-users_roles-IDX_776b7cf9330802e5ef5a8fb18d"
+                        aria-label="Link to this section: IDX_776b7cf9330802e5ef5a8fb18d in users_roles(users_roles)"
+                        >#</a
+                      >
+                      <span>IDX_776b7cf9330802e5ef5a8fb18d</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <ul style="margin: 0">
+                        <li>userId</li>
+                      </ul>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+
+                    <td
+                      id="0-0-1-users_roles-users_roles-IDX_4fb14631257670efa14b15a3d8"
+                    >
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users_roles-users_roles-IDX_4fb14631257670efa14b15a3d8"
+                        aria-label="Link to this section: IDX_4fb14631257670efa14b15a3d8 in users_roles(users_roles)"
+                        >#</a
+                      >
+                      <span>IDX_4fb14631257670efa14b15a3d8</span>
+                    </td>
+
+                    <td
+                      id="0-0-1-users_roles-users_roles-IDX_4fb14631257670efa14b15a3d8"
+                    >
+                      <a
+                        class="anchor-link"
+                        href="#0-0-1-users_roles-users_roles-IDX_4fb14631257670efa14b15a3d8"
+                        aria-label="Link to this section: IDX_4fb14631257670efa14b15a3d8 in users_roles(users_roles)"
+                        >#</a
+                      >
+                      <span>IDX_4fb14631257670efa14b15a3d8</span>
+                    </td>
+
+                    <td></td>
+
+                    <td>
+                      <ul style="margin: 0">
+                        <li>roleId</li>
+                      </ul>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mx-auto p-4" style="width: 100%"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+
+  <script>
+    var so = document.getElementById("entity-version-select");
+
+    so.addEventListener("change", (e) => {
+      var sectionsForContentHide = document.getElementsByClassName(
+        "entity-version-content-section",
+      );
+      [].forEach.call(sectionsForContentHide, (element) => {
+        element.className = element.className
+          .split(" ")
+          .filter((className) => className !== "hide")
+          .concat(["hide"])
+          .join(" ");
+      });
+
+      var sectionsForTocHide = document.getElementsByClassName(
+        "entity-version-toc-section",
+      );
+      [].forEach.call(sectionsForTocHide, (element) => {
+        element.className = element.className
+          .split(" ")
+          .filter((className) => className !== "hide")
+          .concat(["hide"])
+          .join(" ");
+      });
+
+      var sectionsForContentReveal = document.querySelector(
+        ".content-" + e.target.value,
+      );
+      sectionsForContentReveal.className = sectionsForContentReveal.className
+        .split(" ")
+        .filter((className) => className !== "hide")
+        .join(" ");
+
+      var sectionsForTocReveal = document.querySelector(
+        ".toc-" + e.target.value,
+      );
+      sectionsForTocReveal.className = sectionsForTocReveal.className
+        .split(" ")
+        .filter((className) => className !== "hide")
+        .join(" ");
+    });
+  </script>
+</html>

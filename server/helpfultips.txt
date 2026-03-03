@@ -39,47 +39,6 @@ Newsletter Dispatch: Triggering the batch delivery of weekly newsletters during 
 Medium
 Medium
  +4
-3. Financial & Reporting Logic
-Daily Sales Reports: Aggregating the previous day's transactions at 1:00 AM and emailing a PDF summary to stakeholders.
-Invoice Generation: Automatically generating and sending monthly invoices on the 1st day of every month.
-Currency Rate Updates: Fetching the latest exchange rates from an external API every hour to keep pricing accurate.
-Payout Processing: Triggering a batch process to send accumulated funds to vendors or affiliates every Friday. 
-Reddit
-Reddit
- +5
-4. System Integration & Syncing
-Inventory Sync: Pulling stock levels from a 3rd-party ERP (like SAP or Odoo) every 15 minutes to update an e-commerce storefront.
-Search Indexing: Re-indexing database content into Elasticsearch or Algolia every hour to ensure search results are up to date.
-Third-Party Webhook Retries: Identifying outgoing webhooks that failed and re-attempting them with exponential backoff. 
-Medium
-Medium
- +5
-5. Infrastructure & Security
-Database Backups: Triggering a script to dump the database and upload it to S3/Cloud Storage every night.
-SSL Certificate Check: Checking the expiration date of managed certificates once a week and alerting DevOps if any are near expiry.
-Health Monitoring: Running a "heartbeat" check every 5 minutes to verify that critical internal services are responding. 
-OneUptime
-OneUptime
- +2
 
 
- import { Controller, Get } from '@nestjs/common';
-import { HealthCheckService, HttpHealthIndicator, HealthCheck, TypeOrmHealthIndicator } from '@nestjs/terminus';
 
-@Controller('health')
-export class HealthController {
-  constructor(
-    private health: HealthCheckService,
-    private http: HttpHealthIndicator,
-    private db: TypeOrmHealthIndicator,
-  ) {}
-
-  @Get()
-  @HealthCheck()
-  check() {
-    return this.health.check([
-      () => this.http.pingCheck('nestjs-docs', 'https://docs.nestjs.com'),
-      () => this.db.pingCheck('database'),
-    ]);
-  }
-}
