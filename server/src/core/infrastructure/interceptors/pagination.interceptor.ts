@@ -1,5 +1,4 @@
 import {
-  Injectable,
   NestInterceptor,
   ExecutionContext,
   CallHandler,
@@ -7,8 +6,10 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Response as ExpressResponse } from 'express';
+import { Interceptor } from '../../../common/decorators/interceptor.decorator';
 
-@Injectable()
+
+@Interceptor()
 export class PaginationInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(

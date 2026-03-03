@@ -8,7 +8,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { SessionModule } from './modules/session/session.module';
 import dataSourceOptions from './configs/type-orm.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CoreModule } from './core/core.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'node:path';
@@ -19,6 +19,8 @@ import { TerminusModule } from '@nestjs/terminus/dist/terminus.module';
 import { SentryGlobalFilter, SentryModule } from "@sentry/nestjs/setup";
 import { APP_FILTER } from '@nestjs/core/constants';
 import { StatsModule } from './modules/stats/stats.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-redis-yet';
 
 console.log("__dirname:", __dirname);
 
@@ -40,6 +42,21 @@ console.log("__dirname:", __dirname);
     ContactModule, 
     PermissionModule,
     StatsModule,
+       CacheModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        store: await redisStore({
+          socket: {
+            // Use 'redis' because that is the service name in your docker-compose
+            host: configService.get('REDIS_HOST') || 'redis',
+            port: configService.getOrThrow<number>('REDIS_PORT'),
+          },
+          ttl: 30000, // 30 seconds default
+        }),
+      }),
+      isGlobal: true, // Makes CacheManager available everywhere
+    }),
     SentryModule.forRoot(),
      TerminusModule.forRoot({
       gracefulShutdownTimeoutMs: 1000,
