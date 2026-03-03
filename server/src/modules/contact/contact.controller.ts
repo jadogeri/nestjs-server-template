@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
@@ -15,9 +15,11 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { Permissions } from '../../common/decorators/permissions.decorator';
 import { RolesGuard } from '../../core/security/guards/roles.guard';
 import { PoliciesGuard } from '../../core/security/guards/policies.guard';
+import { CacheMonitorInterceptor } from '../../core/infrastructure/interceptors/cache-monitor.interceptor';
 
 @Controller('contacts')
-@UseGuards(AccessAuthGuard, PoliciesGuard )
+@UseGuards(AccessAuthGuard, PoliciesGuard ) @UseInterceptors(CacheMonitorInterceptor) // Apply the monitor here  
+
 export class ContactController {
 
   constructor(private readonly contactService: ContactService) {}

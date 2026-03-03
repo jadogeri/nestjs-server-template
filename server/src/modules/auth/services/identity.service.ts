@@ -1,4 +1,4 @@
-import { UnauthorizedException, ForbiddenException, Logger, Inject } from "@nestjs/common";
+import { UnauthorizedException, ForbiddenException, Logger, Inject, UseInterceptors } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { StatusEnum } from "src/common/enums/user-status.enum";
 import { HashingService } from "src/core/security/hashing/interfaces/hashing.service";
@@ -10,7 +10,7 @@ import { AccessControlService } from "src/core/security/access-control/access-co
 import { PasswordGeneratorUtil } from "src/common/utils/password-generator.util";
 import { ResetPasswordDto } from "../dto/reset-password.dto";
 import { IdentityServiceInterface } from "./interfaces/identity-service.interface";
-import { AccessTokenPayload } from "src/common/types/access-token-payload.type";
+import type { AccessTokenPayload } from "src/common/types/access-token-payload.type";
 import { RefreshTokenPayload } from "../../../common/types/refresh-token-payload.type";
 import { UserService } from "../../../modules/user/user.service";
 import { SessionService } from "../../../modules/session/session.service";
@@ -91,7 +91,6 @@ export class IdentityService implements IdentityServiceInterface {
       return this.payloadMapperService.toUserPayload(user, email);
 
   }
-
   async verifyAccessToken(accessTokenPayload: AccessTokenPayload): Promise<AccessTokenPayload | null> {
   const { userId, email } = accessTokenPayload;
    const cacheKey = `auth:access_token:${email}`;

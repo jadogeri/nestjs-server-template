@@ -13,7 +13,6 @@ services:
   app:
     build:
       context: .
-      target: development # Optional: use if you have a multi-stage Dockerfile
     container_name: nestjs-app
     ports:
       - "3000:3000"

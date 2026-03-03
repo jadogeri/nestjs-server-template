@@ -8,14 +8,15 @@ export const pinoLoggerConfig: Params = {
     transport: {
       targets: [
         // 1. Console Transport (Readable/Pretty)
-        {
-          target: 'pino-pretty',
-          level: 'info',
-          options: { 
-            colorize: true,
-            translateTime: 'SYS:standard'
-          },
-        },
+        // {
+        //   target: 'pino-pretty',
+        //   level: 'info',
+        //   options: { 
+        //     colorize: true,
+        //     translateTime: 'SYS:standard'
+        //   },
+          
+        // },
         // 2. File Transport with Auto-Rotation (Asynchronous & Non-blocking)
         {
           target: 'pino-roll',
