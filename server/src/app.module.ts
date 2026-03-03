@@ -42,7 +42,7 @@ console.log("__dirname:", __dirname);
     ContactModule, 
     PermissionModule,
     StatsModule,
-       CacheModule.registerAsync({
+    CacheModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
