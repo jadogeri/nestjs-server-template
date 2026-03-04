@@ -17,10 +17,13 @@ import { LoggerModule } from 'nestjs-pino/LoggerModule';
 import { pinoLoggerConfig } from './configs/pino.config';
 import { TerminusModule } from '@nestjs/terminus/dist/terminus.module';
 import { SentryGlobalFilter, SentryModule } from "@sentry/nestjs/setup";
-import { APP_FILTER } from '@nestjs/core/constants';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core/constants';
 import { StatsModule } from './modules/stats/stats.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
+import { CustomThrottlerGuard } from './core/security/guards/custom-throttle.guard';
+import { ThrottlerModule } from '@nestjs/throttler/dist/throttler.module';
+import { seconds } from '@nestjs/throttler';
 
 console.log("__dirname:", __dirname);
 
@@ -30,7 +33,10 @@ console.log("__dirname:", __dirname);
       provide: APP_FILTER,
       useClass: SentryGlobalFilter,
     },
-    // ..other providers
+    {
+      provide: APP_GUARD,
+      useClass: CustomThrottlerGuard, // Use your custom guard here
+    },
   ],
   imports: [
     CoreModule,
@@ -80,7 +86,15 @@ console.log("__dirname:", __dirname);
     TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
 
     ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        { name: 'short', ttl: seconds(1), limit: 3 },
+        { name: 'medium', ttl: seconds(10), limit: 20 },
+        { name: 'long', ttl: seconds(60), limit: 100 }
+      ],
+    }),
   ],
+  
 })
 
 export class AppModule {}
