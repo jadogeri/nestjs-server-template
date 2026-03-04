@@ -17,10 +17,11 @@ import { LoggerModule } from 'nestjs-pino/LoggerModule';
 import { pinoLoggerConfig } from './configs/pino.config';
 import { TerminusModule } from '@nestjs/terminus/dist/terminus.module';
 import { SentryGlobalFilter, SentryModule } from "@sentry/nestjs/setup";
-import { APP_FILTER } from '@nestjs/core/constants';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core/constants';
 import { StatsModule } from './modules/stats/stats.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
+import { CustomThrottlerGuard } from './core/security/guards/custom-throttle.guard';
 
 console.log("__dirname:", __dirname);
 
@@ -30,7 +31,10 @@ console.log("__dirname:", __dirname);
       provide: APP_FILTER,
       useClass: SentryGlobalFilter,
     },
-    // ..other providers
+    {
+      provide: APP_GUARD,
+      useClass: CustomThrottlerGuard, // Use your custom guard here
+    },
   ],
   imports: [
     CoreModule,
@@ -81,6 +85,7 @@ console.log("__dirname:", __dirname);
 
     ConfigModule.forRoot({ isGlobal: true }),
   ],
+  
 })
 
 export class AppModule {}
