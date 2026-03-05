@@ -1,0 +1,80 @@
+// cache/cache-keys.ts
+export const CacheKeys = {
+  posts: {
+    all: 'posts:all',
+    byId: (id: string) => `posts:${id}`,
+  },
+  users: {
+    all: 'users:all',
+    byId: (id: string) => `users:${id}`,
+  },
+  profiles: {
+    byUserId: (userId: string) => `profile:user:${userId}`,
+  },
+};
+
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable } from '@nestjs/common';
+import { Cache } from 'cache-manager';
+
+@Injectable()
+export abstract class BaseCacheService<T> {
+  constructor(
+    @Inject(CACHE_MANAGER) protected cacheManager: Cache,
+    protected readonly resourceKey: string, // e.g., 'posts'
+  ) {}
+
+  // Helper to generate keys
+  protected getListKey() { return `${this.resourceKey}:all`; }
+  protected getItemKey(id: string) { return `${this.resourceKey}:${id}`; }
+
+  async create(data: any): Promise<T> {
+    const item = await this.performCreate(data);
+    await this.cacheManager.del(this.getListKey()); // Clear list
+    return item;
+  }
+
+  async findAll(): Promise<T[]> {
+    const cached = await this.cacheManager.get<T[]>(this.getListKey());
+    if (cached) return cached;
+
+    const items = await this.performFindAll();
+    await this.cacheManager.set(this.getListKey(), items);
+    return items;
+  }
+
+  async findOne(id: string): Promise<T> {
+    const key = this.getItemKey(id);
+    const cached = await this.cacheManager.get<T>(key);
+    if (cached) return cached;
+
+    const item = await this.performFindOne(id);
+    await this.cacheManager.set(key, item);
+    return item;
+  }
+
+  async update(id: string, data: any): Promise<T> {
+    const item = await this.performUpdate(id, data);
+    // Invalidate specific item and the list
+    await Promise.all([
+      this.cacheManager.del(this.getItemKey(id)),
+      this.cacheManager.del(this.getListKey()),
+    ]);
+    return item;
+  }
+
+  async remove(id: string): Promise<void> {
+    await this.performDelete(id);
+    await Promise.all([
+      this.cacheManager.del(this.getItemKey(id)),
+      this.cacheManager.del(this.getListKey()),
+    ]);
+  }
+
+  // Abstract methods to be implemented by child services (DB logic)
+  protected abstract performCreate(data: any): Promise<T>;
+  protected abstract performFindAll(): Promise<T[]>;
+  protected abstract performFindOne(id: string): Promise<T>;
+  protected abstract performUpdate(id: string, data: any): Promise<T>;
+  protected abstract performDelete(id: string): Promise<void>;
+}
