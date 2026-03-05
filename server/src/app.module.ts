@@ -21,7 +21,7 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core/constants';
 import { StatsModule } from './modules/stats/stats.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
-import { CustomThrottlerGuard } from './core/security/guards/custom-throttle.guard';
+import { CustomThrottlerGuard } from './core/security/guards/custom-throttler.guard';
 import { ThrottlerModule } from '@nestjs/throttler/dist/throttler.module';
 import { seconds } from '@nestjs/throttler';
 
