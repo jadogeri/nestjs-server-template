@@ -18,8 +18,8 @@ import { PoliciesGuard } from '../../core/security/guards/policies.guard';
 import { CacheMonitorInterceptor } from '../../core/infrastructure/interceptors/cache-monitor.interceptor';
 
 @Controller('contacts')
-@UseGuards(AccessAuthGuard, PoliciesGuard ) @UseInterceptors(CacheMonitorInterceptor) // Apply the monitor here  
-
+@UseGuards(AccessAuthGuard, PoliciesGuard ) 
+@UseInterceptors(CacheMonitorInterceptor) // Apply the monitor here  
 export class ContactController {
 
   constructor(private readonly contactService: ContactService) {}
