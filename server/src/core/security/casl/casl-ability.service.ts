@@ -7,8 +7,9 @@ import { AccessTokenPayload } from '../../../common/types/access-token-payload.t
 import { PermissionString } from '../../../common/types/permission-string.type';
 import { PermissionStringGeneratorUtil } from '../../../common/utils/permission-string.util';
 import { Contact } from '../../../modules/contact/entities/contact.entity';
+import { Profile } from '../../../modules/profile/entities/profile.entity';
 
-export type Subjects = InferSubjects<typeof User | typeof Contact> | Resource;
+export type Subjects = InferSubjects<typeof User | typeof Contact | typeof Profile> | Resource;
 export type AppAbility = MongoAbility<[Action, Subjects]>;
 
 @Service()
@@ -35,7 +36,8 @@ export class CaslAbilityFactory {
     // 3. Ownership Rule: Allow users to MANAGE (Read/Update/Delete) their OWN contacts 
     // This allows regular users to pass the check ONLY if user.id matches.
     can(Action.MANAGE, Contact, { 'user.id': userId } as any);
-
+    can(Action.MANAGE, Profile, { 'user.id': userId } as any);
+    
     return build({
       detectSubjectType: (item) => 
         typeof item === 'string' 

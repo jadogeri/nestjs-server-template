@@ -29,6 +29,7 @@ export class ContactService {
       return await this.contactRepository.findAll();
     }
 
+    // For regular users, only return contacts where contact.user.id matches token.userId
     return await this.contactRepository.findAll({ 
       where: { user: { id: userId } }  
     });
