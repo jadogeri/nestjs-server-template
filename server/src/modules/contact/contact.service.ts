@@ -1,51 +1,67 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
 import { ContactRepository } from './contact.repository';
-import { AccessTokenPayload } from 'src/common/types/access-token-payload.type';
+import { AccessTokenPayload } from '../../common/types/access-token-payload.type';
 
 @Injectable()
 export class ContactService {
   constructor(private readonly contactRepository: ContactRepository) {}
 
   async create(accessTokenPayload: AccessTokenPayload, createContactDto: CreateContactDto) {
-    // Merging userId from token for security
+    const existingContact = await this.contactRepository.findOne({ 
+      where: { 
+        user: { id: accessTokenPayload.userId } 
+      } 
+    }); 
+    
+    if (existingContact) {
+      throw new ConflictException(`Contact for user #${accessTokenPayload.userId} already exists`);
+    }
+
     return await this.contactRepository.create({ 
       ...createContactDto, 
-      userId: accessTokenPayload.userId 
+      user: { id: accessTokenPayload.userId } 
     });
   }
 
   async findAll(accessTokenPayload: AccessTokenPayload) {
     return await this.contactRepository.findAll({ 
-      where: { userId: accessTokenPayload.userId } 
+      where: { user: { id: accessTokenPayload.userId } }  
     });
   }
 
   async findOne(accessTokenPayload: AccessTokenPayload, id: number) {
     const contact = await this.contactRepository.findOne({ 
-      where: { userId: accessTokenPayload.userId, id } 
+      where: { 
+        id, 
+        user: { id: accessTokenPayload.userId } 
+      } 
     });
-    if (!contact) throw new NotFoundException(`Contact #${id} not found`);
+
+    // If no contact matches BOTH the id and the userId, throw error
+    if (!contact) {
+      throw new NotFoundException(`Contact #${id} not found`);
+    }
     return contact;
   }
 
   async update(accessTokenPayload: AccessTokenPayload, id: number, updateContactDto: UpdateContactDto) {
-    // 1. Check ownership first
+    // 1. findOne validates existence and ownership; it throws 404 if check fails
     const existingContact = await this.findOne(accessTokenPayload, id);
 
-       Object.assign(existingContact, updateContactDto);
+    // 2. Merge update data into the existing entity
+    Object.assign(existingContact, updateContactDto);
 
-
-    // 3. Return the fresh data (update() only returns metadata)
+    // 3. Persist the changes
     return await this.contactRepository.update(id, existingContact);
   }
 
   async remove(accessTokenPayload: AccessTokenPayload, id: number) {
-    // Ensure the contact exists and belongs to the user before deleting
+    // 1. findOne validates existence and ownership
     await this.findOne(accessTokenPayload, id);
 
-    // Use the ID directly as the first argument
+    // 2. Perform the deletion
     return await this.contactRepository.delete(id);
   }
 }
