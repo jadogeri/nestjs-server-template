@@ -24,6 +24,7 @@ import { redisStore } from 'cache-manager-redis-yet';
 import { CustomThrottlerGuard } from './core/security/guards/custom-throttler.guard';
 import { ThrottlerModule } from '@nestjs/throttler/dist/throttler.module';
 import { seconds } from '@nestjs/throttler';
+import { throttlerConfig } from './configs/throttler.config';
 
 console.log("__dirname:", __dirname);
 
@@ -86,13 +87,7 @@ console.log("__dirname:", __dirname);
     TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
 
     ConfigModule.forRoot({ isGlobal: true }),
-    ThrottlerModule.forRoot({
-      throttlers: [
-        { name: 'short', ttl: seconds(1), limit: 3 },
-        { name: 'medium', ttl: seconds(10), limit: 20 },
-        { name: 'long', ttl: seconds(60), limit: 100 }
-      ],
-    }),
+    ThrottlerModule.forRoot( throttlerConfig),
   ],
   
 })
