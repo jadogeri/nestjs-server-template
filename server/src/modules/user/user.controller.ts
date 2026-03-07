@@ -19,19 +19,18 @@ import { PoliciesGuard } from '../../core/security/guards/policies.guard';
 import { access } from 'fs';
 
 @Controller('users')
-@UseGuards(AccessAuthGuard, PoliciesGuard ) 
 @UseInterceptors(CacheMonitorInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
   @ApiPostUser()
-  create(@AccessToken() accessTokenPayload: AccessTokenPayload,@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(accessTokenPayload, createUserDto);
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
   }
 
   @Get()
-    @UseGuards(PermissionsGuard, RolesGuard) // Apply both guards to this endpoint)
+ @UseGuards(AccessAuthGuard, PermissionsGuard, RolesGuard, PoliciesGuard ) 
   @Permissions("all:manage") // Only ADMIN can access this endpoint
   @Roles('USER', 'SUPER_USER') // Only users with ADMIN role can access this endpoint
   @ApiGetUsers()
@@ -40,14 +39,16 @@ export class UserController {
   }
 
   @Get(':id')
-  @UseGuards(PermissionsGuard) // Apply both guards to this endpoint)
+  @UseGuards(AccessAuthGuard, PermissionsGuard, RolesGuard, PoliciesGuard ) 
   @Permissions("user:read") // Only users with 'user:read' permission can access this endpoint
   @ApiGetUser()
   findOne(@AccessToken() accessTokenPayload: AccessTokenPayload, @Param('id', ParseIntPipe) id: number) {
-    return this.userService.findById(accessTokenPayload, id);
+    return this.userService.findOne(accessTokenPayload, id);
   }
 
   @Patch(':id')
+  @UseGuards(AccessAuthGuard, PermissionsGuard, RolesGuard, PoliciesGuard ) 
+  @Permissions("user:update") // Only users with 'user:update' permission can access this endpoint
   @ApiPatchUser()
   update(
     @AccessToken() accessTokenPayload: AccessTokenPayload,
@@ -58,7 +59,9 @@ export class UserController {
   }
 
   @Delete(':id')
-  @ApiDeleteUser()
+  @UseGuards(AccessAuthGuard, PermissionsGuard, RolesGuard, PoliciesGuard ) 
+  @Permissions("user:delete") // Only users with 'user:delete' permission can access this endpoint
+   @ApiDeleteUser()
   remove(@AccessToken() accessTokenPayload: AccessTokenPayload, @Param('id', ParseIntPipe) id: number) {
     return this.userService.remove(accessTokenPayload, id);
   }

@@ -37,6 +37,7 @@ export class CaslAbilityFactory {
     // This allows regular users to pass the check ONLY if user.id matches.
     can(Action.MANAGE, Contact, { 'user.id': userId } as any);
     can(Action.MANAGE, Profile, { 'user.id': userId } as any);
+    can(Action.MANAGE, User, { id: userId } as any); // Allow users to read their own user record (for profile page, etc. Admins can read all users due to their global 'manage' permission)
     
     return build({
       detectSubjectType: (item) => 
