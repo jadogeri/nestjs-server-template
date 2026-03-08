@@ -6,7 +6,6 @@ import { AccessTokenPayload } from '../../common/types/access-token-payload.type
 import { CaslAbilityFactory } from '../../core/security/casl/casl-ability.service';
 import { Action } from '../../common/enums/action.enum';
 import { Profile } from './entities/profile.entity';
-import { O } from 'node_modules/@faker-js/faker/dist/airline-Dz1uGqgJ';
 
 
 @Injectable()

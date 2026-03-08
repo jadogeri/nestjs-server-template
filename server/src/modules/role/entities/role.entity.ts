@@ -18,7 +18,7 @@ export class Role {
   @ManyToMany(() => User, (user) => user.roles)
   users: User[];
 
-  @ManyToMany(() => Permission, (permission: Permission) => permission.roles)
+@ManyToMany(() => Permission, (permission: Permission) => permission.roles)
 @JoinTable({
   name: "roles_permissions", // The junction table name
   joinColumn: {
