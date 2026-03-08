@@ -26,6 +26,9 @@ export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Post()
+  @Roles('SUPER_USER') // Only users with SUPER_USER role can access this endpoint
+  @Permissions("all:manage") // Only users with 'all:manage' permission can access this endpoint
+  @UseGuards(PermissionsGuard, RolesGuard) // Apply both guards to this endpoint
   @ApiPostRole()
   create(@AccessToken() accessTokenPayload: AccessTokenPayload, @Body() createRoleDto: CreateRoleDto) {
     return this.roleService.create(accessTokenPayload, createRoleDto);
