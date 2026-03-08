@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
@@ -21,7 +21,15 @@ export class UserService {
   }
 
   async findAll(accessTokenPayload: AccessTokenPayload) {
-    return await this.userRepository.findAll({});
+    const { roles } = accessTokenPayload;
+
+    // 1. Super User gets global access
+    if (roles.includes('SUPER_USER')) {
+      return await this.userRepository.findAll({});
+    }
+
+    throw new ForbiddenException('You do not have permission to access this resource');
+    
   }
 
   async findOne(accessTokenPayload: AccessTokenPayload, id: number) { 

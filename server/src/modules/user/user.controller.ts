@@ -16,7 +16,6 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { Permissions } from '../../common/decorators/permissions.decorator';
 import { RolesGuard } from '../../core/security/guards/roles.guard';
 import { PoliciesGuard } from '../../core/security/guards/policies.guard';
-import { access } from 'fs';
 
 @Controller('users')
 @UseInterceptors(CacheMonitorInterceptor)
