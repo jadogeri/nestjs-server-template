@@ -5,7 +5,7 @@ import type { Cache } from 'cache-manager';
 @Injectable()
 export class CacheService {
   // NestJS automatically handles connection/disconnection via AppContext
-  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+  constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}
 
   async set(key: string, value: any, ttl: number = 3600): Promise<void> {
     // Note: cache-manager uses milliseconds or seconds depending on version
