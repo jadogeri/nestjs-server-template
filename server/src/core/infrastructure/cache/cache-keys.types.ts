@@ -5,7 +5,7 @@ type CacheKeyStore = {
   };
   profiles: {
     all: 'profiles:all';
-    byUserId: (userId: string) => string;
+    byId: (id: number) => string;
   };
   contacts: {
     byUserId: (userId: string) => string;
@@ -32,7 +32,7 @@ export const CacheKeys: CacheKeyStore = {
   },
   profiles: {
     all: 'profiles:all',
-    byUserId: (userId) => `profiles:user:${userId}`,
+    byId: (id: number) => `profiles:user:${id}`,
   },
    contacts: {
     byUserId: (userId: string) => `contacts:user:${userId}`,
