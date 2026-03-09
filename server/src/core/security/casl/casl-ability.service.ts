@@ -18,35 +18,39 @@ export class CaslAbilityFactory {
     const { can, build } = new AbilityBuilder<AppAbility>(createMongoAbility);
     const { roles, permissions, userId } = accessTokenPayload;
 
-    // 1. Super User gets global access
+    // 1. SUPER_USER: Global Wildcard
     if (roles.includes('SUPER_USER')) {
       can(Action.MANAGE, 'all');
     }
 
-    // 2. Add granular permissions from DB/Token (This gives Admins their power)
+    // 2. Database Permissions (ADMIN, EDITOR, VIEWER, USER)
+    // This dynamically maps the roles_permissions records from your SQL script
     permissions.forEach((perm: PermissionString) => {
       const { resource, action } = PermissionStringGeneratorUtil.extract(perm);
-      if (resource === 'all' && action === Action.MANAGE) {
-        can(Action.MANAGE, 'all');
-      } else {    
-        can(action, resource);
-      } 
+      
+      if (resource === 'all') {
+        can(action, 'all');
+      } else {
+        // Map string resource to class-based subjects if necessary
+        can(action, resource as ExtractSubjectType<Subjects>);
+      }
     });
 
-    // 3. Ownership Rule: Allow users to MANAGE (Read/Update/Delete) their OWN contacts 
-    // This allows regular users to pass the check ONLY if user.id matches.
+    // 3. Ownership Override: Refine generic permissions with specific constraints
+    // Even if 'USER' has READ 'contact' from DB, these lines ensure 
+    // they can only MANAGE/READ entries where they are the owner.
+    
+    // Contact & Profile Ownership
     can(Action.MANAGE, Contact, { 'user.id': userId } as any);
     can(Action.MANAGE, Profile, { 'user.id': userId } as any);
-    // Allow users to read their own user record (for profile page, etc. 
-    // Admins can read all users due to their global 'manage' permission) 
-    //User Rule: Allow users to MANAGE (Read/Update/Delete) their OWN user record   
+
+    // User Ownership (Self-service)
     can(Action.READ, User, { id: userId } as any); 
     can(Action.UPDATE, User, { id: userId } as any);
-    can(Action.CREATE, User);
     
-    //Role
+    // Auth & Registration
+    can(Action.CREATE, User); // Allow registration/creation
 
-    
     return build({
       detectSubjectType: (item) => 
         typeof item === 'string' 
