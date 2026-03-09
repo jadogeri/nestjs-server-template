@@ -3,6 +3,7 @@ import { ContactService } from './contact.service';
 import { ContactRepository } from './contact.repository';
 import { CaslAbilityFactory } from '../../core/security/casl/casl-ability.service';
 import { Reflector } from '@nestjs/core';
+import { CacheService } from '../../core//infrastructure/cache/cache.service';
 
 describe('ContactService', () => {
   let service: ContactService;
@@ -25,6 +26,10 @@ describe('ContactService', () => {
           provide: Reflector,
           useValue: {}, // Required by most Guards
         },
+        {
+          provide: CacheService,
+          useValue: { get: jest.fn(), set: jest.fn(), del: jest.fn() }, // Mock the CacheService
+        }
       ],
     }).compile();
 

@@ -3,12 +3,14 @@ import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { PermissionRepository } from './permission.repository';
 import { AccessTokenPayload } from '../../common/types/access-token-payload.type';
+import { CaslAbilityFactory } from '../../core/security/casl/casl-ability.service';
 
 @Injectable()
 export class PermissionService {
 
   constructor(
     private readonly permissionRepository: PermissionRepository,
+    private readonly caslAbilityFactory: CaslAbilityFactory,
   ) {}  
   async create(accessTokenPayload: AccessTokenPayload, createPermissionDto: CreatePermissionDto) {
     return await this.permissionRepository.create(createPermissionDto);

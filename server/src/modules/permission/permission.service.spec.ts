@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PermissionService } from './permission.service';
 import { PermissionRepository } from './permission.repository';
+import { CaslAbilityFactory } from '../../core/security/casl/casl-ability.service';
 
 describe('PermissionService', () => {
   let service: PermissionService;
@@ -12,6 +13,10 @@ describe('PermissionService', () => {
         {
           provide: PermissionRepository,
           useValue: { findOne: jest.fn(), create: jest.fn(), update: jest.fn() },
+        },
+        {
+          provide: CaslAbilityFactory,
+          useValue: { createForUser: jest.fn() },
         }
       ],
     }).compile();

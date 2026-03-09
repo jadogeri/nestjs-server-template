@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleController } from './role.controller';
 import { RoleService } from './role.service';
+import { CacheService } from '../../core/infrastructure/cache/cache.service';
+import { CaslAbilityFactory } from '../../core/security/casl/casl-ability.service';
 
 describe('RoleController', () => {
   let controller: RoleController;
@@ -12,6 +14,14 @@ describe('RoleController', () => {
         {
           provide: RoleService,
           useValue: { findOne: jest.fn(), create: jest.fn(), update: jest.fn() },
+        },
+        {
+          provide: CacheService,
+          useValue: { get: jest.fn(), set: jest.fn(), del: jest.fn() }, // Mock the CacheService
+        },
+        {
+          provide: CaslAbilityFactory,
+          useValue: { createForUser: jest.fn() },
         }
       ],
     }).compile();

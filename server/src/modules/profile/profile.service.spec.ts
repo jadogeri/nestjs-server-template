@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProfileService } from './profile.service';
 import { ProfileRepository } from './profile.repository';
+import { CaslAbilityFactory } from '../../core/security/casl/casl-ability.service';
 
 describe('ProfileService', () => {
   let service: ProfileService;
@@ -12,6 +13,10 @@ describe('ProfileService', () => {
         {
           provide: ProfileRepository,
           useValue: { findOne: jest.fn(), create: jest.fn(), update: jest.fn() },
+        },
+        {
+          provide: CaslAbilityFactory,
+          useValue: { createForUser: jest.fn() },
         }
       ],
     }).compile();
