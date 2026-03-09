@@ -7,14 +7,13 @@ import { RolesGuard } from '../../core/security/guards/roles.guard';
 import { PoliciesGuard } from '../../core/security/guards/policies.guard';
 import { CacheMonitorInterceptor } from '../../core/infrastructure/interceptors/cache-monitor.interceptor';
 import { AccessAuthGuard } from '../../core/security/guards/access-auth.guard';
+import { SkipThrottle } from '@nestjs/throttler';
 
 
 
 @ApiExcludeController()
+@SkipThrottle() // Exclude this controller from rate limiting
 @Controller('stats')
-@UseGuards(AccessAuthGuard, RolesGuard, PoliciesGuard) // Apply the policies guard to the entire controller
-@UseInterceptors(CacheMonitorInterceptor) // Apply the monitor here 
-@Roles('SUPER_USER') // Only users with SUPER_USER role can access this controller
 export class StatsController {
     constructor(private readonly statsService: StatsService) {}
 

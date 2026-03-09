@@ -2,6 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
 import { SessionRepository } from './session.repository';
+import { AccessTokenPayload } from '../../common/types/access-token-payload.type';
+import { CaslAbilityFactory } from '../../core/security/casl/casl-ability.service';
+import { Action } from '../../common/enums/action.enum';
+
 
 @Injectable()
 export class SessionService {
@@ -10,10 +14,11 @@ export class SessionService {
 
   constructor(
     private readonly sessionRepository: SessionRepository,
+    private readonly caslAbilityFactory: CaslAbilityFactory,
   ) {}  
 
  async create(createSessionDto: CreateSessionDto) {
-    const { id, refreshTokenHash, auth, expiresAt } = createSessionDto;
+    const { id, refreshTokenHash, auth } = createSessionDto;
     console.log(`Creating session for user ${auth.id} with session ID ${id}`);
     // 1. Count existing sessions for this user
     const [sessions, count] = await this.sessionRepository.findAllAndCountByAuth(auth.id);

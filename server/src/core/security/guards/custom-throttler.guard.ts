@@ -3,33 +3,33 @@ import { ThrottlerGuard, ThrottlerException } from '@nestjs/throttler';
 
 @Injectable()
 export class CustomThrottlerGuard extends ThrottlerGuard {
+  // This is the primary method to bypass throttling
+  protected async shouldSkip(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    
+    // Bypass throttling for the /admin route and its static assets
+    if (request.url.startsWith('/admin')) {
+      return true;
+    }
+
+    return super.shouldSkip(context);
+  }
+
   protected async throwThrottlingException(
     context: ExecutionContext,
-    throttlerData: any,
+    throttlerData: any, // Contains: limit, ttl, timeToExpire, etc.
   ): Promise<void> {
     const response = context.switchToHttp().getResponse();
     
-    // 1. Calculate wait time
+    // Convert ms to seconds for the Retry-After header
     const waitTimeSeconds = Math.ceil(throttlerData.timeToExpire / 1000);
-
-    console.log("throttlerData:", throttlerData);
-    console.log("Calculated wait time (seconds):", waitTimeSeconds);
     
-    // 2. Set the standard HTTP Header
+    // Set the standard HTTP Header
     response.header('Retry-After', waitTimeSeconds);
 
-  // 3. DEFENSIVE NAME LOOKUP
-    // Check if options is an array (v5) or has a throttlers property (v6)
-    const configs = Array.isArray(this.options) ? this.options : (this.options as any).throttlers;
+    // Identify which limit was hit (if you have multiple named throttlers)
+    const limitName = throttlerData.throttler?.name || 'default';
     
-    // Find the config that matches the limit/ttl from the error
-    const throttlerConfig = configs?.find(
-      (t: any) => t.limit === throttlerData.limit && t.ttl === throttlerData.ttl
-    );
-
-  const limitName = throttlerConfig?.name || 'default';
-    
-    // 3. Throw the custom message including the limit name
     throw new ThrottlerException(
       `Too many requests on the '${limitName}' limit. Please try again in ${waitTimeSeconds} second(s).`
     );
