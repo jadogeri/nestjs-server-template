@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
-import { FindOneOptions, FindOptionsRelations } from 'typeorm';
+import { FindOneOptions } from 'typeorm';
 import { User } from './entities/user.entity';
 
 @Injectable()

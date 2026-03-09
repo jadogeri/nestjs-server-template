@@ -1,5 +1,5 @@
 // 1. NestJS & Third-Party Libs
-import { Controller, Get, Post, Body, Req, Res, HttpCode, HttpStatus, Query, UseGuards, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Res, Query, UseGuards, Param } from '@nestjs/common';
 import type { Request, Response } from 'express';
 
 // 2. Services & Helpers (Logic Layer)
@@ -36,7 +36,9 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ApiResetPassword } from './decorators/api-reset-password.decorator';
 import { ApiLogout } from './decorators/api-logout.decorator';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle({ default: true }) // Disable throttling for this controller, but allow it for specific endpoints if needed
 @Controller('auths')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -56,6 +58,7 @@ export class AuthController {
 
   }
 
+  @SkipThrottle({ default: false })
   @Post('login')
   @ApiLogin()
   @UseGuards(LocalAuthGuard)
@@ -82,7 +85,9 @@ export class AuthController {
     return await this.authService.resendVerification(email);
   }
 
-  @Post('/refresh')
+
+  @SkipThrottle({ short: true, medium: true, long: true })
+  @Post('/refresh')  
   @ApiRefresh()
   @UseGuards(RefreshAuthGuard)
   async refreshToken(@RefreshToken() refreshToken: RefreshTokenPayload, @Req() req: Request,@Res({ passthrough: true }) res: Response): Promise<any> {
