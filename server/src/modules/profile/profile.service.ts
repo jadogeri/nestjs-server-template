@@ -6,6 +6,7 @@ import { AccessTokenPayload } from '../../common/types/access-token-payload.type
 import { CaslAbilityFactory } from '../../core/security/casl/casl-ability.service';
 import { Action } from '../../common/enums/action.enum';
 import { Profile } from './entities/profile.entity';
+import { CacheService } from '../../core/infrastructure/cache/cache.service';
 
 
 @Injectable()
@@ -14,6 +15,7 @@ export class ProfileService {
   constructor(
     private readonly profileRepository: ProfileRepository,
     private readonly caslAbilityFactory: CaslAbilityFactory,
+    private readonly cacheService: CacheService
   ) {}  
   async create(accessTokenPayload: AccessTokenPayload, createProfileDto: CreateProfileDto) {
         // Basic creation - always link to the creator
