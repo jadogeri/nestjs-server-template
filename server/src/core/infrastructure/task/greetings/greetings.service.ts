@@ -6,7 +6,7 @@ import { Auth } from '../../../../modules/auth/entities/auth.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter'; 
 
 @Injectable()
-export class GreetingService {
+export class GreetingsService {
   constructor(
     @InjectRepository(Auth)
     private readonly authRepository: Repository<Auth>,
