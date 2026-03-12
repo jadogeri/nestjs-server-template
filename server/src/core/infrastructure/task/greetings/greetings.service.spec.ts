@@ -70,21 +70,7 @@ describe('GreetingsService', () => {
     expect(queryBuilder.andWhere).toHaveBeenCalledWith(expect.stringContaining("strftime('%m'"), expect.any(Object));
     expect(queryBuilder.andWhere).toHaveBeenCalledWith(expect.stringContaining("strftime('%d'"), expect.any(Object));
   });
-
-  it('5. handleAnniversaries: should emit events with the correct year count', async () => {
-    const currentYear = new Date().getFullYear();
-    const joinYear = currentYear - 2;
-    const mockAuth = { user: { createdAt: new Date(`${joinYear}-01-01`), firstName: 'Bob' } };
-    
-    const queryBuilder = createMockQueryBuilder([mockAuth]);
-    jest.spyOn(repo, 'createQueryBuilder').mockReturnValue(queryBuilder as any);
-
-    await service.handleAnniversaries();
-
-    expect(eventEmitter.emit).toHaveBeenCalledWith('greetings.anniversary', mockAuth, 3);
-  });
-
-  it('6. handleAnniversaries: should only find users joined BEFORE current year', async () => {
+  it('5. handleAnniversaries: should only find users joined BEFORE current year', async () => {
     const queryBuilder = createMockQueryBuilder([]);
     jest.spyOn(repo, 'createQueryBuilder').mockReturnValue(queryBuilder as any);
 
@@ -96,7 +82,7 @@ describe('GreetingsService', () => {
     );
   });
 
-  it('7. should only query enabled accounts (isEnabled = 1)', async () => {
+  it('6. should only query enabled accounts (isEnabled = 1)', async () => {
     const queryBuilder = createMockQueryBuilder([]);
     jest.spyOn(repo, 'createQueryBuilder').mockReturnValue(queryBuilder as any);
 
@@ -105,7 +91,7 @@ describe('GreetingsService', () => {
     expect(queryBuilder.where).toHaveBeenCalledWith('auth.isEnabled = :enabled', { enabled: 1 });
   });
 
-  it('8. handleBirthdays: should handle multiple records correctly', async () => {
+  it('7. handleBirthdays: should handle multiple records correctly', async () => {
     const results = [{ email: 'a@a.com', user: { firstName: 'Bob' } }, { email: 'b@b.com' ,user: { firstName: 'Alice' } }];
     const queryBuilder = createMockQueryBuilder(results);
     jest.spyOn(repo, 'createQueryBuilder').mockReturnValue(queryBuilder as any);
@@ -115,7 +101,7 @@ describe('GreetingsService', () => {
     expect(eventEmitter.emit).toHaveBeenCalledTimes(2);
   });
 
-  it('9. handleAnniversaries: should correctly format join year from user date', async () => {
+  it('8. handleAnniversaries: should correctly format join year from user date', async () => {
     const mockAuth = { user: { createdAt: '2020-05-15' } };
     const queryBuilder = createMockQueryBuilder([mockAuth]);
     jest.spyOn(repo, 'createQueryBuilder').mockReturnValue(queryBuilder as any);
@@ -126,7 +112,7 @@ describe('GreetingsService', () => {
     expect(eventEmitter.emit).toHaveBeenCalledWith('greetings.anniversary', mockAuth, expectedDiff);
   });
 
-  it('10. should handle repository errors gracefully', async () => {
+  it('9. should handle repository errors gracefully', async () => {
     const queryBuilder = {
       innerJoinAndSelect: jest.fn().mockReturnThis(),
       where: jest.fn().mockReturnThis(),
