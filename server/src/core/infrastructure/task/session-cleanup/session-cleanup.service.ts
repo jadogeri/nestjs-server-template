@@ -2,8 +2,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Session } from 'src/modules/session/entities/session.entity';
-import { Repository, LessThan } from 'typeorm';
+import { Session } from '../../../../modules/session/entities/session.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class SessionCleanupService {
