@@ -1,10 +1,12 @@
 import { OnEvent } from '@nestjs/event-emitter';
-import { AnniversaryEmailContext, BirthdayEmailContext, DeactivationEmailContext} from '../interfaces/mail-context.interface';
+import { 
+    DeactivationEmailContext, 
+    DeletionEmailContext, 
+    ReactivationEmailContext} from '../interfaces/mail-context.interface';
 import { MailService } from '../mail.service';
 import { Service } from '../../../../common/decorators/service.decorator';
 import { Logger } from '@nestjs/common';
 import { Auth } from '../../../../modules/auth/entities/auth.entity';
-import { GreetingsEventListenerInterface } from './interfaces/greetings-event-listener.interface';
 import { AccountManagementEventListenerInterface } from './interfaces/account-management-event-listener.interface.';
 
 @Service()

@@ -4,7 +4,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as handlebars from 'handlebars';
 import { Service } from '../../../common/decorators/service.decorator';
-import { WelcomeEmailContext, VerificationEmailContext, MailContext, BaseEmailContext, AccountLockedEmailContext, PasswordResetEmailContext, PasswordForgotEmailContext, BirthdayEmailContext, AnniversaryEmailContext, DeactivationEmailContext } from './interfaces/mail-context.interface';
+import { WelcomeEmailContext, VerificationEmailContext, MailContext, BaseEmailContext, AccountLockedEmailContext, PasswordResetEmailContext, PasswordForgotEmailContext, BirthdayEmailContext, AnniversaryEmailContext, DeactivationEmailContext, ReactivationEmailContext, DeletionEmailContext } from './interfaces/mail-context.interface';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 
 // Assuming these are imported from your interfaces file
@@ -12,12 +12,6 @@ import { ConfigService } from '@nestjs/config/dist/config.service';
 
 @Service()
 export class MailService {
-  sendDeactivationEmail(email: string, context: DeactivationEmailContext) {
-      throw new Error('Method not implemented.');
-  }
-  sendDeletionEmail(email: string, context: DeletionEmailContext) {
-      throw new Error('Method not implemented.');
-  }
 
   constructor(
     private readonly mailerService: MailerService,
@@ -123,5 +117,31 @@ export class MailService {
     console.log('Full context for anniversary email:', fullContext); // Debugging log
     return await this.sendEmail(email, 'greetings/anniversary', fullContext);
   }
+
+  async sendReactivationEmail(email: string, context: ReactivationEmailContext) {
+    const fullContext: ReactivationEmailContext = {
+      ...this.getBaseContext(),
+      ...context,
+    };
+    console.log('Full context for reactivation email:', fullContext); // Debugging log
+    return await this.sendEmail(email, 'account-management/reactivation', fullContext);
+  }
+  async sendDeactivationEmail(email: string, context: DeactivationEmailContext) {
+    const fullContext: DeactivationEmailContext = {
+      ...this.getBaseContext(),
+      ...context,
+    };
+    console.log('Full context for deactivation email:', fullContext); // Debugging log
+    return await this.sendEmail(email, 'account-management/deactivation', fullContext);
+  }
+  async sendDeletionEmail(email: string, context: DeletionEmailContext) {
+    const fullContext: DeletionEmailContext = {
+      ...this.getBaseContext(),
+      ...context,
+    };
+    console.log('Full context for deletion email:', fullContext); // Debugging log
+    return await this.sendEmail(email, 'account-management/deletion', fullContext);
+  }
+
 
 }

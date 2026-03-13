@@ -37,6 +37,15 @@ export interface DeactivationEmailContext extends BaseEmailContext {
   confirmationDate: Date;
 }
 
+export interface ReactivationEmailContext extends BaseEmailContext {
+  email: string;
+}
+
+export interface DeletionEmailContext extends BaseEmailContext {
+  email: string;
+}
+
+
 
 // A union type for your reusable sendEmail method
 export type MailContext = 
@@ -46,4 +55,6 @@ PasswordResetEmailContext |
 AccountLockedEmailContext | 
 BirthdayEmailContext |
 AnniversaryEmailContext |
-DeactivationEmailContext;
+DeactivationEmailContext |
+ReactivationEmailContext |
+DeletionEmailContext;
