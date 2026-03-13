@@ -44,6 +44,9 @@ import { AccessTokenPayload } from '../../common/types/access-token-payload.type
 
 @Service()
 export class AuthService {
+  deactivate(accessTokenPayload: AccessTokenPayload) {
+    throw new Error('Method not implemented.');
+  }
 
   private readonly logger = new Logger(AuthService.name);
 

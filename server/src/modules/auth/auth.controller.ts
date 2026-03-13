@@ -1,5 +1,5 @@
 // 1. NestJS & Third-Party Libs
-import { Controller, Get, Post, Body, Req, Res, Query, UseGuards, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Res, Query, UseGuards, Param, Patch } from '@nestjs/common';
 import type { Request, Response } from 'express';
 
 // 2. Services & Helpers (Logic Layer)
@@ -135,5 +135,14 @@ export class AuthController {
       console.log(`AuthController: Fetching auth with ID ${id}...`);
       return this.authService.findById(+id);
     }
+
+  @Patch('deactivate')
+  @ApiDeactivate() // The custom decorator
+  @UseGuards(AccessAuthGuard) // Ensure only authenticated users can access this endpoint
+  async deactivate(@AccessToken() accessTokenPayload: AccessTokenPayload) {
+
+    console.log('Received deactivate request:', accessTokenPayload);
+    return this.authService.deactivate(accessTokenPayload);
+  }
 
 }
