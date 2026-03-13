@@ -12,7 +12,9 @@ import { SessionService } from "../../../modules/session/session.service";
 import { UserService } from "../../../modules/user/user.service";
 import { AuthRepository } from "../auth.repository";
 import { PayloadMapperService } from "../payload-mapper.service";
-import { StatusEnum } from "src/common/enums/user-status.enum";
+import { StatusEnum } from "../../../common/enums/user-status.enum";
+import { CacheKeys } from "../../../core/infrastructure/cache/cache-keys.types";
+import { CacheService } from "../../../core/infrastructure/cache/cache.service";
 
 @Service()
 export class AccountManagementService implements AccountManagementServiceInterface {
@@ -28,6 +30,7 @@ export class AccountManagementService implements AccountManagementServiceInterfa
           private readonly configService: ConfigService, // For accessing config values like pepper
           private readonly payloadMapperService: PayloadMapperService, // For mapping to UserPayload
           private readonly userService: UserService, // For fetching user details
+          private readonly cacheService: CacheService, // For cache invalidation
         ){ }
     async deactivate(res: Response<any, Record<string, any>>, accessTokenPayload: AccessTokenPayload): Promise<any> {
         //throw new Error("Method not implemented.");   
@@ -38,8 +41,8 @@ export class AccountManagementService implements AccountManagementServiceInterfa
         // 4. handle cache invalidation if you have any caching layer for user data
         // 5. Optionally, emit an event or log the deactivation action for auditing purposes
         // 6. Return a response indicating the account has been deactivated (or handle it as needed in your application flow)
-
-        const auth = await this.authRepository.findOne({ where: { user: { id: accessTokenPayload.userId } } });
+        const userId = accessTokenPayload.userId;
+        const auth = await this.authRepository.findOne({ where: { user: { id: userId } } });
         if (!auth) throw new Error('User not found for deactivation');
         auth.status = StatusEnum.DISABLED;
         auth.isEnabled = false;      
@@ -51,10 +54,28 @@ export class AccountManagementService implements AccountManagementServiceInterfa
         // Clear cookies - this depends on how you set cookies. For example, if you have a cookie named 'refreshToken':
         this.cookieService.deleteRefreshToken(res); // Implement this method to clear the specific cookie
 
+              // 4. Cache Invalidation
+        // We invalidate the specific user, their profile, and their session list
+        const userIdStr = userId.toString(); // Ensure it's a string for cache keys
+        const keysToInvalidate = [
+            CacheKeys.users.byId(userIdStr),
+            CacheKeys.profiles.byId(Number(userIdStr)), // Ensure ID type matches your store
+            CacheKeys.sessions.byUserId(userIdStr),
+            CacheKeys.contacts.byUserId(userIdStr),
+        ];
         
+        await Promise.all(keysToInvalidate.map(key => this.cacheService.delete(key)));
+
+        // 5. Emit Event
+        this.eventEmitter.emit('user.deactivated', { userId, authId });
+
+        // 6. Return Response
+        return { 
+            success: true, 
+            message: "Your account has been deactivated and all sessions have been cleared." 
+        };
 
 
-        return { message: "Account deactivated successfully (placeholder response)" };
     }
     async delete(): Promise<void> {
         throw new Error("Method not implemented.");
