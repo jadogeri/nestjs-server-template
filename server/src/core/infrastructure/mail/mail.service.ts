@@ -4,7 +4,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as handlebars from 'handlebars';
 import { Service } from '../../../common/decorators/service.decorator';
-import { WelcomeEmailContext, VerificationEmailContext, MailContext, BaseEmailContext, AccountLockedEmailContext, PasswordResetEmailContext, PasswordForgotEmailContext, BirthdayEmailContext, AnniversaryEmailContext } from './interfaces/mail-context.interface';
+import { WelcomeEmailContext, VerificationEmailContext, MailContext, BaseEmailContext, AccountLockedEmailContext, PasswordResetEmailContext, PasswordForgotEmailContext, BirthdayEmailContext, AnniversaryEmailContext, DeactivationEmailContext } from './interfaces/mail-context.interface';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 
 // Assuming these are imported from your interfaces file
@@ -12,6 +12,12 @@ import { ConfigService } from '@nestjs/config/dist/config.service';
 
 @Service()
 export class MailService {
+  sendDeactivationEmail(email: string, context: DeactivationEmailContext) {
+      throw new Error('Method not implemented.');
+  }
+  sendDeletionEmail(email: string, context: DeletionEmailContext) {
+      throw new Error('Method not implemented.');
+  }
 
   constructor(
     private readonly mailerService: MailerService,
