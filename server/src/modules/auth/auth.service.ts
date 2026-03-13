@@ -51,7 +51,7 @@ export class AuthService {
     private readonly registrationSercive: RegistrationServiceInterface, 
     private readonly credentialService: CredentialServiceInterface,
     private readonly passwordManagementService: PasswordManagementServiceInterface,
-    private readonly account: AccountManagementServiceInterface,
+    private readonly accountManagementService: AccountManagementServiceInterface,
     private readonly authRepository: AuthRepository,
 
     private readonly identityService: IdentityServiceInterface
@@ -136,6 +136,11 @@ export class AuthService {
   async logout(res: Response<any, Record<string, any>>, refreshTokenPayload: RefreshTokenPayload): Promise<any> {
     return await this.credentialService.logout(res, refreshTokenPayload);
   }
+  async deactivate(res: Response<any, Record<string, any>>, accessTokenPayload: AccessTokenPayload) {
+    return await this.accountManagementService.deactivate(res, accessTokenPayload);
+  }
+
+
       
   
 }

@@ -58,4 +58,8 @@ export class SessionService {
   async remove(id: string) {
     return await this.sessionRepository.delete(id);
   }
+
+  async removeByAuthId(authId: string) {
+    return await this.sessionRepository.delete({ auth: { id: authId } });
+  }
 }
