@@ -37,6 +37,8 @@ import { ApiResetPassword } from './decorators/api-reset-password.decorator';
 import { ApiLogout } from './decorators/api-logout.decorator';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
+import { ApiDeactivateUser } from './decorators/api-deactivate.decorator';
+import { DeactivateDto } from './dto/deactivate.dto';
 
 @SkipThrottle({ default: true }) // Disable throttling for this controller, but allow it for specific endpoints if needed
 @Controller('auths')
@@ -137,12 +139,13 @@ export class AuthController {
     }
 
   @Patch('deactivate')
-  @ApiDeactivate() // The custom decorator
+  @ApiDeactivateUser() // The custom decorator
   @UseGuards(AccessAuthGuard) // Ensure only authenticated users can access this endpoint
-  async deactivate(@AccessToken() accessTokenPayload: AccessTokenPayload) {
+  async deactivate(@AccessToken() accessTokenPayload: AccessTokenPayload, @Body() deactivateDto: DeactivateDto, @Res({ passthrough: true }) res: Response) {
 
+    console.log("dto == ", deactivateDto);
     console.log('Received deactivate request:', accessTokenPayload);
-    return this.authService.deactivate(accessTokenPayload);
+    return this.authService.deactivate(res, accessTokenPayload);
   }
 
 }
