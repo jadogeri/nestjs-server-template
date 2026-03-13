@@ -32,6 +32,10 @@ export interface AnniversaryEmailContext extends BaseEmailContext {
   yearsCount: number;
 }
 
+export interface DeactivationEmailContext extends BaseEmailContext {
+  email: string;
+  confirmationDate: Date;
+}
 
 
 // A union type for your reusable sendEmail method
@@ -41,4 +45,5 @@ VerificationEmailContext |
 PasswordResetEmailContext | 
 AccountLockedEmailContext | 
 BirthdayEmailContext |
-AnniversaryEmailContext;
+AnniversaryEmailContext |
+DeactivationEmailContext;
