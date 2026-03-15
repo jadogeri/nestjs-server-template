@@ -44,9 +44,6 @@ import { AccessTokenPayload } from '../../common/types/access-token-payload.type
 
 @Service()
 export class AuthService {
-  reactivateRequest() {
-    throw new Error('Method not implemented.');
-  }
 
   private readonly logger = new Logger(AuthService.name);
 
@@ -143,6 +140,9 @@ export class AuthService {
     return await this.accountManagementService.deactivate(res, accessTokenPayload);
   }
 
+  async requestReactivation(email: string) {
+    return await this.accountManagementService.requestReactivation(email);
+  }
 
       
   

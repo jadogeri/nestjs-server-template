@@ -43,6 +43,18 @@ import { Auth } from '../../../modules/auth/entities/auth.entity';
       },
       inject: [ConfigService],
     },
+      // Provider for Reactivation Tokens
+    {
+      provide: 'REACTIVATE_TOKEN_JWT_SERVICE',
+      useFactory: (config: ConfigService) => {
+        return new JwtService({
+          secret: config.getOrThrow('JWT_REACTIVATE_TOKEN_SECRET'),
+          signOptions: { expiresIn: config.getOrThrow('JWT_REACTIVATE_TOKEN_EXPIRATION_MS') },
+        });
+      },
+      inject: [ConfigService],
+    },
+
   ],
   exports: [TokenService],
 })

@@ -78,6 +78,20 @@ export class AccountManagementService implements AccountManagementServiceInterfa
 
 
     }
+    async requestReactivation(email: string): Promise<any> {
+        const auth = await this.authRepository.findOne({ where: { email }, relations: ['user'] });
+        if (!auth) {
+            console.log(`No auth record found for email: ${email}`);
+            return {message : "If an account with that email exists, a reactivation link has been sent."}; // Avoid revealing whether the email exists
+        }
+        // If an auth record is found, send a reactivation link
+        
+        const reactivateUrl = `${process.env.FRONTEND_URL}/reactivate?userId=${auth.user.id}`;
+        this.eventEmitter.emit('account.reactivation', { auth, reactivateUrl });
+
+    }
+
+
     async delete(): Promise<void> {
         throw new Error("Method not implemented.");
     }

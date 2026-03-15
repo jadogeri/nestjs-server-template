@@ -39,6 +39,8 @@ import { ApiExcludeEndpoint } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { ApiDeactivateUser } from './decorators/api-deactivate.decorator';
 import { DeactivateDto } from './dto/deactivate.dto';
+import { ReactivateRequestDto } from './dto/reactivate-request.dto';
+import { ApiReactivateRequest } from './decorators/api-reactivaterequest.decorator';
 
 @SkipThrottle({ default: true }) // Disable throttling for this controller, but allow it for specific endpoints if needed
 @Controller('auths')
@@ -148,15 +150,11 @@ export class AuthController {
     return this.authService.deactivate(res, accessTokenPayload);
   }
 
-  @Patch('reactivate-request')
-  @ApiReactivateUser() // The custom decorator
-  @UseGuards(AccessAuthGuard) // Ensure only authenticated users can access this endpoint
-  async reactivateRequest() {
-    return this.authService.reactivateRequest();
+  @Post('reactivate-request')
+  @ApiReactivateRequest()
+  async requestReactivation(@Body() dto: ReactivateRequestDto) {
+    return this.authService.requestReactivation(dto.email);
   }
-
-  async reactivate() {
-    throw new Error("Method not implemented.");
-  }
+    
 
 }

@@ -14,6 +14,7 @@ export class TokenService {
     @Inject('ACCESS_TOKEN_JWT_SERVICE') private readonly accessJwtService: JwtService,
     @Inject('REFRESH_TOKEN_JWT_SERVICE') private readonly refreshJwtService: JwtService,
     @Inject('VERIFY_TOKEN_JWT_SERVICE') private readonly verifyJwtService: JwtService,
+    @Inject('REACTIVATE_TOKEN_JWT_SERVICE') private readonly reactivateJwtService: JwtService,
   ) {}
 
   async generateAuthTokens(user: UserPayload, sessionId: string) {
@@ -82,4 +83,19 @@ export class TokenService {
     }
   }
   
+  async generateReactivationToken(reactivationTokenPayload: any) {
+    const reactivationToken = await this.reactivateJwtService.signAsync(reactivationTokenPayload);
+    return reactivationToken;
+  }
+
+  async verifyReactivationToken(token: string) {
+    try {
+      return await this.reactivateJwtService.verifyAsync(token);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.error('Reactivation token verification failed:', e.message);
+      }
+      throw new UnauthorizedException('Invalid or expired reactivation token');
+    }
+  }
 }
