@@ -150,7 +150,7 @@ export class AccountManagementService implements AccountManagementServiceInterfa
 
 
     async deleteMe(accessTokenPayload: AccessTokenPayload): Promise<DeleteUserResponseDto | null> {
-        const { userId } = accessTokenPayload;
+        const { userId, email } = accessTokenPayload;
         const auth = await this.authRepository.findOne({ where: { user: { id: userId } }, relations: ['user'] });
         if (!auth) {
             console.log(`No auth record found for userId: ${userId}`);
@@ -168,7 +168,7 @@ export class AccountManagementService implements AccountManagementServiceInterfa
         
         const deleteUserResponse = {
             success: true,
-            message: "Your account has been permanently deleted. We're sorry to see you go!",
+            message: `Your account '${email}' has been permanently deleted. We're sorry to see you go!`,
             deletedAt: new Date().toISOString(),
         };
         return deleteUserResponse;
