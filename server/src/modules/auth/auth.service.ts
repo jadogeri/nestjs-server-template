@@ -150,7 +150,7 @@ export class AuthService {
   }
 
   async deleteMe(accessTokenPayload: AccessTokenPayload): Promise<DeleteUserResponseDto | null> {
-    throw new Error('Method not implemented.');
+    return await this.accountManagementService.deleteMe(accessTokenPayload);
   }
 
       

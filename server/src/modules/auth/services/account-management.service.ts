@@ -159,11 +159,11 @@ export class AccountManagementService implements AccountManagementServiceInterfa
         // delete user account and related auth record
         await this.authRepository.delete(auth.id); // This will also cascade and delete the user due to the relation setup
         // delete user profile and related data if needed (e.g. contacts, sessions)
-        await this.userService.remove(userId); // Implement this method to delete the user profile
         await this.profileService.removeByUserId(userId); // Implement this method to delete the profile by user ID
         await this.contactService.removeByUserId(userId); // Implement this method to delete contacts by user ID
         await this.sessionService.removeByAuthId(auth.id.toString()); // Implement this method to delete sessions by auth ID
-        //emit to user account is deactivated and deleted, if you want to send a confirmation email or perform other cleanup tasks
+        await this.userService.remove(userId); // Implement this method to delete the user profile
+
         this.eventEmitter.emit('account.deletion', { auth });
         
         const deleteUserResponse = {
