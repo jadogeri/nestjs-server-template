@@ -40,6 +40,7 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { IdentityServiceInterface } from './services/interfaces/identity-service.interface';
 import { AccessTokenPayload } from '../../common/types/access-token-payload.type';
+import { DeleteUserResponseDto } from './dto/api-delete-user-response.dto';
 
 
 @Service()
@@ -148,6 +149,9 @@ export class AuthService {
     return await this.accountManagementService.verifyReactivation(reactivationToken);
   }
 
+  async deleteMe(accessTokenPayload: AccessTokenPayload): Promise<DeleteUserResponseDto | null> {
+    return await this.accountManagementService.deleteMe(accessTokenPayload);
+  }
 
       
   

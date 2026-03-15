@@ -41,10 +41,14 @@ import { PasswordManagementEventListener } from '../../core/infrastructure/mail/
 import { IdentityServiceInterface } from './services/interfaces/identity-service.interface';
 import { IdentityService } from './services/identity.service';
 import { AccountManagementEventListener } from '../../core/infrastructure/mail/listener/account-management.listener';
+import { ContactService } from '../contact/contact.service';
+import { ProfileService } from '../profile/profile.service';
+import { ContactModule } from '../contact/contact.module';
+import { ProfileModule } from '../profile/profile.module';
 
 
 @Module({
-  imports: [ UserModule, RoleModule, SessionModule,HashingModule, TypeOrmModule.forFeature([Auth])],
+  imports: [ UserModule, RoleModule, ContactModule, ProfileModule, SessionModule,HashingModule, TypeOrmModule.forFeature([Auth])],
   controllers: [AuthController],
   providers: [
     AuthService, 
@@ -52,6 +56,8 @@ import { AccountManagementEventListener } from '../../core/infrastructure/mail/l
     PayloadMapperService, 
     Argon2Service, 
     CookieService, 
+    ContactService,
+    ProfileService,
     {
       provide: RegistrationServiceInterface,
       useClass: RegistrationService,

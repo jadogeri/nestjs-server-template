@@ -95,6 +95,15 @@ export class ContactService {
     return result;
   }
 
+    async removeByUserId(userId: number) {
+    const contacts = await this.contactRepository.findAll({ where: { user: { id: userId } } });
+    if (contacts.length > 0) {
+      const contactIds = contacts.map(contact => contact.id);
+      await this.contactRepository.delete(contactIds);
+      await Promise.all(contactIds.map(contactId => this.invalidateContactCache(userId, contactId)));
+    }
+  }
+
   // Helper to keep code clean
   private async invalidateContactCache(userId: number, contactId: number) {
     await Promise.all([
@@ -103,4 +112,6 @@ export class ContactService {
       this.cacheService.delete('contacts:admin:all') // Clear admin view if applicable
     ]);
   }
+
+
 }

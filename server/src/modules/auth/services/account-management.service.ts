@@ -15,7 +15,11 @@ import { PayloadMapperService } from "../payload-mapper.service";
 import { StatusEnum } from "../../../common/enums/user-status.enum";
 import { CacheKeys } from "../../../core/infrastructure/cache/cache-keys.types";
 import { CacheService } from "../../../core/infrastructure/cache/cache.service";
-import { ReactivationTokenPayload } from "src/common/types/reactivation-token-payload.type";
+import { ReactivationTokenPayload } from "../../../common/types/reactivation-token-payload.type";
+import { NotFoundException } from "@nestjs/common";
+import { ContactService } from "../../../modules/contact/contact.service";
+import { ProfileService } from "../../../modules/profile/profile.service";
+import { DeleteUserResponseDto } from "../dto/api-delete-user-response.dto";
 
 @Service()
 export class AccountManagementService implements AccountManagementServiceInterface {
@@ -32,6 +36,9 @@ export class AccountManagementService implements AccountManagementServiceInterfa
           private readonly payloadMapperService: PayloadMapperService, // For mapping to UserPayload
           private readonly userService: UserService, // For fetching user details
           private readonly cacheService: CacheService, // For cache invalidation
+          private readonly contactService: ContactService, // For deleting user contacts if needed
+          private readonly profileService: ProfileService, // For deleting user profile if needed
+
         ){ }
 
     async deactivate(res: Response<any, Record<string, any>>, accessTokenPayload: AccessTokenPayload): Promise<any> {
@@ -39,7 +46,7 @@ export class AccountManagementService implements AccountManagementServiceInterfa
         const userId = accessTokenPayload.userId;
         const auth = await this.authRepository.findOne({ where: { user: { id: userId } }, relations: ['user'] });
         console.log(`Found auth record for user ID ${userId}: ${JSON.stringify(auth)}`);
-        if (!auth) throw new Error('User not found for deactivation');
+        if (!auth) throw new NotFoundException('User not found for deactivation');
         
         auth.status = StatusEnum.DISABLED;
         auth.isEnabled = false;      
@@ -142,10 +149,29 @@ export class AccountManagementService implements AccountManagementServiceInterfa
     }
 
 
-    async delete(): Promise<void> {
-        throw new Error("Method not implemented.");
+    async deleteMe(accessTokenPayload: AccessTokenPayload): Promise<DeleteUserResponseDto | null> {
+        const { userId, email } = accessTokenPayload;
+        const auth = await this.authRepository.findOne({ where: { user: { id: userId } }, relations: ['user'] });
+        if (!auth) {
+            console.log(`No auth record found for userId: ${userId}`);
+            throw new NotFoundException('User not found');
+        }
+        // delete user account and related auth record
+        await this.authRepository.delete(auth.id); // This will also cascade and delete the user due to the relation setup
+        // delete user profile and related data if needed (e.g. contacts, sessions)
+        await this.profileService.removeByUserId(userId); // Implement this method to delete the profile by user ID
+        await this.contactService.removeByUserId(userId); // Implement this method to delete contacts by user ID
+        await this.sessionService.removeByAuthId(auth.id.toString()); // Implement this method to delete sessions by auth ID
+        await this.userService.remove(userId); // Implement this method to delete the user profile
+
+        this.eventEmitter.emit('account.deletion', { auth });
+        
+        const deleteUserResponse = {
+            success: true,
+            message: `Your account '${email}' has been permanently deleted. We're sorry to see you go!`,
+            deletedAt: new Date().toISOString(),
+        };
+        return deleteUserResponse;
     }
-    async reactivate(): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
+
 }
