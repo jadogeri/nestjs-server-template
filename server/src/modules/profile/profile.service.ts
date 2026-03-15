@@ -72,4 +72,14 @@ export class ProfileService {
     }
     return await this.profileRepository.delete(id);
   }
+
+  
+  async removeByUserId(userId: number) {
+    const profiles = await this.profileRepository.findAll({ where: { user: { id: userId } } });
+    if (profiles.length > 0) {
+      const profileIds = profiles.map(profile => profile.id);
+      await this.profileRepository.delete(profileIds);
+    }
+  }
+
 }

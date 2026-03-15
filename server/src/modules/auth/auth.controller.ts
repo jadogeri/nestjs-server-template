@@ -1,5 +1,5 @@
 // 1. NestJS & Third-Party Libs
-import { Controller, Get, Post, Body, Req, Res, Query, UseGuards, Param, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Res, Query, UseGuards, Param, Patch, Delete } from '@nestjs/common';
 import type { Request, Response } from 'express';
 
 // 2. Services & Helpers (Logic Layer)
@@ -43,6 +43,8 @@ import { ReactivateRequestDto } from './dto/reactivate-request.dto';
 import { ApiReactivateRequest } from './decorators/api-reactivate-request.decorator';
 import { ApiVerifyReactivate } from './decorators/api-verify-reactivate.decorator';
 import { VerifyReactivationDto } from './dto/verify-reactivate.dto';
+import { ApiDeleteMe } from './decorators/api-delete-me.decorator';
+import { DeleteUserResponseDto } from './dto/api-delete-user-response.dto';
 
 @SkipThrottle({ default: true }) // Disable throttling for this controller, but allow it for specific endpoints if needed
 @Controller('auths')
@@ -76,7 +78,7 @@ export class AuthController {
   @Get('me')
   @ApiGetMe()
   @UseGuards(AccessAuthGuard)
-  async me(@AccessToken() accessTokenPayload: AccessTokenPayload): Promise<any> {
+  async getMe(@AccessToken() accessTokenPayload: AccessTokenPayload): Promise<any> {
     console.log("AuthController: Fetching current user payload...");
     console.log(accessTokenPayload);
     return accessTokenPayload;
@@ -164,6 +166,15 @@ export class AuthController {
   @ApiReactivateRequest()
   async requestReactivation(@Body() dto: ReactivateRequestDto) {
     return this.authService.requestReactivation(dto.email);
+  }
+
+  @Delete('me')
+  @ApiDeleteMe()
+  @UseGuards(AccessAuthGuard)
+  async deleteMe(@AccessToken() accessTokenPayload: AccessTokenPayload): Promise<DeleteUserResponseDto | null> {
+    console.log("AuthController: Fetching current user payload...");
+    console.log(accessTokenPayload);
+    return this.authService.deleteMe(accessTokenPayload);
   }
 
 

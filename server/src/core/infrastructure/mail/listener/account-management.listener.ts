@@ -80,7 +80,7 @@ export class AccountManagementEventListener implements AccountManagementEventLis
 
     @OnEvent('account.deletion', { async: true }) // Runs in the background
 
-    async handleDeletionEvent(auth: Auth): Promise<void> {
+    async handleDeletionEvent({auth}: {auth: Auth}): Promise<void> {
     console.log("auth details in event listener:", auth); // Debugging log
  
     // 3. Prepare the link
