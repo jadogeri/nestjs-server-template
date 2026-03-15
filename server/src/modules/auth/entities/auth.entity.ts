@@ -37,6 +37,12 @@ export class Auth extends Audit {
   verifiedAt: Date;
 
   @Column({ type: 'datetime', nullable: true, default: null })
+  reactivatedAt: Date;
+
+  @Column({type: 'varchar', nullable: true, default: null }) // 👈 Set to false to "ban" or deactivate an account
+  reactivateToken: string | null;
+
+  @Column({ type: 'datetime', nullable: true, default: null })
   lastLoginAt: Date;
 
   @Column({ default: 0, nullable: false })

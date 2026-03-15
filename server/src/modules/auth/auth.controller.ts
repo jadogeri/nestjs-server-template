@@ -148,4 +148,15 @@ export class AuthController {
     return this.authService.deactivate(res, accessTokenPayload);
   }
 
+  @Patch('reactivate-request')
+  @ApiReactivateUser() // The custom decorator
+  @UseGuards(AccessAuthGuard) // Ensure only authenticated users can access this endpoint
+  async reactivateRequest() {
+    return this.authService.reactivateRequest();
+  }
+
+  async reactivate() {
+    throw new Error("Method not implemented.");
+  }
+
 }
