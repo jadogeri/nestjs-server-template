@@ -41,6 +41,8 @@ import { ApiDeactivateUser } from './decorators/api-deactivate.decorator';
 import { DeactivateDto } from './dto/deactivate.dto';
 import { ReactivateRequestDto } from './dto/reactivate-request.dto';
 import { ApiReactivateRequest } from './decorators/api-reactivate-request.decorator';
+import { ApiVerifyReactivate } from './decorators/api-verify-reactivate.decorator';
+import { VerifyReactivationDto } from './dto/verify-reactivate.dto';
 
 @SkipThrottle({ default: true }) // Disable throttling for this controller, but allow it for specific endpoints if needed
 @Controller('auths')
@@ -127,6 +129,14 @@ export class AuthController {
     return await this.authService.logout(res, refreshToken);
   }   
 
+  @Get('verify-reactivate')
+  @ApiVerifyReactivate()
+  async verifyReactivation(@Query(TokenValidationPipe) verifyReactivationDto: VerifyReactivationDto) {
+    const reactivationToken = verifyReactivationDto.token;
+    return this.authService.verifyReactivation(reactivationToken);
+  }
+
+
     @Get()
     @ApiExcludeEndpoint()
     findAll() {
@@ -155,6 +165,6 @@ export class AuthController {
   async requestReactivation(@Body() dto: ReactivateRequestDto) {
     return this.authService.requestReactivation(dto.email);
   }
-    
+
 
 }

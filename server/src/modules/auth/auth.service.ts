@@ -144,6 +144,11 @@ export class AuthService {
     return await this.accountManagementService.requestReactivation(email);
   }
 
+  async verifyReactivation(reactivationToken: any) {
+    return await this.accountManagementService.verifyReactivation(reactivationToken);
+  }
+
+
       
   
 }

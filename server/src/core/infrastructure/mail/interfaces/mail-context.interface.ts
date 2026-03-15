@@ -39,7 +39,12 @@ export interface DeactivationEmailContext extends BaseEmailContext {
 
 }
 
-export interface ReactivationEmailContext extends BaseEmailContext {
+export interface ReactivationRequestEmailContext extends BaseEmailContext {
+  email: string;
+  reactivateLink: string;
+}
+
+export interface VerifiedReactivationEmailContext extends BaseEmailContext {
   email: string;
 }
 
@@ -58,5 +63,6 @@ AccountLockedEmailContext |
 BirthdayEmailContext |
 AnniversaryEmailContext |
 DeactivationEmailContext |
-ReactivationEmailContext |
+ReactivationRequestEmailContext |
+VerifiedReactivationEmailContext |
 DeletionEmailContext;

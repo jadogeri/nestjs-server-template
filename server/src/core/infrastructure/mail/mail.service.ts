@@ -4,7 +4,10 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as handlebars from 'handlebars';
 import { Service } from '../../../common/decorators/service.decorator';
-import { WelcomeEmailContext, VerificationEmailContext, MailContext, BaseEmailContext, AccountLockedEmailContext, PasswordResetEmailContext, PasswordForgotEmailContext, BirthdayEmailContext, AnniversaryEmailContext, DeactivationEmailContext, ReactivationEmailContext, DeletionEmailContext } from './interfaces/mail-context.interface';
+import { WelcomeEmailContext, VerificationEmailContext, MailContext, BaseEmailContext, 
+  AccountLockedEmailContext, PasswordResetEmailContext, PasswordForgotEmailContext, BirthdayEmailContext, 
+  AnniversaryEmailContext, DeactivationEmailContext, ReactivationRequestEmailContext,  DeletionEmailContext,
+  VerifiedReactivationEmailContext} from './interfaces/mail-context.interface';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 
 // Assuming these are imported from your interfaces file
@@ -118,8 +121,8 @@ export class MailService {
     return await this.sendEmail(email, 'greetings/anniversary', fullContext);
   }
 
-  async sendReactivationEmail(email: string, context: ReactivationEmailContext) {
-    const fullContext: ReactivationEmailContext = {
+  async sendReactivationEmail(email: string, context: ReactivationRequestEmailContext) {
+    const fullContext: ReactivationRequestEmailContext = {
       ...this.getBaseContext(),
       ...context,
     };
@@ -143,5 +146,24 @@ export class MailService {
     return await this.sendEmail(email, 'account-management/delete-account', fullContext);
   }
 
+  
+  async sendReactivationRequestEmail(email: string, context: ReactivationRequestEmailContext) {
+    const fullContext: ReactivationRequestEmailContext = {
+      ...this.getBaseContext(),
+      ...context,
+    };
+    console.log('Full context for reactivation request email:', fullContext); // Debugging log
+    return await this.sendEmail(email, 'account-management/reactivate-request', fullContext);
+  }
 
+  
+  async sendVerifiedReactivationEmail(email: string, context: VerifiedReactivationEmailContext) {
+    const fullContext: VerifiedReactivationEmailContext = {
+      ...this.getBaseContext(),
+      ...context,
+    };
+    console.log('Full context for verified reactivation email:', fullContext); // Debugging log
+    return await this.sendEmail(email, 'account-management/verified-reactivation', fullContext);  
+  
+  }
 }

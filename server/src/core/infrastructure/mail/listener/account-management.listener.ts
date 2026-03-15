@@ -2,7 +2,8 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { 
     DeactivationEmailContext, 
     DeletionEmailContext, 
-    ReactivationEmailContext} from '../interfaces/mail-context.interface';
+    ReactivationRequestEmailContext,
+    VerifiedReactivationEmailContext} from '../interfaces/mail-context.interface';
 import { MailService } from '../mail.service';
 import { Service } from '../../../../common/decorators/service.decorator';
 import { Logger } from '@nestjs/common';
@@ -37,13 +38,34 @@ export class AccountManagementEventListener implements AccountManagementEventLis
         this.logger.log(`Deactivation email dispatched to: ${auth.email}`);  
     }
 
-    @OnEvent('account.reactivation', { async: true }) // Runs in the background
+    @OnEvent('account.reactivate-request', { async: true }) // Runs in the background
 
-        async handleReactivationEvent(auth: Auth): Promise<void> {
+        async handleReactivationRequestEvent({auth, reactivateLink}: {auth: Auth, reactivateLink: string}): Promise<void> {
         console.log("auth details in event listener:", auth); // Debugging log
     
         // 3. Prepare the link
-        const context: ReactivationEmailContext = {
+        const context: ReactivationRequestEmailContext = {
+        firstName: auth.user.firstName,
+        email: auth.email,
+        reactivateLink: reactivateLink,
+        };
+        
+        
+        console.log("Email context for reactivation:", context); // Debugging log
+
+        // 4. Dispatch Email
+        await this.mailService.sendReactivationRequestEmail(auth.email, context);
+        this.logger.log(`Reactivation email dispatched to: ${auth.email}`); 
+    }
+
+    
+    @OnEvent('account.verified-reactivation', { async: true }) // Runs in the background
+
+        async handleVerifyReactivationEvent({auth}: {auth: Auth}): Promise<void> {
+        console.log("auth details in event listener:", auth); // Debugging log
+    
+        // 3. Prepare the link
+        const context: VerifiedReactivationEmailContext = {
         firstName: auth.user.firstName,
         email: auth.email,
         };
@@ -52,7 +74,7 @@ export class AccountManagementEventListener implements AccountManagementEventLis
         console.log("Email context for reactivation:", context); // Debugging log
 
         // 4. Dispatch Email
-        await this.mailService.sendReactivationEmail(auth.email, context);
+        await this.mailService.sendVerifiedReactivationEmail(auth.email, context);
         this.logger.log(`Reactivation email dispatched to: ${auth.email}`); 
     }
 

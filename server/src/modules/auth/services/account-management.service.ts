@@ -33,6 +33,7 @@ export class AccountManagementService implements AccountManagementServiceInterfa
           private readonly userService: UserService, // For fetching user details
           private readonly cacheService: CacheService, // For cache invalidation
         ){ }
+
     async deactivate(res: Response<any, Record<string, any>>, accessTokenPayload: AccessTokenPayload): Promise<any> {
 
         const userId = accessTokenPayload.userId;
@@ -85,6 +86,19 @@ export class AccountManagementService implements AccountManagementServiceInterfa
             console.log(`No auth record found for email: ${email}`);
             return {message : "If an account with that email exists, a reactivation link has been sent."}; // Avoid revealing whether the email exists
         }
+        if (auth.status === StatusEnum.ENABLED) {
+            console.log(`Auth record for email ${email} is already enabled. Current status: ${auth.status}`);
+            return {message : "Account is already active."}; // Avoid revealing account status
+        }
+        if (auth.status === StatusEnum.LOCKED) {
+            console.log(`Auth record for email ${email} is locked. Current status: ${auth.status}`);
+            return {message : "Account is locked. Please contact support."}; // Avoid revealing account status
+        }
+        if (auth.status !== StatusEnum.DISABLED) {
+            console.log(`Auth record for email ${email} is not disabled. Current status: ${auth.status}`);
+            return {message : "If an account with that email exists, a reactivation link has been sent."}; // Avoid revealing account status
+        }
+        
         const reactivationTokenPayload: ReactivationTokenPayload = {
             email: auth.email,
             userId: auth.user.id,
@@ -97,8 +111,33 @@ export class AccountManagementService implements AccountManagementServiceInterfa
         const updatedAuth = await this.authRepository.update(auth.id, auth); // Update the auth record with the hashed token
         console.log(`Updated auth record for reactivation: ${JSON.stringify(updatedAuth)}`);
         
-        const reactivateUrl = `${process.env.FRONTEND_URL}/verify-reactivate?token=${reactivationToken}`;
-        this.eventEmitter.emit('account.reactivation', { auth: updatedAuth, reactivateUrl });
+        const reactivateLink = `${process.env.FRONTEND_URL}/verify-reactivate?token=${reactivationToken}`;
+        this.eventEmitter.emit('account.reactivate-request', { auth: updatedAuth, reactivateLink });
+
+        return {message : "If an account with that email exists, a reactivation link has been sent."}; // Always return the same message for security
+
+    }
+
+    async verifyReactivation(reactivationToken: any): Promise<any> {
+        const verifyReactivationTokenPayload = await this.tokenService.verifyReactivationToken(reactivationToken);
+        if (!verifyReactivationTokenPayload) {
+            console.log(`Invalid or expired reactivation token: ${reactivationToken}`);
+            throw new Error('Invalid or expired reactivation token');
+        }
+        const auth = await this.authRepository.findOne({ where: { email: verifyReactivationTokenPayload.email }, relations: ['user'] });
+        if (!auth) {
+            console.log(`No auth record found for email: ${verifyReactivationTokenPayload.email}`);
+            throw new Error('Invalid reactivation token');
+        }
+        auth.status = StatusEnum.ENABLED;
+        console.log(`Reactivating account for email: ${auth.email}`);
+        auth.reactivateToken = null;
+        const updatedAuth = await this.authRepository.update(auth.id, auth);
+        console.log(`Account reactivated for email: ${auth.email}`);
+        console.log(`Updated auth record after reactivation: ${JSON.stringify(updatedAuth)}`);
+        //emit event for reactivation if needed, e.g. to send a confirmation email
+        this.eventEmitter.emit('account.verified-reactivation', { auth: updatedAuth });
+        return {message : "Account has been successfully reactivated."};
 
     }
 

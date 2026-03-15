@@ -38,5 +38,4 @@ class Server {
 }
 
 
-
 Server.bootstrap();

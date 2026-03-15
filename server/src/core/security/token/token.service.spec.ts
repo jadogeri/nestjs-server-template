@@ -35,6 +35,10 @@ describe('TokenService', () => {
           provide: 'VERIFY_TOKEN_JWT_SERVICE',
           useValue: { signAsync: jest.fn(), verifyAsync: jest.fn() },
         },
+        {
+          provide: 'REACTIVATE_TOKEN_JWT_SERVICE',
+          useValue: { signAsync: jest.fn(), verifyAsync: jest.fn() },
+        }
       ],
     }).compile();
 
@@ -42,6 +46,7 @@ describe('TokenService', () => {
     accessJwtService = module.get('ACCESS_TOKEN_JWT_SERVICE');
     refreshJwtService = module.get('REFRESH_TOKEN_JWT_SERVICE');
     verifyJwtService = module.get('VERIFY_TOKEN_JWT_SERVICE');
+
   });
 
   describe('Happy Path Tests', () => {
@@ -79,7 +84,7 @@ describe('TokenService', () => {
     });
 
     it('4. should sign a verification token with provided payload', async () => {
-      const vPayload = { userId: 1, type: "access" as const, email: 'dev@example.com' };
+      const vPayload = { userId: 1, type: "verification" as const, email: 'dev@example.com' };
       jest.spyOn(verifyJwtService, 'signAsync').mockResolvedValue('v-token');
 
       const result = await service.generateVerificationToken(vPayload);
