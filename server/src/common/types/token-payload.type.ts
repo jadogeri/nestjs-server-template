@@ -1,4 +1,4 @@
 export type TokenPayload = {
   userId: number;
-  type: "access" | "refresh" | "verification";        
+  type: "access" | "refresh" | "verification" | "reactivation";        
 }

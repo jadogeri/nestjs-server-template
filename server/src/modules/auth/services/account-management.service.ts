@@ -15,6 +15,7 @@ import { PayloadMapperService } from "../payload-mapper.service";
 import { StatusEnum } from "../../../common/enums/user-status.enum";
 import { CacheKeys } from "../../../core/infrastructure/cache/cache-keys.types";
 import { CacheService } from "../../../core/infrastructure/cache/cache.service";
+import { ReactivationTokenPayload } from "src/common/types/reactivation-token-payload.type";
 
 @Service()
 export class AccountManagementService implements AccountManagementServiceInterface {
@@ -84,10 +85,20 @@ export class AccountManagementService implements AccountManagementServiceInterfa
             console.log(`No auth record found for email: ${email}`);
             return {message : "If an account with that email exists, a reactivation link has been sent."}; // Avoid revealing whether the email exists
         }
-        // If an auth record is found, send a reactivation link
+        const reactivationTokenPayload: ReactivationTokenPayload = {
+            email: auth.email,
+            userId: auth.user.id,
+            type: "reactivation",
+        };
+        const reactivationToken = await this.tokenService.generateReactivationToken(reactivationTokenPayload);
+        // Hash the token before storing it in the database for security
+        const hashedReactivationToken = await this.hashingService.hash(reactivationToken);
+        auth.reactivateToken = hashedReactivationToken;
+        const updatedAuth = await this.authRepository.update(auth.id, auth); // Update the auth record with the hashed token
+        console.log(`Updated auth record for reactivation: ${JSON.stringify(updatedAuth)}`);
         
-        const reactivateUrl = `${process.env.FRONTEND_URL}/reactivate?userId=${auth.user.id}`;
-        this.eventEmitter.emit('account.reactivation', { auth, reactivateUrl });
+        const reactivateUrl = `${process.env.FRONTEND_URL}/verify-reactivate?token=${reactivationToken}`;
+        this.eventEmitter.emit('account.reactivation', { auth: updatedAuth, reactivateUrl });
 
     }
 

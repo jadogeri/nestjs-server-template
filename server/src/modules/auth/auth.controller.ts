@@ -40,7 +40,7 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { ApiDeactivateUser } from './decorators/api-deactivate.decorator';
 import { DeactivateDto } from './dto/deactivate.dto';
 import { ReactivateRequestDto } from './dto/reactivate-request.dto';
-import { ApiReactivateRequest } from './decorators/api-reactivaterequest.decorator';
+import { ApiReactivateRequest } from './decorators/api-reactivate-request.decorator';
 
 @SkipThrottle({ default: true }) // Disable throttling for this controller, but allow it for specific endpoints if needed
 @Controller('auths')
