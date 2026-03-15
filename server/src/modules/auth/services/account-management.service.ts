@@ -20,7 +20,6 @@ import { NotFoundException } from "@nestjs/common";
 import { ContactService } from "../../../modules/contact/contact.service";
 import { ProfileService } from "../../../modules/profile/profile.service";
 import { DeleteUserResponseDto } from "../dto/api-delete-user-response.dto";
-import { de } from "@faker-js/faker";
 
 @Service()
 export class AccountManagementService implements AccountManagementServiceInterface {

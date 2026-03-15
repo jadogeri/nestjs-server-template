@@ -145,7 +145,6 @@ export class MailService {
     console.log('Full context for deletion email:', fullContext); // Debugging log
     return await this.sendEmail(email, 'account-management/delete-account', fullContext);
   }
-
   
   async sendReactivationRequestEmail(email: string, context: ReactivationRequestEmailContext) {
     const fullContext: ReactivationRequestEmailContext = {
