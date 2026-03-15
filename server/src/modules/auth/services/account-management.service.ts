@@ -33,26 +33,24 @@ export class AccountManagementService implements AccountManagementServiceInterfa
           private readonly cacheService: CacheService, // For cache invalidation
         ){ }
     async deactivate(res: Response<any, Record<string, any>>, accessTokenPayload: AccessTokenPayload): Promise<any> {
-        //throw new Error("Method not implemented.");   
-        
-        // 1. Set the user's status to 'deactivated' in the database
-        // 2. Invalidate all active sessions for the user (e.g., by deleting session records)
-        // 3  clear cookie in browser
-        // 4. handle cache invalidation if you have any caching layer for user data
-        // 5. Optionally, emit an event or log the deactivation action for auditing purposes
-        // 6. Return a response indicating the account has been deactivated (or handle it as needed in your application flow)
+
         const userId = accessTokenPayload.userId;
-        const auth = await this.authRepository.findOne({ where: { user: { id: userId } } });
+        const auth = await this.authRepository.findOne({ where: { user: { id: userId } }, relations: ['user'] });
+        console.log(`Found auth record for user ID ${userId}: ${JSON.stringify(auth)}`);
         if (!auth) throw new Error('User not found for deactivation');
+        
         auth.status = StatusEnum.DISABLED;
         auth.isEnabled = false;      
-        await this.authRepository.update(auth.id, auth); // Use update to avoid triggering entity listeners that might be on save/remove
+        const updatedAuth = await this.authRepository.update(auth.id, auth); // Use update to avoid triggering entity listeners that might be on save/remove
+        console.log(`Updated auth record for user ID ${userId}: ${JSON.stringify(updatedAuth)}`);
         const authId : string = auth.id as unknown as string
         // Invalidate sessions - this depends on how you manage sessions. For example, if you have a Session entity:
-        await this.sessionService.removeByAuthId(authId); // Implement this method to delete sessions by auth ID
+        const removedSessions = await this.sessionService.removeByAuthId(authId); // Implement this method to delete sessions by auth ID
+        console.log(`Removed ${JSON.stringify(removedSessions)} sessions for auth ID ${authId}`);
 
         // Clear cookies - this depends on how you set cookies. For example, if you have a cookie named 'refreshToken':
-        this.cookieService.deleteRefreshToken(res); // Implement this method to clear the specific cookie
+        const isDeleted = this.cookieService.deleteRefreshToken(res); // Implement this method to clear the specific cookie
+        console.log(`Refresh token cookie deleted: ${isDeleted}`);
 
               // 4. Cache Invalidation
         // We invalidate the specific user, their profile, and their session list
@@ -65,9 +63,12 @@ export class AccountManagementService implements AccountManagementServiceInterfa
         ];
         
         await Promise.all(keysToInvalidate.map(key => this.cacheService.delete(key)));
+        console.log(`Invalidated cache keys: ${JSON.stringify(keysToInvalidate)}`);
+        
 
         // 5. Emit Event
-        this.eventEmitter.emit('user.deactivated', { userId, authId });
+        const reactivateUrl = `${process.env.FRONTEND_URL}/reactivate?userId=${userId}`;
+        this.eventEmitter.emit('account.deactivation', { auth, reactivateUrl });
 
         // 6. Return Response
         return { 

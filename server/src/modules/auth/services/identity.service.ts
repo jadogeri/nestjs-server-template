@@ -49,7 +49,7 @@ export class IdentityService implements IdentityServiceInterface {
       const isVerified = this.accessControlService.isUserVerified(auth);
       if (!isVerified) throw new ForbiddenException('Account not verified, please verify your email before logging in');
       if (auth.status === StatusEnum.LOCKED) throw new ForbiddenException('Account is locked, use forget account to access account');
-      
+      if (auth.status === StatusEnum.DISABLED) throw new ForbiddenException('Account is disabled, contact support for assistance');
       const isMatch = await this.hashingService.compare(password, auth.password);
       if (!isMatch) {
         auth.failedLoginAttempts = auth.failedLoginAttempts + 1;

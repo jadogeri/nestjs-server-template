@@ -124,7 +124,7 @@ export class MailService {
       ...context,
     };
     console.log('Full context for reactivation email:', fullContext); // Debugging log
-    return await this.sendEmail(email, 'account-management/reactivation', fullContext);
+    return await this.sendEmail(email, 'account-management/reactivate-account', fullContext);
   }
   async sendDeactivationEmail(email: string, context: DeactivationEmailContext) {
     const fullContext: DeactivationEmailContext = {
@@ -132,7 +132,7 @@ export class MailService {
       ...context,
     };
     console.log('Full context for deactivation email:', fullContext); // Debugging log
-    return await this.sendEmail(email, 'account-management/deactivation', fullContext);
+    return await this.sendEmail(email, 'account-management/deactivate-account', fullContext);
   }
   async sendDeletionEmail(email: string, context: DeletionEmailContext) {
     const fullContext: DeletionEmailContext = {
@@ -140,7 +140,7 @@ export class MailService {
       ...context,
     };
     console.log('Full context for deletion email:', fullContext); // Debugging log
-    return await this.sendEmail(email, 'account-management/deletion', fullContext);
+    return await this.sendEmail(email, 'account-management/delete-account', fullContext);
   }
 
 

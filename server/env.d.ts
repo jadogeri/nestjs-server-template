@@ -40,7 +40,7 @@ declare global {
             ROOT_DATE_OF_BIRTH: string;
             ROOT_EMAIL: string;
             ROOT_PASSWORD: string;
-            
+            FRONTEND_URL: string;
         }
     }
 }

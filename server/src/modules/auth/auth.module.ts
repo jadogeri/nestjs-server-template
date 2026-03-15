@@ -40,6 +40,7 @@ import { AuthenticationEventListener } from '../../core/infrastructure/mail/list
 import { PasswordManagementEventListener } from '../../core/infrastructure/mail/listener/password-management.listener';
 import { IdentityServiceInterface } from './services/interfaces/identity-service.interface';
 import { IdentityService } from './services/identity.service';
+import { AccountManagementEventListener } from '../../core/infrastructure/mail/listener/account-management.listener';
 
 
 @Module({
@@ -74,6 +75,7 @@ import { IdentityService } from './services/identity.service';
     RegistrationEventListener,
     AuthenticationEventListener,
     PasswordManagementEventListener,
+    AccountManagementEventListener,
     LocalStrategy,
     AccessTokenStrategy,
     RefreshTokenStrategy,

@@ -35,6 +35,8 @@ export interface AnniversaryEmailContext extends BaseEmailContext {
 export interface DeactivationEmailContext extends BaseEmailContext {
   email: string;
   confirmationDate: Date;
+  reactivateUrl: string;
+
 }
 
 export interface ReactivationEmailContext extends BaseEmailContext {

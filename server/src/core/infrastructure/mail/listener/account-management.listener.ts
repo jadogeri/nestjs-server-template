@@ -18,7 +18,7 @@ export class AccountManagementEventListener implements AccountManagementEventLis
   ) {}
 
     @OnEvent('account.deactivation', { async: true }) // Runs in the background
-    async handleDeactivationEvent(auth: Auth): Promise<void> {
+    async handleDeactivationEvent({auth, reactivateUrl}: {auth: Auth, reactivateUrl: string}): Promise<void> {
         console.log("auth details in event listener:", auth); // Debugging log
     
         // 3. Prepare the link
@@ -26,6 +26,8 @@ export class AccountManagementEventListener implements AccountManagementEventLis
         firstName: auth.user.firstName,
         email: auth.email,
         confirmationDate: new Date(), // You can set this to the actual deactivation date if available
+        reactivateUrl: reactivateUrl, // Pass the reactivation URL to the email context
+
         };
 
         console.log("Email context for deactivation:", context); // Debugging log
@@ -53,7 +55,6 @@ export class AccountManagementEventListener implements AccountManagementEventLis
         await this.mailService.sendReactivationEmail(auth.email, context);
         this.logger.log(`Reactivation email dispatched to: ${auth.email}`); 
     }
-
 
     @OnEvent('account.deletion', { async: true }) // Runs in the background
 
