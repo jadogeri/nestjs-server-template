@@ -58,9 +58,9 @@ Integrity & Performance
 
 | Design Level | Asset Link |
 |---|---|
-| Conceptual | ![View Sketch 🎨 ](./docs/database/conceptual/conceptual-design.jpg)|
-| Logical | ![View ERD ⚙️ ](./docs/database/logical/logical-design.jpg)|
-| Physical | ![View SQL Migration 🏗️ ](./docs/database/physical/physical_diagram.png)|
+| Conceptual | [View Sketch 🎨 ](./docs/database/conceptual/conceptual-design.jpg)|
+| Logical | [View ERD ⚙️ ](./docs/database/logical/logical-design.jpg)|
+| Physical | [View SQL Migration 🏗️ ](./docs/database/physical/physical_diagram.png)|
 
 ------------------------------
 Would you like me to generate the One-to-One TypeORM relation code for the User and Profile entities?
