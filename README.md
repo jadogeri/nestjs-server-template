@@ -1,15 +1,15 @@
 # **System Design Document (SDD)**
 
-## **NestJS Enterprise Core v3**
+## ** NestJS Server App**
 
-**Version:** 3.0
-**Date:** March 15, 2026
+**Version:** 2.0
+**Date:** March 21, 2026
 
 ---
 
 ## Description
 
-A professional NestJS backend template implementing Clean Architecture, built-in Role-Based Access Control (RBAC), and automated documentation. This template is designed to handle complex user profiles, contacts, and secure session management.
+This is a template for Backend Application (Express + Node + SQLite + NestJS) which stores user information and contacts.
 
 ## Authors
 
@@ -17,10 +17,9 @@ A professional NestJS backend template implementing Clean Architecture, built-in
 
 ## Screenshots
 
-
 | ![Screenshot 1](assets/images/screenshot1.png) | ![screenshot 2](assets/images/screenshot2.png) |
 | -------------------------------------------- | -------------------------------------------- |
-| *App Dashboard*                              | *API Explorer*                               |
+|                                              |                                              |
 
 ## Table of Contents
 
@@ -50,7 +49,8 @@ A professional NestJS backend template implementing Clean Architecture, built-in
       <li><a href="#4-data-design">4. Data Design</a>
         <ul>
           <li><a href="#41-data-entities-and-relationships">4.1 Entities and Relationships</a> </li>
-          <li><a href="#42-database-design-artifacts">4.2 Database Design Artifacts</a> </li>
+          <li><a href="#42-database-conceptual-schema">4.2 Database Conceptual Schema</a> </li>
+          <li><a href="#33-deployment-artifacts">3.3 Deployment Artifacts</a> </li>
         </ul>
       </li>
     </ul> 
@@ -84,9 +84,7 @@ A professional NestJS backend template implementing Clean Architecture, built-in
     <ul> 
         <li><a href="#10-references">10. References</a>
         </li>
-    </ul>
-
----
+    <ul>
 
 ## **1. Introduction**
 
@@ -97,13 +95,15 @@ This document outlines the system architecture and design considerations for the
 ### **1.2 Scope**
 
 The system allows users to:
+
 - Create and manage secure accounts.
 - Handle Profile and Contact management.
 - Manage Sessions and Permissions via Roles.
 
 ### **1.3 Intended Audience**
 
-- Backend developers and system architects.
+- Junior or Senior backend developers.
+- beginners learning typescript.
 
 ---
 
@@ -111,24 +111,39 @@ The system allows users to:
 
 * [Link to Documentation ](https://documenter.getpostman.com/view/40822092/2sB3QRoSr6)
 
----
-
 ## **3. System Architecture**
 
 ### **3.1 High-Level Architecture**
 
-The system follows a **Modular Architecture**:
-1. **Controller Layer**: Handles HTTP requests and DTO validation.
-2. **Service Layer**: Core business logic and domain services.
-3. **Repository Layer**: Data persistence using TypeORM/Prisma.
+The system follows a **tier architecture**:
+
+1. **Presentation Layer**: Controllers & DTOs (Request handling & Validation).
+2. **Security Layer**: Guards & Strategies (Authentication & RBAC).
+3. **Application Layer**: Services (Business logic orchestration).
+4. **Infrastructure Layer**: External Integrations (Mailers).
+5. **Persistence Layer**: Repositories & Entities (Database interactions).
+
+![Architecture](assets/images/architecture.png)
 
 ### **3.2 Technology Stack**
 
-- **Framework**: NestJS (Node.js)
-- **Database**: PostgreSQL / MongoDB
-- **ORM**: TypeORM
-- **Security**: JWT, Passport.js, Bcrypt
-- **Container**: Docker & Docker Compose
+- **Programming Languages**: Typescript, NOSQL, YAML
+- **IDE**: Visual Studio Code (VSCode)
+- **Backend Frameworks**: Node and Express
+- **Database**: SQLite
+- **Test**: Jest
+- **Plugins**: Early AI
+- **Container**: Docker
+- **Security**: JSON Web Token (JWT), Argon2 and Nanoid
+- **Source Control**: Git and GitHub
+- **CI/CD**: GitHub Actions
+- **Code Analsis**: SonarQube
+- **Documentation**: Swagger
+- **Caching**: Redis
+
+### **3.3 Deployment Artifacts**
+
+- **Backend Application**: Appllicationcontains everyting to build and run Express application instance on Render.com or build a Docker image, and run a Docker container on Render.com
 
 ---
 
@@ -145,22 +160,17 @@ The system follows a **Modular Architecture**:
 | **Contact** | 📇 | User-owned address book entries. |
 | **Role** | 🛡️ | Named access levels (e.g., Admin). |
 | **Permission**| 📜 | Granular action rules (e.g., `user:write`). |
-
-### **4.2 Database Design Artifacts**
-
-
-| Level | Link (Click to View) |
-| :--- | :--- |
-| **Conceptual** | [View Sketch 🎨](./docs/database/conceptual/conceptual-design.jpg) |
-| **Logical** | [View ERD ⚙️](./docs/database/logical/logical-design.jpg) |
-| **Physical** | [View SQL Migration 🏗️](./docs/database/physical/physical_diagram.png) |
+| **Auth** | 🔐|	Authentication system handling login, token issuance, and password management.|
 
 ---
 
 ## **5. Installation**
 
 * [Download and install NodeJS](https://nodejs.org/en/download)
-* [Download and install Docker](https://docs.docker.com)
+* [Download and install Docker - Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
+* [Download and install Docker - Mac](https://docs.docker.com/desktop/setup/install/mac-install/)
+* [Create Google account](https://google.com/)
+* [Generate Google account App Password](https://support.google.com/mail/thread/205453566/how-to-generate-an-app-password?hl=en)
 
 ---
 
@@ -168,34 +178,117 @@ The system follows a **Modular Architecture**:
 
 ### **6.1 Run Application**
 
-```bash
-  git clone https://github.com
-  cd NestJSTemplate
+1 Open command prompt or terminal.
 
+2 Type command git clone https://github.com/jadogeri/Nestjs-Server-Template.git then press enter.
+
+```bash
+  git clone https://github.com/jadogeri/Nestjs-Server-Template.git
 ```
 
-6.1.1 Run Locally
-Configure .env from .env.sample.
-Install and run:
-bash
+3 Enter command cd Nestjs-Server-Template/server then press enter.
+
+```bash
+  cd Nestjs-Server-Template/server
+```
+
+#### **6.1.1 Run Locally**
+
+1 Add .env file in project root directory and copy contents in .env.sample.
+
+2 Fill out missing variables 
+
+![env](assets/images/env.png)
+
+3 Type npm install to install dependencies.
+
+```bash
   npm install
-  npm run start:dev
-Use code with caution.
+```
 
-6.1.2 Run Docker Container
-bash
-  docker-compose up --build
-Use code with caution.
+4 Type npm run dev to run server
 
-7. API Testing 
-Note : Use API Reference for endpoint testing.
-8. Tests
-bash
+```bash
+  npm run dev
+```
+
+![env](assets/images/localoutput.png)
+
+#### **6.1.2 Run Docker container**
+
+1 Add Dockerfile file in project root directory and copy contents in .Dockerfile.sample.
+
+2 Fill out connection string with mongoDB atlas MONGODB_URI and create a secret phrase for JSON_WEB_TOKEN_SECRET.
+
+![docker](assets/images/docker.png)
+
+3 Type docker build -t server-image . in command line to build docker image.
+
+```bash
+  docker build -t server-image .
+```
+
+![dockerbuild](assets/images/dockerimage.png)
+
+3 Type docker run --name server-container -d -it -p 6000:6000 server-image to create and start container immediately.
+
+```bash
+  docker run --name server-container -d -it -p 6000:6000 server-image
+```
+
+![dockerbuild](assets/images/dockerrun.png)
+
+4 Type docker stop server-container to stop container.
+
+```bash
+  docker stop server-container
+```
+
+5 Type docker start server-container to start container.
+
+```bash
+  docker start server-container
+```
+
+## **7. API Testing**
+
+**Prerequisites** :ensure container or local application is running.
+
+**Note** : use `<a href="#2-api-reference">`API Reference`</a>` docs for testing endpoints.
+
+#### **7.1.1 Postman Environment Variables**
+
+![postmanenv](assets/images/postman_env.png)
+
+---
+
+## **8. Tests**
+
+1. run test command below.
+
+```bash
   npm run test
-Use code with caution.
+```
 
-9. License
-LICENSE
-10. References
-NestJS Documentation
-TypeScript Deep Dive
+![tests](assets/images/tests.png)
+
+---
+
+## **9. License**
+
+[LICENSE](/LICENSE)
+
+---
+
+## **10. References**
+
+* FreeCodeCamp : [Frontend Web Development: (HTML, CSS, JavaScript, TypeScript, React)](https://www.youtube.com/watch?v=MsnQ5uepIa).
+* Dipesh Malvia : [Learn Node.js &amp; Express with Project in 2 Hours](https://www.youtube.com/watch?v=H9M02of22z4&t=140s).
+* AweSome Open Source : [Awesome Readme Templates](https://awesomeopensource.com/project/elangosundar/awesome-README-templates)
+* Readme.so : [The easiest way to create a README](https://readme.so/)
+* Swagger :  [Swagger API Documentation](https://swagger.io/docs/)
+* Supertest :  [Guide to writing integration tests in express js with Jest and Supertest](https://dev.to/ali_adeku/guide-to-writing-integration-tests-in-express-js-with-jest-and-supertest-1059#:~:text=In%20the%20root%20directory%20of,all%20your%20integration%20test%20files)
+* MongoDB Memory Server Test Database : [Testing with MongoDB-Memory-Server ](https://dev.to/remrkabledev/testing-with-mongodb-memory-server-4ja2)
+* Unit Testing : [Unit tests in Jest with supertest, MongoDB and TypeScript](https://medium.com/@adammalej/unit-tests-in-jest-with-supertest-and-mongodb-e4d56e918ce8)
+* Mockingoose : [How to test mongoose models with jest and mockingoose](https://dev.to/darkmavis1980/how-to-test-mongoose-models-with-jest-and-mockingoose-2k10)
+* MongoDB Memory Server :  [MongoDB Memory Server tutorial in typescript](https://github.com/typegoose/mongodb-memory-server)
